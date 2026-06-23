@@ -82,10 +82,17 @@
     letter-spacing:.03em; padding:3px 10px; border-radius:999px; border:1px solid transparent;}
   .badge.halal{background:#eef4ef; color:#2f6b4f; border-color:#cce0d4;}
   .badge.veg{background:#f1f6ea; color:#4f7a2c; border-color:#d8e8c5;}
+  .badge.wt{background:#f7efe8; color:#8a6e4a; border-color:#ead9c5;}
   .ingredients{margin-top:13px; padding-top:11px; border-top:1px dashed var(--blush);}
   .ingredients .lbl{display:block; font-size:10.5px; font-weight:600; letter-spacing:.12em;
-    text-transform:uppercase; color:var(--gold); margin-bottom:3px;}
+    text-transform:uppercase; color:var(--gold); margin:0 0 3px;}
+  .ingredients .lbl.mt{margin-top:11px;}
   .ingredients p{margin:0; font-size:12.5px; color:#6a5a58; line-height:1.5;}
+  .allergens{display:flex; flex-wrap:wrap; gap:6px;}
+  .alg{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500;
+    color:#7a3a3a; background:#fbf1ee; border:1px solid #f0d9d4; padding:2px 8px; border-radius:7px;}
+  .alg .dot{width:7px; height:7px; border-radius:50%; background:#b08968; display:inline-block;}
+  .trace{margin:8px 0 0; font-size:11px; font-style:italic; color:#9a8a88;}
 
   .storage{background:#fff; border:1px solid var(--blush); border-left:4px solid var(--sage);
     border-radius:12px; padding:18px 22px; margin:30px 0 6px;}
@@ -180,9 +187,15 @@
       <div class="flavour-body">
         <span class="pill">Flavour 1</span>
         <h4>Lotus with Melon Seeds and Yolk</h4>
-        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span></div>
+        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span><span class="badge wt">160g</span></div>
         <p class="story">Smooth white lotus paste studded with melon seeds and wrapped around a golden salted egg yolk, baked the time-honoured Cantonese way. The one everyone reaches for first.</p>
-        <div class="ingredients"><span class="lbl">Ingredients</span><p>White lotus paste, melon seed, wheat flour, golden syrup, cooking oil (palm, peanuts, sesame), salted egg yolk, egg.</p></div>
+        <div class="ingredients">
+          <span class="lbl">Ingredients</span>
+          <p>White lotus paste, wheat flour, salted egg yolk, golden syrup, blended cooking oil (palm, peanuts, sesame), melon seed, egg, milk.</p>
+          <span class="lbl mt">Allergen advice · contains</span>
+          <div class="allergens"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg">🥛 Milk</span><span class="alg"><span class="dot"></span> Sesame</span><span class="alg">🥜 Peanuts</span></div>
+          <p class="trace">May contain traces of soy.</p>
+        </div>
       </div>
     </div>
 
@@ -191,9 +204,15 @@
       <div class="flavour-body">
         <span class="pill">Flavour 2</span>
         <h4>Lotus with Melon Seeds</h4>
-        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span></div>
+        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span><span class="badge wt">160g</span></div>
         <p class="story">Pure white lotus paste with melon seeds folded through, in a classic baked skin. Quiet, smooth and traditional, for those who like it simple.</p>
-        <div class="ingredients"><span class="lbl">Ingredients</span><p>White lotus paste, melon seed, wheat flour, golden syrup, cooking oil (palm, peanuts, sesame), egg.</p></div>
+        <div class="ingredients">
+          <span class="lbl">Ingredients</span>
+          <p>White lotus paste, melon seed, wheat flour, golden syrup, blended cooking oil (palm, peanuts, sesame), egg, milk.</p>
+          <span class="lbl mt">Allergen advice · contains</span>
+          <div class="allergens"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg">🥛 Milk</span><span class="alg"><span class="dot"></span> Sesame</span><span class="alg">🥜 Peanuts</span></div>
+          <p class="trace">May contain traces of soy.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -215,9 +234,15 @@
       <div class="flavour-body">
         <span class="pill">Flavour 1</span>
         <h4>Belgian Double Chocolate</h4>
-        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span></div>
-        <p class="story">A double hit of chocolate in both the skin and the paste, finished with a pinch of sea salt that sharpens the cocoa from the first bite to the last.</p>
-        <div class="ingredients"><span class="lbl">Ingredients</span><p>Chocolate lotus, chocolate paste, melon seeds, cooking oil (palm, peanuts, sesame), chocolate powder, dark chocolate paste, Himalayan salt.</p></div>
+        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span><span class="badge wt">160g</span></div>
+        <p class="story">A double hit of chocolate in both the skin and the paste, finished with a pinch of Himalayan salt that sharpens the cocoa from the first bite to the last.</p>
+        <div class="ingredients">
+          <span class="lbl">Ingredients</span>
+          <p>Chocolate lotus paste, Maruchi dough, chocolate paste, melon seeds, blended cooking oil (palm, peanut, sesame), cocoa powder, Himalayan salt.</p>
+          <span class="lbl mt">Allergen advice · contains</span>
+          <div class="allergens"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥛 Milk</span><span class="alg">🌰 Tree nuts</span><span class="alg">🫘 Soy</span><span class="alg"><span class="dot"></span> Sesame</span><span class="alg">🥚 Egg</span><span class="alg">🥜 Peanuts</span></div>
+          <p class="trace">May contain traces of soy.</p>
+        </div>
       </div>
     </div>
 
@@ -226,9 +251,15 @@
       <div class="flavour-body">
         <span class="pill">Flavour 2</span>
         <h4>Black Sesame Peanut Butter</h4>
-        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span></div>
+        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span><span class="badge wt">160g</span></div>
         <p class="story">Toasty black sesame meets smooth peanut butter, a nostalgic pairing carried in a soft Momoyama skin.</p>
-        <div class="ingredients"><span class="lbl">Ingredients</span><p>Black sesame lotus, peanut butter, melon seeds, oil, pumpkin powder.</p></div>
+        <div class="ingredients">
+          <span class="lbl">Ingredients</span>
+          <p>Black sesame lotus, Maruchi dough, peanut butter, melon seeds, blended cooking oil (palm, peanut, sesame), pumpkin powder.</p>
+          <span class="lbl mt">Allergen advice · contains</span>
+          <div class="allergens"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🌰 Tree nuts</span><span class="alg">🥚 Egg</span><span class="alg"><span class="dot"></span> Sesame</span><span class="alg">🥜 Peanuts</span></div>
+          <p class="trace">May contain traces of soy.</p>
+        </div>
       </div>
     </div>
 
@@ -237,9 +268,14 @@
       <div class="flavour-body">
         <span class="pill">Flavour 3</span>
         <h4>Emerald Pandan Golden Yolk</h4>
-        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span></div>
+        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span><span class="badge wt">160g</span></div>
         <p class="story">Fragrant pandan paste with a custard salted egg yolk centre, carried in a soft Momoyama skin. A local favourite, reimagined.</p>
-        <div class="ingredients"><span class="lbl">Ingredients</span><p>Pandan bean paste, custard salted egg yolk paste, melon seed, cooking oil (palm, peanuts, sesame), pumpkin powder.</p></div>
+        <div class="ingredients">
+          <span class="lbl">Ingredients</span>
+          <p>Pandan paste, Maruchi dough, custard salted egg yolk paste, melon seed, blended cooking oil (palm, peanuts, sesame), purple sweet potato powder.</p>
+          <span class="lbl mt">Allergen advice · contains</span>
+          <div class="allergens"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥛 Milk</span><span class="alg">🥚 Egg</span><span class="alg"><span class="dot"></span> Sesame</span><span class="alg">🥜 Peanuts</span></div>
+        </div>
       </div>
     </div>
 
@@ -248,9 +284,14 @@
       <div class="flavour-body">
         <span class="pill">Flavour 4</span>
         <h4>Red Dates Longan</h4>
-        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span></div>
+        <div class="badges"><span class="badge halal">✓ Halal</span><span class="badge veg">🌱 Vegetarian</span><span class="badge wt">160g</span></div>
         <p class="story">Warm red dates and longan bits, two ingredients long loved for comfort and good wishes, folded into a rose-hued Momoyama skin.</p>
-        <div class="ingredients"><span class="lbl">Ingredients</span><p>Red date lotus, longan bits, melon seeds, cooking oil (palm, peanuts, sesame), red food colouring. Contains permitted colouring substances.</p></div>
+        <div class="ingredients">
+          <span class="lbl">Ingredients</span>
+          <p>Red date lotus, Maruchi dough, longan bits, melon seeds, blended cooking oil (palm, peanuts, sesame), colour (102, 110, 124).</p>
+          <span class="lbl mt">Allergen advice · contains</span>
+          <div class="allergens"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg"><span class="dot"></span> Sesame</span><span class="alg">🥜 Peanuts</span></div>
+        </div>
       </div>
     </div>
   </section>
