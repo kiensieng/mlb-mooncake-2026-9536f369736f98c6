@@ -155,8 +155,8 @@
   .pack .desc p:last-child{margin-bottom:0;}
   .given{font-size:12px; color:var(--muted); font-style:italic; margin-top:8px;}
 
-  footer{margin-top:60px; text-align:center; font-size:12.5px; color:var(--muted);}
-  .confirm{color:var(--coral); font-weight:500;}
+  footer{margin-top:60px; text-align:center; font-size:12.5px; color:var(--muted); line-height:1.9;}
+  .foot-cn{font-family:'Playfair Display',serif; font-size:15px; color:var(--gold);}
 
   /* ---------- STICKY JUMP NAV ---------- */
   .jumpnav{position:sticky; top:0; z-index:60; background:var(--burgundy);
@@ -170,28 +170,11 @@
     border-bottom:2px solid transparent; transition:color .18s, border-color .18s;}
   .jumpnav a:hover{color:#fff;}
   .jumpnav a.active{color:#fff; border-bottom-color:var(--gold);}
-  .jumpnav a.nav-order{flex:0 0 auto; color:var(--burgundy); background:var(--gold);
-    font-weight:600; border-bottom-color:transparent; padding:7px 16px; border-radius:999px;
-    box-shadow:0 3px 10px -4px rgba(0,0,0,.45);}
   .jumpnav .in{mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 18px),transparent 100%);
     -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 18px),transparent 100%);}
-  .jumpnav a.nav-order:hover{background:#d8bc86;}
   .jumpnav .progress{height:2px; background:var(--gold); width:0; transition:width .1s linear;}
   [id]{scroll-margin-top:64px;}
 
-  /* ---------- ORDER CTA ---------- */
-  .order-row{margin-top:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
-  .btn-order{display:inline-flex; align-items:center; gap:7px; background:var(--burgundy); color:#fff;
-    font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; letter-spacing:.03em;
-    text-decoration:none; padding:10px 20px; border-radius:999px;
-    box-shadow:0 8px 18px -10px rgba(111,22,52,.7); transition:background .18s, transform .18s;}
-  .btn-order:hover{background:var(--burgundy-lo); transform:translateY(-1px);}
-  .btn-order .arw{font-size:15px; line-height:1;}
-  .soon{font-size:12px; color:var(--muted); font-style:italic;}
-  .soon a{color:var(--burgundy); font-style:normal; font-weight:500;}
-  .shopall{text-align:center; margin:34px 0 0;}
-  .shopall .btn-order{font-size:14px; padding:13px 30px;}
-  .shopall p{font-size:12.5px; color:var(--muted); margin:10px 0 0;}
 
   /* ---------- BACK TO TOP ---------- */
   #toTop{position:fixed; right:18px; bottom:18px; z-index:70; width:42px; height:42px;
@@ -203,7 +186,7 @@
 
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
-    .btn-order, #toTop, .jumpnav a, .jumpnav .progress{transition:none;}
+    #toTop, .jumpnav a, .jumpnav .progress{transition:none;}
   }
 
   @media (max-width:680px){
@@ -212,7 +195,7 @@
     .pack-photo{flex:none; width:80%; max-width:300px; margin:0 auto;}
     .pack-body{text-align:left;}
   }
-  @media print{ .jumpnav,#toTop,.order-row,.shopall{display:none !important;} body{background:#fff;} .flavour,.pack,.type-intro{box-shadow:none;} header.hero::after{display:none;} }
+  @media print{ .jumpnav,#toTop{display:none !important;} body{background:#fff;} .flavour,.pack,.type-intro{box-shadow:none;} header.hero::after{display:none;} }
 </style>
 </head>
 <body>
@@ -228,7 +211,6 @@
       <a href="#sets">Sets</a>
       <a href="#giftsets">Gift Sets</a>
     </div>
-    <a class="nav-order" href="https://www.mdmlingbakery.com/product-category/mid-autumn-mooncakes-singapore/" target="_blank" rel="noopener">Order</a>
   </div>
   <div class="progress" id="navProgress"></div>
 </nav>
@@ -236,7 +218,7 @@
 <header class="hero">
   <div class="kicker">Mdm Ling Bakery · Mid-Autumn 2026</div>
   <h1>The Collection</h1>
-  <p>Our mooncakes and gift sets for the season, with the story and product copy for each, so the whole team and the website speak with one voice.</p>
+  <p>Our mooncakes and keepsake gift sets for the season, with the story behind every flavour and every name.</p>
 </header>
 
 <div class="wrap">
@@ -543,7 +525,7 @@
         <li>1 × Truffle Popping Candy</li>
         <li>1 × Truffle Pistachio Kunafa</li>
       </ul>
-      <p class="snote">Best enjoyed chilled. Unlike our baked sets, this set isn't Halal certified.</p>
+      <p class="snote">Best enjoyed chilled. Unlike our baked sets, this set isn't Halal certified. The Orchid Reverie Tin carries eight, two of each flavour.</p>
     </div>
   </div>
 
@@ -569,7 +551,6 @@
         <p>Its name comes from the old idiom <strong>花晨月夕</strong>, flower mornings and moonlit evenings, the two loveliest hours of any day. We split it across a pair of bags: The Dawn is <strong>花晨</strong>, the morning the flowers open, in cream like first light.</p>
         <p>Designed as a <strong>keepsake rather than a wrapper</strong>, The Dawn turns a Mid-Autumn gift into something kept, used and remembered for years to come. <strong>Pair it with The Dusk</strong>, its warmer companion, for two halves of the same day.</p>
       </div>
-      <div class="order-row"><a class="btn-order" href="https://www.mdmlingbakery.com/products/the-dawn-bag-traditional-assorted-mooncakes/" target="_blank" rel="noopener">Order The Dawn<span class="arw">&rarr;</span></a></div>
     </div>
   </article>
 
@@ -586,7 +567,6 @@
         <p>The Dusk is <strong>月夕</strong>, the moonlit evening from the idiom <strong>花晨月夕</strong>, the other of the day's two loveliest hours. Where The Dawn wears first light, The Dusk wears the last of it, and together the pair <strong>bookend the day the way family bookends a life</strong>.</p>
         <p><strong>More heirloom than packaging</strong>, The Dusk lets your Mid-Autumn gift live on as a bag that's reached for again and again. <strong>The natural other half to The Dawn.</strong></p>
       </div>
-      <div class="order-row"><a class="btn-order" href="https://www.mdmlingbakery.com/products/the-dusk-bag-traditional-assorted-mooncakes/" target="_blank" rel="noopener">Order The Dusk<span class="arw">&rarr;</span></a></div>
     </div>
   </article>
 
@@ -603,7 +583,6 @@
         <p>Every petal is washed in gentle pinks, lilacs and gold, a celebration of nature at its most tender, finished with a quiet glow of <strong>foil</strong>.</p>
         <p><strong>Sustainably designed to be kept and reused</strong> long after Mid-Autumn, the tin finds a second life holding keepsakes, trinkets and the small things worth saving. A Mid-Autumn gift set for <strong>family, friends and clients</strong> that stays on the shelf.</p>
       </div>
-      <div class="order-row"><a class="btn-order" href="https://www.mdmlingbakery.com/products/the-painted-garden-traditional-assorted-mooncakes/" target="_blank" rel="noopener">Order The Painted Garden<span class="arw">&rarr;</span></a></div>
     </div>
   </article>
 
@@ -620,7 +599,6 @@
         <p>Ideal for a <strong>smaller gesture that still feels considered</strong>, it's an easy way to wish someone well this Mid-Autumn.</p>
         <p>Like its larger companion, the tin is made to be <strong>kept and reused</strong> long after the season passes.</p>
       </div>
-      <div class="order-row"><a class="btn-order" href="https://www.mdmlingbakery.com/products/the-painted-garden-duo-2pc-traditional-mooncakes/" target="_blank" rel="noopener">Order The Painted Garden Duo<span class="arw">&rarr;</span></a></div>
     </div>
   </article>
 
@@ -637,7 +615,6 @@
         <p><strong>Thoughtfully designed for sustainable keeping and reuse</strong> long after Mid-Autumn, the box finds a second life storing keepsakes, trinkets and the small things worth saving. A Mid-Autumn gift set for <strong>family, friends and clients</strong> that stays on the shelf.</p>
         <p>This Mid-Autumn Festival, let your celebration carry further. With every purchase of The Painted Garden Box, <strong>we'll donate $1 to the Breast Cancer Foundation</strong>, supporting breast cancer awareness, screening and survivor care in Singapore. Each garden you give helps look after someone else's: <strong>care, passed along twice in one gift</strong>.</p>
       </div>
-      <div class="order-row"><a class="btn-order" href="https://www.mdmlingbakery.com/products/the-painted-garden-box-traditional-assorted-mooncakes/" target="_blank" rel="noopener">Order The Painted Garden Box<span class="arw">&rarr;</span></a></div>
     </div>
   </article>
 
@@ -653,7 +630,6 @@
         <p>The peony has long stood for <strong>honour, grace and prosperity</strong>, making this a gift that carries good meaning as much as good looks. <strong>Where The Painted Garden whispers, A Court of Peonies sings.</strong> 花好月圆 is the blessing spoken at every reunion table; <strong>give this tin and you're saying it out loud</strong>.</p>
         <p><strong>Sustainably designed to be reused</strong> long after Mid-Autumn, it's a striking gift set for family, friends and <strong>corporate gifting</strong> alike.</p>
       </div>
-      <div class="order-row"><a class="btn-order" href="https://www.mdmlingbakery.com/products/a-court-of-peonies-traditional-assorted-mooncakes/" target="_blank" rel="noopener">Order A Court of Peonies<span class="arw">&rarr;</span></a></div>
     </div>
   </article>
 
@@ -669,7 +645,6 @@
         <p>Set against a <strong>soft sage</strong> ground with the collection's signature blooms, it's a smaller gesture that still speaks of <strong>honour and good wishes</strong>.</p>
         <p>Built to be <strong>kept and reused</strong>, it carries the season well beyond the festival.</p>
       </div>
-      <div class="order-row"><a class="btn-order" href="https://www.mdmlingbakery.com/products/court-of-peonies-duo-2pc-traditional-mooncakes/" target="_blank" rel="noopener">Order A Court of Peonies Duo<span class="arw">&rarr;</span></a></div>
     </div>
   </article>
 
@@ -686,7 +661,22 @@
         <p>Then keep the chest for everything after. The drawer is made for <strong>jewellery, keepsakes and the little treasures</strong> that deserve a home.</p>
         <p>A Mid-Autumn gift set that doubles as a <strong>lasting piece for the dressing table</strong>, thoughtful enough for <strong>someone you'd really like to impress</strong>.</p>
       </div>
-      <div class="order-row"><a class="btn-order" href="https://www.mdmlingbakery.com/products/blossom-drawer-chest-traditional-assorted-mooncakes/" target="_blank" rel="noopener">Order Blossom Drawer Chest<span class="arw">&rarr;</span></a></div>
+    </div>
+  </article>
+
+  <!-- Orchid Reverie Tin -->
+  <article class="pack" id="set-orchid-reverie">
+    <div class="pack-photo"><img src="assets/orchid-reverie.webp" alt="Orchid Reverie keepsake tin with snowskin mooncakes cut open to show their truffle centres" width="700" height="1043" loading="lazy" decoding="async"></div>
+    <div class="pack-body">
+      <span class="pcs">Snowskin Keepsake Tin · 8 pcs</span>
+      <h4>Orchid Reverie</h4>
+      <div class="desc">
+        <p>Orchid Reverie is a <strong>square metal keepsake tin</strong> painted with orchids in full bloom, in watercolour pinks, corals and gold.</p>
+        <p>Inside sit <strong>eight snowskin mooncakes, two of each of our four truffle flavours</strong>, so nobody at the table has to settle for one. Serve them chilled and let everyone find their favourite.</p>
+        <p>The orchid earns its place here. Singapore's <strong>national flower</strong> is an orchid, and it's a bloom that opens slowly and <strong>holds its flower for months</strong>, which is exactly what we hope a Mid-Autumn gift does for the people who receive it.</p>
+        <p>Designed to be <strong>refilled and reused long after the season</strong>, the tin keeps biscuits, tea or letters just as happily as it keeps mooncakes. <strong>Our best selling snowskin range, in the tin made for it.</strong></p>
+      </div>
+      <p class="given">Not Halal certified. Vegetarian, with no pork and no lard. Ingredients and allergen advice for each flavour are in the Snowskin section above.</p>
     </div>
   </article>
 
@@ -702,7 +692,6 @@
         <p>Its name, <strong>丝丝情长</strong>, borrows 情长 straight from the collection itself, because this bag is the collection's idea made touchable: <strong>affection, woven to last</strong>.</p>
         <p><strong>Sustainably designed as a thoughtful keepsake</strong>, this stylish bag is an invitation to cherish meaningful moments and carry them with you.</p>
       </div>
-      <div class="order-row"><p class="soon">Not yet listed online. <a href="https://www.mdmlingbakery.com/product-category/mid-autumn-mooncakes-singapore/" target="_blank" rel="noopener">See the full Mid-Autumn collection &rarr;</a></p></div>
     </div>
   </article>
 
@@ -719,7 +708,6 @@
         <p>Of all the things we wish the people we love, <strong>health comes first</strong>, and the name says it in four characters: <strong>月满安康, when the moon is full, may you be well</strong>. For parents, grandparents and the people whose wellbeing you think about daily.</p>
         <p><strong>Sustainably designed as a keepsake</strong>, this gift set turns a simple visit into something that stays, and carries that wish into the year ahead.</p>
       </div>
-      <div class="order-row"><p class="soon">Not yet listed online. <a href="https://www.mdmlingbakery.com/product-category/mid-autumn-mooncakes-singapore/" target="_blank" rel="noopener">See the full Mid-Autumn collection &rarr;</a></p></div>
     </div>
   </article>
 
@@ -736,7 +724,6 @@
         <p>The name promises that <strong>when flowers open, joy follows</strong>, and that's exactly how this tote gives: first the bag, then the scarf, then the mooncakes, <strong>one happiness unfolding after another</strong>.</p>
         <p><strong>Sustainably designed as a keepsake</strong>, this Mid-Autumn gift set lets a little of the celebration's calm travel with you wherever you go.</p>
       </div>
-      <div class="order-row"><p class="soon">Not yet listed online. <a href="https://www.mdmlingbakery.com/product-category/mid-autumn-mooncakes-singapore/" target="_blank" rel="noopener">See the full Mid-Autumn collection &rarr;</a></p></div>
     </div>
   </article>
 
@@ -752,18 +739,15 @@
         <p>Adorned in a <strong>luminous rose pink</strong> with <strong>sage green accents</strong>, its name echoes the collection itself: 花月情长 says affection lasts long, and <strong>花月长卷 gives that affection a shape, a long scroll that keeps unrolling</strong>.</p>
         <p>Whether for <strong>family, friends or clients</strong>, it leaves a <strong>lasting impression</strong> long after the treats are enjoyed. <strong>Some gifts are opened. This one is unveiled.</strong></p>
       </div>
-      <div class="order-row"><p class="soon">Not yet listed online. <a href="https://www.mdmlingbakery.com/product-category/mid-autumn-mooncakes-singapore/" target="_blank" rel="noopener">See the full Mid-Autumn collection &rarr;</a></p></div>
     </div>
   </article>
-  <div class="shopall">
-    <a class="btn-order" href="https://www.mdmlingbakery.com/product-category/mid-autumn-mooncakes-singapore/" target="_blank" rel="noopener">Shop the Mid-Autumn 2026 collection<span class="arw">&rarr;</span></a>
-    <p>Opens mdmlingbakery.com in a new tab.</p>
-  </div>
 
 
   <footer>
-    Mdm Ling Bakery · Mid-Autumn 2026 · Internal &amp; website reference<br>
-    Mooncake flavour notes are written from the product names. Anything marked <span class="confirm">suggested</span> or referencing ingredients should be confirmed before going live.
+    Mdm Ling Bakery · Mid-Autumn 2026<br>
+    <span class="foot-cn">花月情长 · A Bond in Lasting Bloom</span><br>
+    Ingredients and allergen advice on this page follow the printed product labels. If you're gifting to
+    someone with a food allergy, do check the label on the box as well.
   </footer>
 
 </div>
