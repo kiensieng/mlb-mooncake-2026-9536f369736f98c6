@@ -53,6 +53,51 @@ a{color:inherit;}
 .wrap{max-width:var(--maxw); margin:0 auto; padding:0 26px;}
 .read{max-width:var(--readw);}
 
+/* ---------- the unwrapping ---------- */
+.intro{position:fixed; inset:0; z-index:200; display:none; cursor:pointer;
+  -webkit-tap-highlight-color:transparent;}
+.intro.show{display:block;}
+.intro:focus{outline:none;}
+.intro .pane{position:absolute; top:0; bottom:0; width:calc(50% + 1px); background:var(--cocoa);
+  will-change:transform; transition:transform 800ms cubic-bezier(.62,.02,.2,1);}
+.intro .pane.l{left:0;}
+.intro .pane.r{right:0;}
+.intro .pane::after{content:""; position:absolute; top:-80px; width:300px; height:300px;
+  border-radius:50%; border:1px solid rgba(251,248,246,.11);}
+.intro .pane.l::after{right:-150px;}
+.intro .pane.r::after{left:-150px; top:auto; bottom:-90px;}
+.intro.open .pane.l{transform:translateX(-100%);}
+.intro.open .pane.r{transform:translateX(100%);}
+/* the champagne seam, and the light that comes out of it */
+.intro .seam{position:absolute; top:0; bottom:0; left:50%; width:1px; z-index:2;
+  transform:translateX(-50%); background:linear-gradient(180deg,
+    rgba(199,166,106,0) 0%, rgba(235,217,174,.9) 22%, rgba(235,217,174,.9) 78%, rgba(199,166,106,0) 100%);
+  transition:opacity 420ms ease, box-shadow 700ms ease;}
+.intro.open .seam{opacity:0; box-shadow:0 0 90px 44px rgba(240,226,196,.55);}
+/* the seal */
+.intro .seal{position:absolute; left:50%; top:50%; z-index:3; text-align:center;
+  transform:translate(-50%,-50%); color:#F0E2C4; width:min(84vw,420px);
+  transition:opacity 360ms ease, transform 520ms cubic-bezier(.5,0,.2,1);}
+.intro.open .seal{opacity:0; transform:translate(-50%,-50%) scale(1.16);}
+.intro .s-eyebrow{display:block; font-size:11px; font-weight:600; letter-spacing:.34em;
+  text-transform:uppercase; color:#EBD9AE;}
+/* solid ground so the seam passes behind the seal, not through it */
+.intro .s-plate{display:grid; grid-template-columns:1fr 1fr; justify-items:center;
+  gap:6px 20px; margin:20px auto; width:max-content; padding:24px 30px;
+  background:var(--cocoa); border:1px solid rgba(235,217,174,.55);
+  box-shadow:inset 0 0 0 5px var(--cocoa), inset 0 0 0 6px rgba(235,217,174,.3);}
+.intro .s-plate span{font-size:clamp(30px,8vw,44px); line-height:1; font-weight:500;
+  letter-spacing:.06em; color:#F4E7C8;}
+.intro .s-sub{display:block; font-size:13px; font-weight:500; letter-spacing:.2em;
+  text-transform:uppercase; color:#D7CCC6;}
+.intro .prompt{position:absolute; left:0; right:0; bottom:min(9vh,74px); z-index:3;
+  text-align:center; color:#D7CCC6; font-size:13px; font-weight:500; letter-spacing:.22em;
+  text-transform:uppercase; transition:opacity 260ms ease;}
+.intro.open .prompt{opacity:0;}
+.intro .prompt i{display:block; width:26px; height:1px; background:#EBD9AE; margin:12px auto 0;
+  animation:pull 2.1s ease-in-out infinite;}
+@keyframes pull{0%,100%{transform:scaleX(1); opacity:.55;} 50%{transform:scaleX(2.1); opacity:1;}}
+
 /* ---------- nav ---------- */
 nav.jump{position:sticky; top:0; z-index:60; background:rgba(243,242,241,.94);
   backdrop-filter:saturate(150%) blur(12px); border-bottom:1px solid var(--hair);}
@@ -322,6 +367,19 @@ footer a{color:var(--gold);}
 </style>
 </head>
 <body>
+
+<!-- The Unwrapping. Hidden by default so a no-JS visitor never meets a locked door. -->
+<div class="intro" id="intro" role="button" tabindex="0" aria-label="Open the Mid-Autumn 2026 collection">
+  <div class="pane l"></div>
+  <div class="pane r"></div>
+  <div class="seam"></div>
+  <div class="seal">
+    <span class="s-eyebrow">Mdm Ling Bakery</span>
+    <div class="s-plate"><span>花</span><span>月</span><span>情</span><span>长</span></div>
+    <span class="s-sub">Mid-Autumn 2026</span>
+  </div>
+  <div class="prompt"><span id="introVerb">Tap</span> to open<i></i></div>
+</div>
 
 <nav class="jump">
   <div class="in">
@@ -832,6 +890,51 @@ footer a{color:var(--gold);}
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function find(id){ for(var i=0;i<K.length;i++){ if(K[i].id===id) return K[i]; } return null; }
   function setById(id){ for(var i=0;i<S.length;i++){ if(S[i].id===id) return S[i]; } return null; }
+
+  /* ---------------- the unwrapping ----------------
+     Shows once per session. Any tap, scroll or key opens it. Skipped entirely
+     for reduced-motion, for a repeat visit, and for anyone arriving on a deep
+     link (an EDM pointing at #corporate should land on #corporate). */
+  (function(){
+    var intro = byId('intro');
+    if (!intro) return;
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var seen;
+    try { seen = window.sessionStorage.getItem('mlbIntro'); } catch(e){ seen = null; }
+    if (reduced || seen || window.location.hash){ intro.parentNode.removeChild(intro); return; }
+
+    if (!window.matchMedia('(pointer: coarse)').matches){
+      var verb = byId('introVerb');
+      if (verb) verb.textContent = 'Click';
+    }
+    intro.classList.add('show');
+    var prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    var opened = false;
+
+    function open(){
+      if (opened) return;
+      opened = true;
+      try { window.sessionStorage.setItem('mlbIntro','1'); } catch(e){}
+      intro.classList.add('open');
+      document.body.style.overflow = prevOverflow;
+      ga('intro_open', {});
+      window.setTimeout(function(){
+        if (intro.parentNode) intro.parentNode.removeChild(intro);
+      }, 900);
+    }
+
+    intro.addEventListener('click', open);
+    intro.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape'){ e.preventDefault(); open(); }
+    });
+    window.addEventListener('wheel', open, {passive:true, once:true});
+    window.addEventListener('touchmove', open, {passive:true, once:true});
+    window.addEventListener('keydown', open, {once:true});
+    /* Never trap anyone: open on its own after a few seconds of no input. */
+    window.setTimeout(open, 6000);
+    intro.focus({preventScroll:true});
+  })();
 
   /* ---------------- jump nav ---------------- */
   var links = [].slice.call(document.querySelectorAll('.jump a[href^="#"]'));
