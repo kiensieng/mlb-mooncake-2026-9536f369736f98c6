@@ -738,7 +738,7 @@ JS = """
                                    : '<span class="tag chill">Not Halal certified</span>') + '</div></div>';
       });
     } else {
-      rows = '<div class="setrow"><div class="sid">—</div><ul><li>' + esc(k.duoNote) +
+      rows = '<div class="setrow"><div class="sid">Duo</div><ul><li>' + esc(k.duoNote) +
              '</li></ul><div><span class="tag sage">Halal certified</span></div></div>';
     }
 
