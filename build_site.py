@@ -237,7 +237,6 @@ header.hero::before{content:""; position:absolute; right:10px; top:30px; width:1
 .pack .desc strong{color:var(--plum); font-weight:600;}
 .pack .note{margin:14px 0 0; font-size:13px; color:var(--muted); font-style:italic;}
 .pack-foot{margin-top:auto; padding-top:22px; display:flex; flex-wrap:wrap; align-items:center; gap:12px;}
-.pack-foot .price{margin-right:auto;}
 details.more{margin:16px 0 0;}
 details.more summary{cursor:pointer; font-size:13.5px; font-weight:600; color:var(--rose);
   list-style:none; padding:2px 0;}
@@ -507,8 +506,8 @@ def keepsake_card(k):
                'data-order="%s" data-name="%s">Order online</a>'
                % (k["url"], k["id"], k["name"]))
     else:
-        msg = ("Hello! I'd like to ask about the %s Mid-Autumn gift set (S$%d). "
-               "Which booths have it in stock?" % (k["name"], k["price"]))
+        msg = ("Hello! I'd like to ask about the %s Mid-Autumn gift set. "
+               "Which booths have it in stock?" % k["name"])
         cta = ('<a class="btn sm gold" href="%s" target="_blank" rel="noopener" '
                'data-booth="%s" data-name="%s">Check booth stock</a>'
                '<a class="btn sm ghost" href="#where">See booths</a>'
@@ -527,12 +526,12 @@ def keepsake_card(k):
     <p class="pgloss">%s · %s</p>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>%s</p></div>
     <details class="more"><summary>The full story</summary><div class="desc">%s</div>%s</details>
-    <div class="pack-foot"><span class="price">S$%d</span>%s</div>
+    <div class="pack-foot">%s</div>
     <div class="res-meta" style="margin-top:14px">%s</div>
   </div>
 </article>""" % (k["id"], chan_cls, chan_lbl, k["img"], ASSET_V, k["alt"],
                  k["format"], k["name"], var, k["cn"], k["pinyin"], k["gloss"],
-                 k["becomes"], body, note, k["price"], cta, "".join(tags))
+                 k["becomes"], body, note, cta, "".join(tags))
 
 
 def sets_table():
@@ -757,17 +756,17 @@ JS = """
     var cta;
     if (k.channel === 'online'){
       cta = '<a class="btn" href="' + k.url + '" target="_blank" rel="noopener" ' +
-            'data-order="' + k.id + '" data-name="' + esc(k.name) + '">Order online · S$' + k.price + '</a>';
+            'data-order="' + k.id + '" data-name="' + esc(k.name) + '">Order online</a>';
     } else {
       var msg = "Hello! The gift matcher on your Mid-Autumn page suggested the " + k.name +
-                " (S$" + k.price + "). Which booths have it in stock?";
+                ". Which booths have it in stock?";
       cta = '<a class="btn gold" href="https://wa.me/' + WA_CUSTOMER + '?text=' +
             encodeURIComponent(msg) + '" target="_blank" rel="noopener" data-booth="' + k.id +
-            '" data-name="' + esc(k.name) + '">Check booth stock · S$' + k.price + '</a>';
+            '" data-name="' + esc(k.name) + '">Check booth stock</a>';
     }
 
     var shareMsg = "For " + recipLabel + " this Mid-Autumn: " + k.name + " " + k.cn +
-                   " from Mdm Ling Bakery, S$" + k.price + ". " + k.becomes + " " + SITE;
+                   " from Mdm Ling Bakery. " + k.becomes + " " + SITE;
 
     var html =
       '<div class="res-grid">' +
@@ -788,7 +787,7 @@ JS = """
             '<button class="btn ghost" id="cAgain" type="button">Start again</button>' +
           '</div>' +
           (alt ? '<p class="res-alt">Also worth a look: <a href="#k-' + alt.id + '">' + esc(alt.name) +
-                 '</a> at S$' + alt.price + ', ' + esc(alt.becomes.charAt(0).toLowerCase() + alt.becomes.slice(1)) + '</p>' : '') +
+                 '</a>, ' + esc(alt.becomes.charAt(0).toLowerCase() + alt.becomes.slice(1)) + '</p>' : '') +
         '</div>' +
       '</div>';
 
@@ -837,8 +836,8 @@ JS = """
       cta = '<a class="btn sm" href="' + k.url + '" target="_blank" rel="noopener" data-order="' +
             k.id + '" data-name="' + esc(k.name) + '">Order online</a>';
     } else {
-      var msg = "Hello! I'd like to ask about the " + k.name + " Mid-Autumn gift set (S$" +
-                k.price + "). Which booths have it in stock?";
+      var msg = "Hello! I'd like to ask about the " + k.name + " Mid-Autumn gift set. " +
+                "Which booths have it in stock?";
       cta = '<a class="btn sm gold" href="https://wa.me/' + WA_CUSTOMER + '?text=' +
             encodeURIComponent(msg) + '" target="_blank" rel="noopener" data-booth="' + k.id +
             '" data-name="' + esc(k.name) + '">Check booth stock</a>';
@@ -849,7 +848,7 @@ JS = """
         '<img src="assets/' + k.img + '?v=%(v)d" alt="' + esc(k.alt) + '">' +
         '<div><h4>' + esc(k.name) + '</h4>' +
           '<p class="rgloss" style="margin:4px 0 0">' + esc(k.cn) + ' · ' + esc(k.pinyin) + '</p>' +
-          '<div class="res-meta" style="margin-top:12px"><span class="price">S$' + k.price + '</span>' +
+          '<div class="res-meta" style="margin-top:12px">' +
           '<span class="tag">' + esc(k.format) + ' · ' + esc(k.pcs) + '</span>' +
           '<span class="tag' + (k.channel === 'booth' ? ' gold' : '') + '">' +
             (k.channel === 'booth' ? 'At our booths' : 'Order online') + '</span></div>' +
@@ -889,7 +888,7 @@ def build():
         optset("recipient", [(r[0], r[1]) for r in RECIPIENTS], 1, 4, "Who are you gifting?"),
         optset("priority", [(p[0], p[1]) for p in PRIORITIES], 2, 4, "What matters most to you here?"),
         optset("table", [(t[0], t[1]) for t in TABLES], 3, 4, "And their table?"),
-        optset("budget", [(b[0], b[1]) for b in BUDGETS], 4, 4, "Roughly what per gift?"),
+        optset("budget", [(b[0], b[1]) for b in BUDGETS], 4, 4, "And how much of a moment should it be?"),
     ])
 
     ranges = ""

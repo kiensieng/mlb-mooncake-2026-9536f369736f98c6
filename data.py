@@ -334,8 +334,15 @@ KEEPSAKES = [
 
 # --------------------------------------------------------------------------
 # GIFT CONCIERGE — questions. Budget and halal act as HARD FILTERS, not
-# weights: a $118 chest must never surface on an "under $50" answer, and
-# snowskin must never surface when Halal certification is required.
+# weights: the top-tier chest must never surface on a "simple gesture"
+# answer, and snowskin must never surface when Halal certification is
+# required.
+#
+# Prices are RETAIL, before whatever promo is running the week someone
+# orders — so nothing in this collection is shown to a customer as a
+# dollar figure. The min/max on each BUDGETS tier below are internal
+# tiering only, used to keep the Concierge's match honest; the label the
+# customer sees is a scenario, not a number.
 # --------------------------------------------------------------------------
 RECIPIENTS = [
     ("family",     "Family",                  "family"),
@@ -360,10 +367,10 @@ TABLES = [
 ]
 
 BUDGETS = [
-    ("b1", "Under $50",   0,   50),
-    ("b2", "$50 to $90",  50,  90),
-    ("b3", "$90 to $120", 90,  120),
-    ("b4", "Corporate volume", 0, 9999),
+    ("b1", "A simple gesture",              0,   50),
+    ("b2", "A proper gift, well presented", 50,  90),
+    ("b3", "The one that really lands",     90,  120),
+    ("b4", "Corporate or bulk gifting",     0, 9999),
 ]
 
 # --------------------------------------------------------------------------
