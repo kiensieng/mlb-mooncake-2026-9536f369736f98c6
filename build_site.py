@@ -7,8 +7,30 @@ Everything is generated from data.py, so the keepsake cards, the Gift
 Concierge and the Build Your Gift tool always agree with each other.
 
 Visual system: MLB brand refresh 2026 (brands/mlb/design-system.css).
-Dusty Rose #A97F78 · Champagne Gold #C7A66A · Cocoa #4E3C37 on Cloud #F3F2F1.
-Inter throughout, Work Sans for standalone numbers only.
+Dusty Rose #A97F78 / Champagne Gold #C7A66A / Cocoa #4E3C37 on Cloud #F3F2F1.
+Inter throughout (variable, optical sizing for display); Work Sans is used
+ONLY for standalone numerals, which is where the big ghosted section marks
+come from.
+
+DESIGN NOTE (Aug 2026 rebuild, "The Garden Table")
+--------------------------------------------------
+The 2026 campaign was shot as a garden picnic: a cream fringed parasol,
+white ironwork tables, rattan chairs, rose and bougainvillea hedges, blue
+and white teacups. The earlier build ignored that and rendered everything
+as identical bordered white cards in a two-column grid, which read as
+generic. This build takes its cues from the photography instead:
+
+  * no decorative geometry anywhere (the old ring/circle motifs are gone)
+  * no bordered cards on the page ground; hairlines and type do the work
+  * full-bleed photographic bands carry the section transitions
+  * the keepsakes are laid out editorially, not uniformly: four features,
+    one paired band for The Dawn + The Dusk, then a staggered grid
+  * the intro is the shoot's own rose hedge, filmed, which parts to enter
+  * real defocused rose petals (cut from the shoot) drift over the page
+
+Templating uses {{KEY}} placeholders and str.replace rather than %-format,
+because the CSS and JS are full of literal % and the escaping was a
+liability at this size.
 """
 import json
 import os
@@ -17,7 +39,21 @@ from data import (KEEPSAKES, SETS, BOOTHS, RECIPIENTS, PRIORITIES, TABLES,
                   BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSET_V = 3  # bump when an asset is replaced under the same filename
+ASSET_V = 4  # bump when an asset is replaced under the same filename
+
+# Breast Cancer Foundation, Singapore. Verified 6 Aug 2026.
+BCF_URL = "https://www.bcf.org.sg"
+ARTIST_IG = "https://www.instagram.com/theworldofying/"
+
+
+def fill(t, **kw):
+    for k, v in kw.items():
+        t = t.replace("{{%s}}" % k, str(v))
+    return t
+
+
+def v(path):
+    return "assets/%s?v=%d" % (path, ASSET_V)
 
 
 # --------------------------------------------------------------------------
@@ -27,372 +63,521 @@ CSS = """
 :root{
   --rose:#A97F78; --gold:#C7A66A; --cocoa:#4E3C37; --cloud:#F3F2F1;
   --sage:#A5A58D; --plum:#6E4B4A; --mushroom:#D8CEC3; --brass:#8B7355;
-  --taupe:#B6A79C; --paper:#FFFFFF;
-  --ink:var(--cocoa); --muted:#8A7A72; --hair:#E2DAD3;
+  --taupe:#B6A79C; --paper:#FBFAF9; --linen:#EFE9E2;
+  --ink:var(--cocoa); --muted:#8A7A72; --hair:#DFD6CE; --hair-soft:#E9E2DB;
   --f:'Inter',system-ui,-apple-system,sans-serif;
   --fn:'Work Sans','Inter',sans-serif;
-  --maxw:1120px; --readw:640px;
+  --maxw:1240px; --readw:60ch;
+  --navh:58px;
 }
 *{box-sizing:border-box;}
-html{scroll-behavior:smooth; scroll-padding-top:74px;}
-@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} *{animation:none!important; transition:none!important;} }
+html{scroll-behavior:smooth; scroll-padding-top:calc(var(--navh) + 14px);}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;} *{animation:none!important; transition:none!important;}
+}
 body{margin:0; background:var(--cloud); color:var(--ink); font-family:var(--f);
-  font-weight:400; font-size:17px; line-height:1.65; -webkit-font-smoothing:antialiased;
-  font-feature-settings:"cv11","ss01";}
+  font-weight:400; font-size:17.5px; line-height:1.62; -webkit-font-smoothing:antialiased;
+  font-feature-settings:"cv11","ss01"; overflow-x:hidden;}
 img{max-width:100%; display:block;}
 a{color:inherit;}
-.wrap{max-width:var(--maxw); margin:0 auto; padding:0 26px;}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 clamp(20px,5vw,48px);}
 .read{max-width:var(--readw);}
+.bleed{width:100vw; margin-left:calc(50% - 50vw);}
 
-/* ---------- the unwrapping ---------- */
-.intro{position:fixed; inset:0; z-index:200; display:none; cursor:pointer;
-  -webkit-tap-highlight-color:transparent;}
+/* type ------------------------------------------------------------------ */
+h1,h2,h3,h4{font-variation-settings:"opsz" 32; text-wrap:balance;}
+.eyebrow{display:block; font-size:11px; font-weight:600; letter-spacing:.32em;
+  text-transform:uppercase; color:var(--gold);}
+.han{letter-spacing:.16em;}
+.cnmark{font-size:clamp(17px,2.4vw,22px); font-weight:500; color:var(--rose);
+  letter-spacing:.16em;}
+.gloss{font-size:13.5px; font-style:italic; color:var(--muted);}
+
+/* ---------- into the garden (intro) ---------- */
+.intro{position:fixed; inset:0; z-index:220; display:none; cursor:pointer; overflow:hidden;
+  background:#2A211E; -webkit-tap-highlight-color:transparent;}
 .intro.show{display:block;}
+/* The solid ground is only a fallback while the clip loads. It has to drop the
+   moment the hedge parts, or the gap between the halves shows the backdrop
+   instead of the page underneath. */
+.intro.open{background:transparent;}
 .intro:focus{outline:none;}
-.intro .pane{position:absolute; top:0; bottom:0; width:calc(50% + 1px); background:var(--cocoa);
-  will-change:transform; transition:transform 800ms cubic-bezier(.62,.02,.2,1);}
-.intro .pane.l{left:0;}
-.intro .pane.r{right:0;}
-.intro .pane::after{content:""; position:absolute; top:-80px; width:300px; height:300px;
-  border-radius:50%; border:1px solid rgba(251,248,246,.11);}
-.intro .pane.l::after{right:-150px;}
-.intro .pane.r::after{left:-150px; top:auto; bottom:-90px;}
-.intro.open .pane.l{transform:translateX(-100%);}
-.intro.open .pane.r{transform:translateX(100%);}
-/* the champagne seam, and the light that comes out of it */
-.intro .seam{position:absolute; top:0; bottom:0; left:50%; width:1px; z-index:2;
-  transform:translateX(-50%); background:linear-gradient(180deg,
-    rgba(199,166,106,0) 0%, rgba(235,217,174,.9) 22%, rgba(235,217,174,.9) 78%, rgba(199,166,106,0) 100%);
-  transition:opacity 420ms ease, box-shadow 700ms ease;}
-.intro.open .seam{opacity:0; box-shadow:0 0 90px 44px rgba(240,226,196,.55);}
-/* the seal */
-.intro .seal{position:absolute; left:50%; top:50%; z-index:3; text-align:center;
-  transform:translate(-50%,-50%); color:#F0E2C4; width:min(84vw,420px);
-  transition:opacity 360ms ease, transform 520ms cubic-bezier(.5,0,.2,1);}
-.intro.open .seal{opacity:0; transform:translate(-50%,-50%) scale(1.16);}
-.intro .s-eyebrow{display:block; font-size:11px; font-weight:600; letter-spacing:.34em;
+.intro .gv{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  z-index:1; transition:opacity 260ms linear;}
+.intro.open .gv{opacity:0;}
+/* the hedge, in two halves, feathered at the inner edge so leaves interleave */
+.intro .leaf{position:absolute; top:-4%; bottom:-4%; width:53%; z-index:2; opacity:0;
+  background-image:var(--hedge); background-size:cover; will-change:transform;
+  transition:opacity 120ms linear,
+             transform 1150ms cubic-bezier(.5,.02,.18,1) 130ms;}
+.intro .leaf.l{left:0;  background-position:left center;
+  -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 46px), transparent 100%);
+          mask-image:linear-gradient(to right, #000 calc(100% - 46px), transparent 100%);}
+.intro .leaf.r{right:0; background-position:right center;
+  -webkit-mask-image:linear-gradient(to left,  #000 calc(100% - 46px), transparent 100%);
+          mask-image:linear-gradient(to left,  #000 calc(100% - 46px), transparent 100%);}
+.intro.open .leaf{opacity:1;}
+.intro.open .leaf.l{transform:translateX(-104%) rotate(-2.2deg) scale(1.07);}
+.intro.open .leaf.r{transform:translateX(104%)  rotate(2.2deg)  scale(1.07);}
+/* a soft vignette so the seal always reads over the foliage */
+.intro .veil{position:absolute; inset:0; z-index:3; pointer-events:none;
+  background:radial-gradient(ellipse 70% 55% at 50% 48%, rgba(30,23,20,.62) 0%,
+             rgba(30,23,20,.30) 55%, rgba(30,23,20,.44) 100%);
+  transition:opacity 300ms ease;}
+.intro.open .veil{opacity:0;}
+.intro .seal{position:absolute; left:50%; top:50%; z-index:4; text-align:center;
+  transform:translate(-50%,-50%); color:#F6ECD8; width:min(88vw,540px);
+  transition:opacity 380ms ease, transform 900ms cubic-bezier(.5,0,.2,1);}
+.intro.open .seal{opacity:0; transform:translate(-50%,-54%) scale(1.14);}
+.intro .seal .s-brand{display:block; font-size:10.5px; font-weight:600; letter-spacing:.34em;
   text-transform:uppercase; color:#EBD9AE;}
-/* solid ground so the seam passes behind the seal, not through it */
-.intro .s-plate{display:grid; grid-template-columns:1fr 1fr; justify-items:center;
-  gap:6px 20px; margin:20px auto; width:max-content; padding:24px 30px;
-  background:var(--cocoa); border:1px solid rgba(235,217,174,.55);
-  box-shadow:inset 0 0 0 5px var(--cocoa), inset 0 0 0 6px rgba(235,217,174,.3);}
-.intro .s-plate span{font-size:clamp(30px,8vw,44px); line-height:1; font-weight:500;
-  letter-spacing:.06em; color:#F4E7C8;}
-.intro .s-sub{display:block; font-size:13px; font-weight:500; letter-spacing:.2em;
-  text-transform:uppercase; color:#D7CCC6;}
-.intro .prompt{position:absolute; left:0; right:0; bottom:min(9vh,74px); z-index:3;
-  text-align:center; color:#D7CCC6; font-size:13px; font-weight:500; letter-spacing:.22em;
-  text-transform:uppercase; transition:opacity 260ms ease;}
+.intro .seal .s-han{display:block; margin:22px 0 0; font-size:clamp(42px,12vw,74px);
+  font-weight:500; letter-spacing:.2em; line-height:1.05; color:#FBF3E2;
+  text-shadow:0 2px 26px rgba(24,18,15,.7);}
+.intro .seal .s-en{display:block; margin:16px 0 0; font-size:clamp(12px,2.6vw,14px);
+  font-weight:500; letter-spacing:.26em; text-transform:uppercase; color:#E4D6CE;}
+.intro .seal .s-rule{display:block; width:54px; height:1px; margin:26px auto 0;
+  background:linear-gradient(90deg,transparent,#D9BF86,transparent);}
+.intro .prompt{position:absolute; left:0; right:0; bottom:max(7vh,58px); z-index:4;
+  text-align:center; color:#E6D9D2; font-size:11.5px; font-weight:600; letter-spacing:.28em;
+  text-transform:uppercase; transition:opacity 240ms ease;}
 .intro.open .prompt{opacity:0;}
-.intro .prompt i{display:block; width:26px; height:1px; background:#EBD9AE; margin:12px auto 0;
-  animation:pull 2.1s ease-in-out infinite;}
-@keyframes pull{0%,100%{transform:scaleX(1); opacity:.55;} 50%{transform:scaleX(2.1); opacity:1;}}
+.intro .prompt i{display:block; width:1px; height:26px; background:linear-gradient(#D9BF86,transparent);
+  margin:14px auto 0; animation:reach 2.4s ease-in-out infinite;}
+@keyframes reach{0%,100%{transform:scaleY(.6); opacity:.5;} 50%{transform:scaleY(1); opacity:1;}}
+
+/* ---------- drifting petals ---------- */
+#petals{position:fixed; inset:0; z-index:58; pointer-events:none; opacity:.62;}
 
 /* ---------- nav ---------- */
-nav.jump{position:sticky; top:0; z-index:60; background:rgba(243,242,241,.94);
-  backdrop-filter:saturate(150%) blur(12px); border-bottom:1px solid var(--hair);}
-nav.jump .in{max-width:var(--maxw); margin:0 auto; padding:0 26px; display:flex; gap:26px;
-  overflow-x:auto; scrollbar-width:none; height:56px; align-items:center;}
+nav.jump{position:sticky; top:0; z-index:60; background:rgba(243,242,241,.93);
+  backdrop-filter:saturate(150%) blur(14px); border-bottom:1px solid var(--hair);}
+nav.jump .in{max-width:var(--maxw); margin:0 auto; padding:0 clamp(20px,5vw,48px);
+  display:flex; gap:clamp(18px,2.4vw,30px); overflow-x:auto; scrollbar-width:none;
+  height:var(--navh); align-items:center;}
 nav.jump .in::-webkit-scrollbar{display:none;}
-nav.jump a{text-decoration:none; white-space:nowrap; font-size:12px; font-weight:500;
-  letter-spacing:.14em; text-transform:uppercase; color:var(--muted); padding:4px 0;
+nav.jump a{text-decoration:none; white-space:nowrap; font-size:11.5px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--muted); padding:5px 0;
   border-bottom:1.5px solid transparent; transition:color .2s,border-color .2s;}
 nav.jump a:hover{color:var(--ink);}
 nav.jump a.active{color:var(--rose); border-bottom-color:var(--gold);}
-.progress{height:1.5px; background:var(--gold); width:0; transition:width .1s linear;}
+.progress{height:1px; background:var(--gold); width:0; transition:width .1s linear;}
 
-/* ---------- hero ---------- */
-header.hero{background:var(--rose); color:#FBF8F6; padding:78px 0 66px; position:relative; overflow:hidden;}
-header.hero::after{content:""; position:absolute; right:-90px; top:-90px; width:340px; height:340px;
-  border-radius:50%; border:1px solid rgba(251,248,246,.22);}
-header.hero::before{content:""; position:absolute; right:10px; top:30px; width:170px; height:170px;
-  border-radius:50%; background:rgba(199,166,106,.26);}
-.hero .wrap{position:relative; z-index:2;}
-.hgrid{display:block;}
-@media(min-width:940px){ .hgrid{display:grid; grid-template-columns:1.1fr .9fr;
-  gap:60px; align-items:center;} }
-.eyebrow{font-size:11.5px; font-weight:600; letter-spacing:.34em; text-transform:uppercase;
-  color:#EBD9AE;}
-.hero h1{font-family:var(--f); font-weight:600; letter-spacing:-.028em; line-height:1.02;
-  font-size:clamp(40px,7.2vw,68px); margin:18px 0 0; max-width:14ch;}
-.hero .cn{font-size:clamp(19px,3vw,25px); font-weight:500; margin:16px 0 0; color:#F0E2C4;}
-.hero .cn .han{letter-spacing:.14em;}
-.hero .cn .en{letter-spacing:.01em; font-size:.86em; color:#EBD9AE;}
-.hero p{max-width:44ch; margin:20px 0 0; font-size:17px; color:#F3E6E2;}
-.hero .acts{display:flex; flex-wrap:wrap; gap:12px; margin-top:32px;}
-.hshot{margin:40px 0 0; max-width:340px; aspect-ratio:4/5; overflow:hidden;
-  border:1px solid rgba(251,248,246,.4); background:rgba(251,248,246,.08);}
-@media(min-width:940px){ .hshot{margin:0; max-width:none;} }
-.hshot img{width:100%; height:100%; object-fit:cover;}
-.hshot figcaption{display:none;}
+/* phones: the bar lives at the bottom, where the thumb is */
+@media (max-width:759px){
+  nav.jump{position:fixed; top:auto; bottom:0; border-bottom:0;
+    border-top:1px solid var(--hair); padding-bottom:env(safe-area-inset-bottom);
+    box-shadow:0 -6px 22px rgba(78,60,55,.09);}
+  nav.jump .in{height:54px;}
+  nav.jump a{padding:4px 0; border-bottom:0; border-top:1.5px solid transparent;}
+  nav.jump a.active{border-top-color:var(--gold);}
+  nav.jump .progress{order:-1;}
+  body{padding-bottom:calc(54px + env(safe-area-inset-bottom));}
+  html{scroll-padding-top:18px;}
+}
+
+/* ---------- hero ----------
+   The opening is split rather than overlaid. The hero frame is the whole
+   collection staged under the parasol, and its subject sits mid-frame: a
+   square photograph offers no horizontal pan on a wide viewport, so any
+   headline laid over it collided with the products and every scrim strong
+   enough to fix that threw the photograph away. So the photograph runs
+   undimmed and the title block sits beneath it on cocoa, overlapping the
+   frame slightly the way an opening spread does. */
+header.hero{background:var(--cocoa);}
+header.hero .hfig{position:relative; height:min(58svh,600px); overflow:hidden;
+  background:var(--mushroom);}
+header.hero .hfig picture{position:absolute; inset:0;}
+header.hero .hbg{width:100%; height:100%; object-fit:cover; object-position:50% 40%;}
+header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(to top, rgba(42,31,27,.55) 0%, rgba(42,31,27,.10) 22%,
+             rgba(42,31,27,0) 44%);}
+.hero .hcap{position:relative; z-index:2; color:#FBF6F2;
+  padding:clamp(30px,4.6vw,58px) 0 clamp(44px,6vw,80px);}
+.hero .hcap .wrap{display:grid; gap:clamp(18px,3vw,54px); align-items:end;}
+@media(min-width:960px){ .hero .hcap .wrap{grid-template-columns:1.35fr 1fr;} }
+.hero .eyebrow{color:#EFDCB4;}
+.hero h1{font-weight:600; letter-spacing:-.032em; line-height:.99;
+  font-size:clamp(40px,7.2vw,82px); margin:16px 0 0; max-width:15ch;}
+.hero .hcn{margin:20px 0 0; font-size:clamp(18px,3vw,26px); font-weight:500; color:#F4E3C2;}
+.hero .hcn .en{letter-spacing:.02em; font-size:.8em; color:#E4D2C4;}
+.hero p.lede{max-width:44ch; margin:0; font-size:clamp(15.5px,2vw,17.5px); color:#DCCEC8;}
+.hero .acts{display:flex; flex-wrap:wrap; gap:12px; margin-top:clamp(22px,3vw,30px);}
+/* the fringed-parasol frame gets a hairline caption, like a plate in a book */
+.hero .hcred{margin:20px 0 0; padding-top:14px; border-top:1px solid rgba(199,166,106,.4);
+  font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#A3948E;}
 
 /* ---------- buttons ---------- */
-.btn{display:inline-flex; align-items:center; gap:9px; font-family:var(--f); font-size:14px;
-  font-weight:600; letter-spacing:.02em; padding:13px 22px; border:1.5px solid var(--cocoa);
+.btn{display:inline-flex; align-items:center; gap:9px; font-family:var(--f); font-size:13.5px;
+  font-weight:600; letter-spacing:.04em; padding:14px 24px; border:1.5px solid var(--cocoa);
   background:var(--cocoa); color:var(--cloud); text-decoration:none; cursor:pointer;
-  border-radius:2px; transition:background .18s,color .18s,border-color .18s;}
-.btn:hover{background:#3B2C28; border-color:#3B2C28;}
+  border-radius:0; transition:background .18s,color .18s,border-color .18s,transform .18s;}
+.btn:hover{background:#382925; border-color:#382925;}
 .btn.gold{background:var(--gold); border-color:var(--gold); color:#3B2C28;}
 .btn.gold:hover{background:#B8934F; border-color:#B8934F;}
 .btn.ghost{background:transparent; color:inherit; border-color:currentColor;}
-.btn.ghost:hover{background:rgba(78,60,55,.08);}
-.btn.light{background:#FBF8F6; border-color:#FBF8F6; color:var(--rose);}
+.btn.ghost:hover{background:rgba(78,60,55,.07);}
+.btn.light{background:#FBF6F2; border-color:#FBF6F2; color:#4E3C37;}
 .btn.light:hover{background:#fff; border-color:#fff;}
-.btn.sm{font-size:13px; padding:10px 17px;}
+.btn.sm{font-size:12.5px; padding:11px 18px;}
 .btn[disabled]{opacity:.45; pointer-events:none;}
+/* a quieter text link, used where a button would be too loud */
+.tlink{display:inline-flex; align-items:center; gap:7px; font-size:13.5px; font-weight:600;
+  color:var(--rose); text-decoration:none; border-bottom:1px solid var(--gold);
+  padding-bottom:2px; transition:color .18s,border-color .18s;}
+.tlink:hover{color:var(--cocoa); border-color:var(--cocoa);}
 
 /* ---------- section furniture ---------- */
-.part{margin:104px 0 0;}
-.part-head{border-top:1.5px solid var(--gold); padding-top:20px; margin-bottom:42px;}
-.part-num{font-family:var(--fn); font-size:13px; font-weight:600; letter-spacing:.2em;
-  color:var(--gold); text-transform:uppercase;}
-.part-head h2{font-weight:600; letter-spacing:-.022em; line-height:1.06;
-  font-size:clamp(30px,4.6vw,46px); margin:10px 0 0; color:var(--cocoa); max-width:18ch;}
-.part-head .lede{max-width:var(--readw); margin:16px 0 0; font-size:17px; color:#6B5A54;}
+.part{margin:clamp(74px,11vw,140px) 0 0;}
+.part-head{position:relative; margin-bottom:clamp(34px,5vw,58px);}
+.part-head .mark{position:absolute; right:0; top:-.28em; font-family:var(--fn);
+  font-size:clamp(84px,17vw,210px); font-weight:600; line-height:.8; color:#E7DFD7;
+  z-index:0; pointer-events:none; user-select:none; letter-spacing:-.04em;}
+.part-head .inner{position:relative; z-index:1;}
+.part-head h2{font-weight:600; letter-spacing:-.028em; line-height:1.02;
+  font-size:clamp(32px,6vw,62px); margin:12px 0 0; color:var(--cocoa); max-width:20ch;}
+.part-head .lede{max-width:var(--readw); margin:20px 0 0; font-size:17px; color:#6B5A54;}
 .part-head .lede strong{color:var(--rose); font-weight:600;}
+.rule{height:1px; background:var(--gold); border:0; margin:0;}
 
-/* ---------- ethos ---------- */
-.ethos{background:var(--cocoa); color:#EDE6E2; padding:52px 0; margin-top:0;}
-.ethos h2{font-size:clamp(22px,3vw,30px); font-weight:600; letter-spacing:-.02em; margin:0 0 14px; color:#fff;}
-.ethos p{max-width:58ch; margin:0; color:#D7CCC6; font-size:16.5px;}
-.ethos .pillars{display:grid; grid-template-columns:1fr; gap:22px; margin-top:34px; padding-top:28px;
-  border-top:1px solid rgba(199,166,106,.4);}
-@media(min-width:560px){ .ethos .pillars{grid-template-columns:repeat(2,1fr); gap:28px 36px;} }
-@media(min-width:900px){ .ethos .pillars{grid-template-columns:repeat(4,1fr);} }
-.ethos .pillars .n{font-family:var(--fn); font-size:22px; font-weight:600; color:var(--gold); display:block; margin-bottom:8px;}
-.ethos .pillars .l{font-size:13.5px; color:#E7DCD6; line-height:1.45; max-width:24ch;}
+/* ---------- photographic bands ---------- */
+.band{position:relative; min-height:min(76svh,660px); display:flex; align-items:flex-end;
+  overflow:hidden; background:var(--mushroom); margin:clamp(74px,11vw,140px) 0 0;}
+/* A phone crops a 3:2 band to roughly its middle third, so each band also
+   ships a portrait cut rather than upscaling the centre of the landscape one. */
+.band picture{position:absolute; inset:0; z-index:0;}
+.band img{width:100%; height:100%; object-fit:cover;}
+.band::after{content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(to top, rgba(44,33,29,.80) 0%, rgba(44,33,29,.34) 38%,
+             rgba(44,33,29,0) 72%);}
+.band .bt{position:relative; z-index:2; color:#FBF6F2; max-width:var(--maxw); margin:0 auto;
+  width:100%; padding:0 clamp(20px,5vw,48px) clamp(38px,6vw,64px);}
+.band .bt p{margin:14px 0 0; font-size:clamp(20px,3.4vw,34px); font-weight:500;
+  letter-spacing:-.02em; line-height:1.24; max-width:26ch;
+  text-shadow:0 2px 22px rgba(30,22,19,.45);}
+.band .bt .eyebrow{color:#EFDCB4;}
+.band.short{min-height:min(52svh,440px);}
 
-/* ---------- concierge ---------- */
-.tool{background:var(--paper); border:1px solid var(--hair); border-radius:3px; padding:36px 34px;}
-.tool-kicker{font-size:11.5px; font-weight:600; letter-spacing:.24em; text-transform:uppercase; color:var(--gold);}
-.tool h3{font-size:clamp(24px,3.4vw,33px); font-weight:600; letter-spacing:-.022em; margin:10px 0 8px;}
-.tool .sub{color:var(--muted); font-size:15.5px; margin:0 0 26px; max-width:52ch;}
-.qsteps{display:flex; gap:6px; margin-bottom:26px;}
-.qsteps i{flex:1; height:2px; background:var(--hair);}
+/* ---------- manifesto ---------- */
+.manifesto{background:var(--cocoa); color:#EFE7E2; padding:clamp(56px,9vw,104px) 0;}
+.manifesto .wrap{display:grid; gap:clamp(26px,4vw,60px);}
+@media(min-width:900px){ .manifesto .wrap{grid-template-columns:1fr 1.15fr; align-items:start;} }
+.manifesto .mhan{font-size:clamp(30px,5vw,50px); font-weight:500; letter-spacing:.14em;
+  color:var(--gold); line-height:1.3; margin:0;}
+.manifesto .msub{display:block; margin-top:14px; font-size:12px; letter-spacing:.26em;
+  text-transform:uppercase; color:#C8B8B1; font-weight:600;}
+.manifesto p{margin:0 0 16px; font-size:clamp(17px,2.2vw,20px); color:#E3D8D3; line-height:1.6;}
+.manifesto p:last-child{margin-bottom:0;}
+.manifesto p strong{color:#fff; font-weight:600;}
+
+/* ---------- tools (matcher + builder) ---------- */
+.tool{background:var(--linen); padding:clamp(30px,5vw,60px) clamp(22px,4vw,56px);}
+.tool-kicker{display:block; font-size:11px; font-weight:600; letter-spacing:.26em;
+  text-transform:uppercase; color:var(--brass);}
+.tool h3{font-size:clamp(25px,4.2vw,40px); font-weight:600; letter-spacing:-.026em;
+  margin:12px 0 10px; line-height:1.06;}
+.tool .sub{color:#6F5F58; font-size:16px; margin:0 0 30px; max-width:56ch;}
+.qsteps{display:flex; gap:5px; margin-bottom:30px; max-width:280px;}
+.qsteps i{flex:1; height:2px; background:#D6CBC2;}
 .qsteps i.on{background:var(--gold);}
 .q{display:none;}
 .q.on{display:block;}
-.q .qn{font-family:var(--fn); font-size:12px; font-weight:600; letter-spacing:.16em;
+.q .qn{font-family:var(--fn); font-size:11.5px; font-weight:600; letter-spacing:.18em;
   text-transform:uppercase; color:var(--muted);}
-.q h4{font-size:22px; font-weight:600; letter-spacing:-.015em; margin:8px 0 20px;}
-.opts{display:grid; gap:10px;}
-@media(min-width:620px){ .opts{grid-template-columns:1fr 1fr;} }
-.opt{text-align:left; font-family:var(--f); font-size:15.5px; font-weight:500; color:var(--ink);
-  background:#FCFAF9; border:1.5px solid var(--hair); border-radius:2px; padding:15px 18px;
-  cursor:pointer; transition:border-color .16s,background .16s;}
-.opt:hover{border-color:var(--rose); background:#fff;}
-.qback{margin-top:20px; background:none; border:0; font-family:var(--f); font-size:13.5px;
+.q h4{font-size:clamp(20px,3vw,27px); font-weight:600; letter-spacing:-.02em; margin:10px 0 22px;}
+.opts{display:grid; gap:0; border-top:1px solid var(--hair);}
+.opt{text-align:left; font-family:var(--f); font-size:16px; font-weight:500; color:var(--ink);
+  background:none; border:0; border-bottom:1px solid var(--hair); padding:17px 40px 17px 2px;
+  cursor:pointer; position:relative; transition:background .16s,padding-left .16s,color .16s;}
+.opt::after{content:"\\2192"; position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  color:var(--gold); opacity:0; transition:opacity .16s,right .16s;}
+.opt:hover, .opt:focus-visible{background:#FBFAF9; padding-left:14px; color:var(--rose); outline:none;}
+.opt:hover::after, .opt:focus-visible::after{opacity:1; right:16px;}
+.qback{margin-top:22px; background:none; border:0; font-family:var(--f); font-size:13.5px;
   color:var(--muted); cursor:pointer; padding:0; text-decoration:underline; text-underline-offset:3px;}
 .qback:hover{color:var(--ink);}
 
 .result{display:none;}
 .result.on{display:block;}
-.res-grid{display:grid; gap:26px;}
-@media(min-width:720px){ .res-grid{grid-template-columns:250px 1fr; align-items:start;} }
-.res-photo{border:1px solid var(--hair); background:var(--mushroom); aspect-ratio:4/5; overflow:hidden;}
+.res-grid{display:grid; gap:clamp(22px,3.5vw,40px);}
+@media(min-width:760px){ .res-grid{grid-template-columns:290px 1fr; align-items:start;} }
+.res-photo{background:var(--mushroom); aspect-ratio:4/5; overflow:hidden;}
 .res-photo img{width:100%; height:100%; object-fit:cover;}
-.res-body h4{font-size:29px; font-weight:600; letter-spacing:-.022em; margin:0;}
-.res-body .rcn{font-size:18px; color:var(--rose); font-weight:500; letter-spacing:.1em; margin:6px 0 0;}
+.res-body h4{font-size:clamp(26px,3.6vw,34px); font-weight:600; letter-spacing:-.026em; margin:8px 0 0;}
+.res-body .rcn{font-size:19px; color:var(--rose); font-weight:500; letter-spacing:.13em; margin:8px 0 0;}
 .res-body .rgloss{font-size:13.5px; color:var(--muted); font-style:italic; margin:3px 0 0;}
-.res-why{border-left:2px solid var(--gold); padding:2px 0 2px 16px; margin:20px 0 0; font-size:16.5px;}
-.res-meta{display:flex; flex-wrap:wrap; gap:8px; margin:20px 0 0;}
-.res-acts{display:flex; flex-wrap:wrap; gap:10px; margin:24px 0 0;}
+.res-why{border-left:2px solid var(--gold); padding:3px 0 3px 18px; margin:22px 0 0; font-size:17px;}
+.res-meta{display:flex; flex-wrap:wrap; gap:8px; margin:22px 0 0;}
+.res-acts{display:flex; flex-wrap:wrap; gap:11px; align-items:center; margin:26px 0 0;}
 .res-alt{margin:30px 0 0; padding:20px 0 0; border-top:1px solid var(--hair); font-size:15px; color:var(--muted);}
 .res-alt a{color:var(--rose); font-weight:600; text-decoration:none; border-bottom:1px solid var(--gold);}
-.res-note{margin:16px 0 0; font-size:13.5px; color:var(--muted);}
+.res-note{margin:16px 0 0; font-size:14px; color:#7A6A64;}
 
 /* ---------- tags ---------- */
-.tag{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600;
-  letter-spacing:.05em; padding:5px 10px; border:1px solid var(--hair); border-radius:2px;
-  background:#FCFAF9; color:#6B5A54;}
-.tag.gold{border-color:#E4D3AF; background:#FBF6EA; color:#8A6E33;}
-.tag.rose{border-color:#E6D2CE; background:#FBF3F1; color:var(--rose);}
-.tag.sage{border-color:#D5DAC9; background:#F4F6EF; color:#5F6B4C;}
-.tag.chill{border-color:#CDD9DE; background:#F0F5F7; color:#4C6570;}
-.price{font-family:var(--fn); font-weight:600; font-size:20px; letter-spacing:-.01em; color:var(--cocoa);}
+.tag{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase; padding:5px 10px; border:1px solid var(--hair);
+  background:transparent; color:#6B5A54;}
+.tag.gold{border-color:#DDC796; color:#8A6E33;}
+.tag.rose{border-color:#E0CBC6; color:var(--rose);}
+.tag.sage{border-color:#CFD6C4; color:#5F6B4C;}
+.tag.chill{border-color:#C6D4DA; color:#4C6570;}
 
-/* ---------- keepsake cards ---------- */
-.packs{display:grid; gap:2px; background:var(--hair); border:1px solid var(--hair);}
-@media(min-width:760px){ .packs{grid-template-columns:1fr 1fr;} }
-.pack{background:var(--paper); padding:0; display:flex; flex-direction:column;}
-.pack-photo{aspect-ratio:4/5; overflow:hidden; background:var(--mushroom); position:relative;}
-.pack-photo img{width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
-.pack:hover .pack-photo img{transform:scale(1.03);}
-.chan{position:absolute; left:0; top:0; font-size:10.5px; font-weight:600; letter-spacing:.14em;
-  text-transform:uppercase; padding:7px 12px; background:var(--cocoa); color:var(--cloud);}
-.chan.booth{background:var(--gold); color:#3B2C28;}
-.pack-body{padding:26px 26px 28px; display:flex; flex-direction:column; flex:1;}
-.pack .fmt{font-size:11.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);}
-.pack h4{font-size:25px; font-weight:600; letter-spacing:-.022em; margin:9px 0 0; line-height:1.15;}
-.pack h4 .var{font-weight:400; font-size:16px; color:var(--muted);}
-.pack .pcn{font-size:17px; font-weight:500; letter-spacing:.1em; color:var(--rose); margin:7px 0 0;}
-.pack .pgloss{font-size:13px; font-style:italic; color:var(--muted); margin:2px 0 0;}
-.becomes{margin:20px 0 0; padding:14px 0 0; border-top:1px solid var(--hair);}
-.becomes .lbl{display:block; font-size:10.5px; font-weight:700; letter-spacing:.18em;
+/* ---------- keepsakes: features ---------- */
+.feat{display:grid; gap:0; margin:clamp(56px,8vw,108px) 0 0; align-items:center;}
+@media(min-width:900px){
+  .feat{grid-template-columns:1fr 1fr; gap:clamp(34px,4.5vw,72px);}
+  .feat.rev .fimg{order:2;}
+}
+.feat .fimg{position:relative; background:var(--mushroom); aspect-ratio:4/5; overflow:hidden;}
+.feat .fimg img{width:100%; height:100%; object-fit:cover; transition:transform 900ms cubic-bezier(.2,.6,.2,1);}
+.feat:hover .fimg img{transform:scale(1.028);}
+.feat .ftxt{padding:clamp(26px,3.5vw,10px) 0 0;}
+@media(min-width:900px){ .feat .ftxt{padding:0;} }
+.feat .chan{display:block; font-size:10.5px; font-weight:700; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--brass); margin-bottom:14px;}
+.feat .chan.booth{color:#96762F;}
+.feat .fmt{display:block; font-size:11px; font-weight:600; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--muted);}
+.feat h3{font-size:clamp(28px,4.6vw,50px); font-weight:600; letter-spacing:-.03em;
+  line-height:1.02; margin:10px 0 0;}
+.feat h3 .var{display:block; font-weight:400; font-size:.42em; color:var(--muted);
+  letter-spacing:0; margin-top:8px;}
+.feat .fcn{margin:14px 0 0;}
+.feat .desc{margin:22px 0 0; font-size:16.5px; color:#5E4F49; max-width:52ch;}
+.feat .desc p{margin:0 0 13px;}
+.feat .desc p:last-child{margin-bottom:0;}
+.feat .desc strong{color:var(--plum); font-weight:600;}
+.feat .becomes{margin:24px 0 0; padding:16px 0 0; border-top:1px solid var(--hair); max-width:52ch;}
+.feat .becomes .lbl{display:block; font-size:10px; font-weight:700; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--gold); margin-bottom:6px;}
+.feat .becomes p{margin:0; font-size:16px; color:#5E4F49;}
+.feat .note{margin:14px 0 0; font-size:13.5px; color:var(--muted); font-style:italic; max-width:52ch;}
+.feat .foot{display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:26px 0 0;}
+.feat .meta{margin-top:18px;}
+
+/* ---------- keepsakes: the paired band (Dawn + Dusk) ---------- */
+/* Full-bleed geometry is declared here rather than leaning on the .bleed
+   utility: this rule's own margin shorthand would reset .bleed's margin-left
+   (same specificity, declared later), which shunted the whole band right by
+   the wrap's gutter. */
+.pairband{position:relative; width:100vw;
+  margin:clamp(56px,8vw,108px) 0 0 calc(50% - 50vw); padding:clamp(44px,7vw,96px) 0;
+  overflow:hidden; background:var(--cocoa);}
+.pairband > img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  z-index:0; opacity:.34;}
+.pairband::after{content:""; position:absolute; inset:0; z-index:1;
+  background:linear-gradient(rgba(44,33,29,.62), rgba(44,33,29,.82));}
+.pairband .pinner{position:relative; z-index:2;}
+.pairband .phead{text-align:center; margin-bottom:clamp(30px,4.5vw,52px); color:#F6ECE4;}
+.pairband .phead .eyebrow{color:#EFDCB4;}
+.pairband .phead h3{font-size:clamp(27px,4.6vw,48px); font-weight:600; letter-spacing:-.028em;
+  margin:12px 0 0; color:#FBF6F2;}
+.pairband .phead p{margin:14px auto 0; max-width:44ch; color:#DFD1CB; font-size:16.5px;}
+.duo{display:grid; gap:clamp(20px,3vw,40px);}
+@media(min-width:700px){ .duo{grid-template-columns:1fr 1fr;} }
+.duo .half{color:#F1E7E2;}
+.duo .half .hi{background:rgba(251,246,242,.07); aspect-ratio:4/5; overflow:hidden;}
+.duo .half .hi img{width:100%; height:100%; object-fit:cover;}
+.duo .half h4{font-size:clamp(22px,3.2vw,30px); font-weight:600; letter-spacing:-.024em; margin:20px 0 0;}
+.duo .half .dcn{margin:8px 0 0; font-size:17px; color:#EFDCB4; letter-spacing:.13em; font-weight:500;}
+.duo .half .dgloss{margin:3px 0 0; font-size:13px; font-style:italic; color:#C4B4AD;}
+.duo .half p.db{margin:16px 0 0; font-size:15.5px; color:#DED0CA;}
+.duo .half .foot{display:flex; flex-wrap:wrap; gap:10px; margin:20px 0 0;}
+
+/* ---------- keepsakes: the staggered grid ---------- */
+.rest{display:grid; gap:clamp(38px,5.5vw,72px) clamp(24px,3.5vw,52px);
+  margin:clamp(50px,7vw,96px) 0 0;}
+@media(min-width:680px){ .rest{grid-template-columns:1fr 1fr;} }
+@media(min-width:680px){ .rest > .item:nth-child(even){margin-top:clamp(28px,5vw,74px);} }
+.item .ri{position:relative; background:var(--mushroom); aspect-ratio:4/5; overflow:hidden;}
+.item .ri img{width:100%; height:100%; object-fit:cover; transition:transform 900ms cubic-bezier(.2,.6,.2,1);}
+.item:hover .ri img{transform:scale(1.03);}
+.item .chan{display:block; font-size:10px; font-weight:700; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--brass); margin:18px 0 0;}
+.item .chan.booth{color:#96762F;}
+.item h4{font-size:clamp(21px,2.7vw,27px); font-weight:600; letter-spacing:-.024em;
+  margin:8px 0 0; line-height:1.14;}
+.item h4 .var{font-weight:400; font-size:.58em; color:var(--muted);}
+.item .icn{margin:8px 0 0; font-size:16px; color:var(--rose); letter-spacing:.13em; font-weight:500;}
+.item .igloss{margin:2px 0 0; font-size:12.5px; font-style:italic; color:var(--muted);}
+.item .ibec{margin:16px 0 0; padding:14px 0 0; border-top:1px solid var(--hair-soft);
+  font-size:15px; color:#5E4F49;}
+.item .ibec .lbl{display:block; font-size:9.5px; font-weight:700; letter-spacing:.2em;
   text-transform:uppercase; color:var(--gold); margin-bottom:5px;}
-.becomes p{margin:0; font-size:15px; color:#5E4F49;}
-.pack .desc{margin:18px 0 0; font-size:15.5px; color:#5E4F49;}
-.pack .desc p{margin:0 0 11px;}
-.pack .desc p:last-child{margin-bottom:0;}
-.pack .desc strong{color:var(--plum); font-weight:600;}
-.pack .note{margin:14px 0 0; font-size:13px; color:var(--muted); font-style:italic;}
-.pack-foot{margin-top:auto; padding-top:22px; display:flex; flex-wrap:wrap; align-items:center; gap:12px;}
-details.more{margin:16px 0 0;}
-details.more summary{cursor:pointer; font-size:13.5px; font-weight:600; color:var(--rose);
+.item .ibec p{margin:0;}
+.item .note{margin:12px 0 0; font-size:13px; color:var(--muted); font-style:italic;}
+.item .foot{display:flex; flex-wrap:wrap; align-items:center; gap:11px; margin:18px 0 0;}
+.item .meta{margin-top:14px;}
+details.more{margin:14px 0 0;}
+details.more summary{cursor:pointer; font-size:13px; font-weight:600; color:var(--rose);
   list-style:none; padding:2px 0;}
 details.more summary::-webkit-details-marker{display:none;}
 details.more summary::after{content:" +";}
 details.more[open] summary::after{content:" \\2212";}
+details.more .desc{margin:12px 0 0; font-size:15px; color:#5E4F49;}
+details.more .desc p{margin:0 0 11px;}
+details.more .desc p:last-child{margin-bottom:0;}
+details.more .desc strong{color:var(--plum); font-weight:600;}
 
 /* ---------- builder ---------- */
-.bpick{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:0 0 30px;}
-@media(min-width:560px){ .bpick{grid-template-columns:repeat(3,1fr);} }
-@media(min-width:820px){ .bpick{grid-template-columns:repeat(5,1fr);} }
-.chip{font-family:var(--f); padding:0; cursor:pointer; text-align:left;
-  background:#FCFAF9; border:1.5px solid var(--hair); border-radius:2px; color:var(--ink);
-  overflow:hidden; transition:border-color .16s;}
-.chip img{width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:var(--cloud);}
-.chip span{display:block; font-size:12.5px; font-weight:500; line-height:1.32; padding:9px 11px;
-  transition:background .16s,color .16s;}
-.chip:hover{border-color:var(--rose);}
-.chip.on{border-color:var(--rose);}
-.chip.on span{background:var(--rose); color:#fff;}
-.bout{display:none; border-top:1px solid var(--hair); padding-top:26px;}
+.bpick{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(10px,1.6vw,18px); margin:0 0 34px;}
+@media(min-width:620px){ .bpick{grid-template-columns:repeat(5,1fr);} }
+@media(min-width:980px){ .bpick{grid-template-columns:repeat(7,1fr);} }
+.chip{font-family:var(--f); padding:0; cursor:pointer; text-align:left; background:none;
+  border:0; color:var(--ink); transition:opacity .16s;}
+.chip img{width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:var(--mushroom);
+  outline:1.5px solid transparent; outline-offset:-1.5px; transition:outline-color .16s;}
+.chip span{display:block; font-size:11.5px; font-weight:600; line-height:1.3; padding:9px 0 0;
+  letter-spacing:.01em;}
+.chip:hover img{outline-color:var(--rose);}
+.chip.on img{outline-color:var(--rose); outline-width:2.5px;}
+.chip.on span{color:var(--rose);}
+.bout{display:none; border-top:1px solid var(--hair); padding-top:30px;}
 .bout.on{display:block;}
-.bhead{display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start; margin-bottom:22px;}
-.bhead img{width:96px; height:120px; object-fit:cover; border:1px solid var(--hair); flex:none;}
-.bhead h4{margin:0; font-size:23px; font-weight:600; letter-spacing:-.02em;}
-.setlist{display:grid; gap:2px; background:var(--hair); border:1px solid var(--hair);}
-.setrow{background:#FCFAF9; padding:15px 18px; display:grid; gap:4px 16px; align-items:start;}
-@media(min-width:640px){ .setrow{grid-template-columns:78px 1fr auto;} }
-.setrow .sid{font-family:var(--fn); font-size:19px; font-weight:600; color:var(--rose);}
-.setrow .sid small{display:block; font-family:var(--f); font-size:11px; font-weight:600;
-  letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-top:1px;}
+.bhead{display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start; margin-bottom:26px;}
+.bhead img{width:104px; height:130px; object-fit:cover; flex:none; background:var(--mushroom);}
+.bhead h4{margin:0; font-size:clamp(21px,3vw,26px); font-weight:600; letter-spacing:-.022em;}
+.setlist{border-top:1px solid var(--hair);}
+.setrow{padding:16px 2px; display:grid; gap:5px 18px; align-items:start;
+  border-bottom:1px solid var(--hair);}
+@media(min-width:640px){ .setrow{grid-template-columns:84px 1fr auto;} }
+.setrow .sid{font-family:var(--fn); font-size:21px; font-weight:600; color:var(--rose);}
+.setrow .sid small{display:block; font-family:var(--f); font-size:10.5px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:2px;}
 .setrow ul{margin:0; padding:0; list-style:none; font-size:14.5px; color:#5E4F49;}
 .setrow li{padding:1px 0;}
 
 /* ---------- sets table ---------- */
-.settable{border:1px solid var(--hair); background:var(--paper);}
-.settable .r{display:grid; gap:4px 18px; padding:17px 20px; border-bottom:1px solid var(--hair);}
-@media(min-width:680px){ .settable .r{grid-template-columns:74px 168px 1fr;} }
-.settable .r:last-child{border-bottom:0;}
-.settable .r.hdr{background:#FAF7F5; font-size:11px; font-weight:600; letter-spacing:.16em;
-  text-transform:uppercase; color:var(--muted);}
+.settable{border-top:1.5px solid var(--gold);}
+.settable .r{display:grid; gap:5px 20px; padding:18px 2px; border-bottom:1px solid var(--hair);}
+@media(min-width:700px){ .settable .r{grid-template-columns:70px 190px 1fr;} }
+.settable .r.hdr{font-size:10.5px; font-weight:700; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--muted); padding:12px 2px;}
+.settable .sid{font-family:var(--fn); font-size:23px; font-weight:600; color:var(--rose); line-height:1;}
 .settable .g{font-size:13.5px; color:var(--muted);}
 .settable ul{margin:0; padding:0; list-style:none; font-size:15px; color:#5E4F49;}
 
 /* ---------- flavours ---------- */
-.range{margin:52px 0 0;}
-.range-head{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
-  border-bottom:1.5px solid var(--gold); padding-bottom:13px;}
-.range-num{font-family:var(--fn); font-size:34px; font-weight:600; color:var(--gold); line-height:.85;}
-.range-head h3{font-size:25px; font-weight:600; letter-spacing:-.02em; margin:0;}
+.range{margin:clamp(46px,7vw,86px) 0 0;}
+.range-head{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap;
+  border-bottom:1.5px solid var(--gold); padding-bottom:14px;}
+.range-num{font-family:var(--fn); font-size:clamp(30px,5vw,46px); font-weight:600;
+  color:var(--gold); line-height:.82; letter-spacing:-.03em;}
+.range-head h3{font-size:clamp(21px,3.2vw,29px); font-weight:600; letter-spacing:-.024em; margin:0;}
 .range-head .tag2{font-size:14px; color:var(--muted);}
-.range-intro{margin:20px 0 0; font-size:16px; color:#5E4F49; max-width:var(--readw);}
+.range-intro{margin:22px 0 0; font-size:16.5px; color:#5E4F49; max-width:var(--readw);}
 .range-intro strong{color:var(--plum); font-weight:600;}
-.flavours{display:grid; gap:2px; background:var(--hair); border:1px solid var(--hair); margin-top:24px;}
-@media(min-width:700px){ .flavours{grid-template-columns:1fr 1fr;} }
-.flav{background:var(--paper); padding:22px 24px; display:flex; gap:18px;}
-.flav .fp{flex:0 0 96px; padding:0; border:0; background:none; cursor:pointer; display:block;
-  position:relative;}
-.flav .fp img{width:96px; height:126px; object-fit:cover; background:var(--mushroom); display:block;}
-.flav .fp::after{content:""; position:absolute; inset:0; background:rgba(20,16,15,.28);
-  opacity:0; transition:opacity .14s;}
-.flav .fp::before{content:""; position:absolute; top:50%; left:50%; width:22px; height:22px;
-  transform:translate(-50%,-50%); z-index:1; opacity:0; transition:opacity .14s;
+.flavours{display:grid; gap:clamp(24px,3.5vw,44px); margin-top:30px;}
+@media(min-width:640px){ .flavours{grid-template-columns:1fr 1fr;} }
+@media(min-width:1040px){ .flavours{grid-template-columns:repeat(4,1fr);} }
+.flav{display:flex; flex-direction:column;}
+.flav .fp{padding:0; border:0; background:none; cursor:pointer; display:block; position:relative;
+  width:100%;}
+.flav .fp img{width:100%; aspect-ratio:4/5; object-fit:cover; background:var(--mushroom); display:block;}
+.flav .fp::after{content:""; position:absolute; inset:0; background:rgba(20,16,15,.24);
+  opacity:0; transition:opacity .16s;}
+.flav .fp::before{content:""; position:absolute; top:50%; left:50%; width:24px; height:24px;
+  transform:translate(-50%,-50%); z-index:1; opacity:0; transition:opacity .16s;
   background-repeat:no-repeat; background-position:center;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='10' cy='10' r='7'/%3E%3Cline x1='20.5' y1='20.5' x2='15.2' y2='15.2'/%3E%3C/svg%3E");}
 .flav .fp:hover::after, .flav .fp:focus-visible::after,
 .flav .fp:hover::before, .flav .fp:focus-visible::before{opacity:1;}
-
-/* ---------- lightbox ---------- */
-.lightbox{position:fixed; inset:0; background:rgba(20,16,15,.9); display:none;
-  align-items:center; justify-content:center; padding:36px; z-index:80;}
-.lightbox.on{display:flex;}
-.lightbox img{max-width:min(520px,90vw); max-height:82vh; width:auto; height:auto;
-  object-fit:contain; box-shadow:0 24px 60px rgba(0,0,0,.45); background:var(--mushroom);}
-.lightbox .lb-close{position:absolute; top:16px; right:18px; background:none; border:0;
-  color:#fff; font-size:30px; line-height:1; cursor:pointer; padding:8px; font-family:var(--f);}
-.lightbox .lb-cap{position:absolute; bottom:26px; left:0; right:0; text-align:center;
-  color:#EDE6E2; font-size:13px; padding:0 20px;}
-.flav h4{font-size:19px; font-weight:600; letter-spacing:-.015em; margin:0 0 8px; line-height:1.2;}
-.flav .badges{display:flex; gap:6px; margin:0 0 10px; flex-wrap:wrap;}
+.flav h4{font-size:18px; font-weight:600; letter-spacing:-.018em; margin:16px 0 8px; line-height:1.22;}
+.flav .badges{display:flex; gap:6px; margin:0 0 11px; flex-wrap:wrap;}
 .flav .story{font-size:14.5px; color:#5E4F49; margin:0;}
 .flav .story strong{color:var(--plum); font-weight:600;}
-.ing{margin-top:13px; padding-top:11px; border-top:1px dashed var(--hair);}
-.ing summary{cursor:pointer; font-size:10.5px; font-weight:700; letter-spacing:.16em;
+.ing{margin-top:14px; padding-top:12px; border-top:1px dashed var(--hair);}
+.ing summary{cursor:pointer; font-size:10px; font-weight:700; letter-spacing:.18em;
   text-transform:uppercase; color:var(--gold); list-style:none; padding:1px 0;}
 .ing summary::-webkit-details-marker{display:none;}
 .ing summary::after{content:" +"; color:var(--muted); font-weight:600;}
 .ing[open] summary::after{content:" \\2212";}
 .ing .ing-body{margin-top:11px;}
-.ing .lbl{display:block; font-size:10px; font-weight:700; letter-spacing:.16em;
+.ing .lbl{display:block; font-size:9.5px; font-weight:700; letter-spacing:.18em;
   text-transform:uppercase; color:var(--gold); margin:0 0 3px;}
 .ing .lbl.mt{margin-top:10px;}
 .ing p{margin:0; font-size:12.5px; color:#7A6A64; line-height:1.5;}
 .algs{display:flex; flex-wrap:wrap; gap:5px;}
-.alg{font-size:11px; font-weight:500; color:#7A4A46; background:#FBF3F1; border:1px solid #EBDCD8;
-  padding:2px 7px; border-radius:2px;}
+.alg{font-size:11px; font-weight:500; color:#7A4A46; border:1px solid #E5D6D2; padding:2px 7px;}
 .trace{margin:7px 0 0; font-size:11px; font-style:italic; color:#9C8C86;}
 
 /* ---------- panels ---------- */
-.panel{background:var(--paper); border:1px solid var(--hair); border-left:2px solid var(--gold);
-  padding:26px 28px; margin:32px 0 0;}
-.panel h4{font-size:19px; font-weight:600; letter-spacing:-.015em; margin:0 0 9px;}
-.panel p{margin:0 0 10px; font-size:15.5px; color:#5E4F49;}
+.panel{border-left:2px solid var(--gold); padding:4px 0 4px 24px; margin:clamp(34px,5vw,56px) 0 0;
+  max-width:var(--readw);}
+.panel h4{font-size:19px; font-weight:600; letter-spacing:-.018em; margin:0 0 10px;}
+.panel p{margin:0 0 11px; font-size:15.5px; color:#5E4F49;}
 .panel p:last-child{margin-bottom:0;}
 .panel strong{color:var(--plum); font-weight:600;}
 
-.feature{background:var(--paper); border:1px solid var(--hair); display:grid; gap:0;}
-@media(min-width:820px){ .feature{grid-template-columns:1fr 1fr;} }
-.feature .fimg{background:var(--mushroom); min-height:320px; overflow:hidden;}
-.feature .fimg img{width:100%; height:100%; object-fit:cover;}
-.feature .ftxt{padding:38px 36px;}
-.feature h3{font-size:clamp(24px,3.2vw,32px); font-weight:600; letter-spacing:-.022em; margin:12px 0 16px;}
-.feature p{font-size:16px; color:#5E4F49; margin:0 0 13px;}
-.feature p:last-of-type{margin-bottom:0;}
-.feature strong{color:var(--plum); font-weight:600;}
+/* ---------- the artist / BCF feature ---------- */
+.artist{position:relative; overflow:hidden; background:var(--cocoa);
+  margin:clamp(74px,11vw,140px) 0 0;}
+.artist > picture{position:absolute; inset:0; z-index:0;}
+.artist > picture img{width:100%; height:100%; object-fit:cover;}
+.artist::after{content:""; position:absolute; inset:0; z-index:1;
+  background:linear-gradient(105deg, rgba(40,30,26,.93) 0%, rgba(40,30,26,.80) 46%,
+             rgba(40,30,26,.34) 78%, rgba(40,30,26,.18) 100%);}
+@media(max-width:899px){ .artist::after{background:linear-gradient(rgba(40,30,26,.62) 0%, rgba(40,30,26,.93) 46%);} }
+.artist .ainner{position:relative; z-index:2; padding:clamp(48px,8vw,110px) 0;}
+.artist .acol{max-width:56ch; color:#EFE4DE;}
+@media(min-width:900px){ .artist .acol{max-width:46ch;} }
+.artist .eyebrow{color:#EFDCB4;}
+.artist h3{font-size:clamp(28px,4.8vw,52px); font-weight:600; letter-spacing:-.03em;
+  line-height:1.02; margin:14px 0 0; color:#FBF6F2;}
+.artist p{margin:18px 0 0; font-size:16.5px; color:#E0D3CD;}
+.artist p strong{color:#fff; font-weight:600;}
+.artist .acts{display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:30px 0 0;}
+.artist .bcfnote{margin-top:26px; padding-top:20px; border-top:1px solid rgba(199,166,106,.42);}
+.artist .bcfnote .amt{font-family:var(--fn); font-size:34px; font-weight:600; color:var(--gold);
+  line-height:1; letter-spacing:-.03em;}
+.artist .bcfnote p{margin:8px 0 0; font-size:15.5px;}
 
 /* ---------- booth map ---------- */
-.booth-map{height:420px; margin:0 0 24px; border:1px solid var(--hair); background:var(--mushroom);}
-.booth-map .leaflet-popup-content-wrapper{border-radius:2px; box-shadow:0 6px 20px rgba(78,60,55,.18);}
+.booth-map{height:min(56svh,440px); margin:0 0 18px; background:var(--mushroom);}
+.booth-map .leaflet-popup-content-wrapper{border-radius:0; box-shadow:0 6px 22px rgba(78,60,55,.2);}
 .booth-map .leaflet-popup-tip{box-shadow:none;}
 .booth-map .leaflet-popup-content{margin:14px 16px; font-family:var(--f);}
 .bpop .bn{font-size:15px; font-weight:600; margin:0 0 2px; color:var(--ink);}
 .bpop .bl{font-size:12.5px; color:var(--muted); margin:0;}
 .bpop .bf{display:inline-block; margin-top:6px; font-size:10px; font-weight:700;
-  letter-spacing:.13em; text-transform:uppercase; color:var(--gold);}
+  letter-spacing:.14em; text-transform:uppercase; color:#96762F;}
 .bpop a{display:inline-block; margin-top:9px; font-size:12.5px; font-weight:600; color:var(--rose);}
 .pin{display:block; filter:drop-shadow(0 2px 3px rgba(78,60,55,.35));}
-.map-tools{display:flex; justify-content:flex-end; margin:-14px 0 14px;}
+.map-tools{display:flex; justify-content:flex-end; margin:-6px 0 20px;}
 
 /* ---------- booths ---------- */
-.booths{display:grid; gap:2px; background:var(--hair); border:1px solid var(--hair);}
+.booths{display:grid; border-top:1px solid var(--hair);}
 @media(min-width:560px){ .booths{grid-template-columns:1fr 1fr;} }
-@media(min-width:900px){ .booths{grid-template-columns:repeat(3,1fr);} }
-.booth{background:var(--paper); padding:10px 14px; border:0; width:100%; text-align:left;
-  font-family:var(--f); cursor:pointer; display:block; transition:background .14s;}
-.booth:hover{background:#F6F1EC;}
-.booth.flag{background:#FBF6EA;}
-.booth.flag:hover{background:#F7EFD9;}
-.booth.on{box-shadow:inset 0 0 0 2px var(--rose);}
-.booth .bn{font-size:13.5px; font-weight:600; margin:0; color:var(--ink);}
-.booth .bl{font-size:12px; color:var(--muted); margin:1px 0 0;}
-.booth .bf{display:inline-block; margin-top:4px; font-size:9.5px; font-weight:700;
-  letter-spacing:.13em; text-transform:uppercase; color:var(--gold);}
+@media(min-width:920px){ .booths{grid-template-columns:repeat(3,1fr);} }
+.booth{background:none; padding:14px 12px 14px 2px; border:0; border-bottom:1px solid var(--hair);
+  width:100%; text-align:left; font-family:var(--f); cursor:pointer; display:block;
+  transition:background .14s,padding-left .14s;}
+.booth:hover{background:#EFE9E2; padding-left:12px;}
+.booth.on{background:#EFE9E2; box-shadow:inset 2px 0 0 var(--rose); padding-left:12px;}
+.booth .bn{font-size:14.5px; font-weight:600; margin:0; color:var(--ink);}
+.booth .bl{font-size:12.5px; color:var(--muted); margin:2px 0 0;}
+.booth .bf{display:inline-block; margin-top:5px; font-size:9.5px; font-weight:700;
+  letter-spacing:.14em; text-transform:uppercase; color:#96762F;}
+
+/* ---------- lightbox ---------- */
+.lightbox{position:fixed; inset:0; background:rgba(24,18,16,.93); display:none;
+  align-items:center; justify-content:center; padding:clamp(20px,5vw,44px); z-index:240;}
+.lightbox.on{display:flex;}
+.lightbox img{max-width:min(560px,92vw); max-height:82vh; width:auto; height:auto;
+  object-fit:contain; background:var(--mushroom);}
+.lightbox .lb-close{position:absolute; top:14px; right:16px; background:none; border:0;
+  color:#fff; font-size:32px; line-height:1; cursor:pointer; padding:8px; font-family:var(--f);}
+.lightbox .lb-cap{position:absolute; bottom:24px; left:0; right:0; text-align:center;
+  color:#EDE6E2; font-size:13px; padding:0 20px;}
 
 /* ---------- footer ---------- */
-footer{margin-top:104px; background:var(--cocoa); color:#C9BDB7; padding:52px 0 44px; font-size:14px;}
-footer .fcn{display:block; color:var(--gold); font-size:19px; letter-spacing:.14em; margin:8px 0 22px;}
-footer .fb{font-size:19px; font-weight:600; color:#fff; letter-spacing:-.02em;}
-footer .fl{max-width:64ch; margin:22px 0 0; color:#A99B95; font-size:13px;}
+footer{margin-top:clamp(74px,11vw,140px); background:var(--cocoa); color:#C9BDB7;
+  padding:clamp(46px,7vw,80px) 0 clamp(40px,6vw,60px); font-size:14px;}
+footer .fb{font-size:21px; font-weight:600; color:#fff; letter-spacing:-.022em;}
+footer .fcn{display:block; color:var(--gold); font-size:19px; letter-spacing:.15em; margin:10px 0 26px;}
+footer .fl{max-width:66ch; margin:26px 0 0; color:#A3948E; font-size:12.5px; line-height:1.6;}
 footer a{color:var(--gold);}
-
-#toTop{position:fixed; right:20px; bottom:20px; z-index:70; width:42px; height:42px;
-  border:1px solid var(--hair); background:var(--paper); color:var(--rose); font-size:17px;
-  cursor:pointer; opacity:0; pointer-events:none; transition:opacity .2s; border-radius:2px;}
-#toTop.show{opacity:1; pointer-events:auto;}
+footer .fnav{display:flex; flex-wrap:wrap; gap:12px; margin:0 0 26px;}
 """
 
 
@@ -402,35 +587,28 @@ footer a{color:var(--gold);}
 def flav(img, alt, name, badges, story, ing, algs, trace):
     b = "".join('<span class="tag %s">%s</span>' % (c, t) for c, t in badges)
     a = "".join('<span class="alg">%s</span>' % x for x in algs)
-    src = "assets/%s?v=%d" % (img, ASSET_V)
+    src = v(img)
     return """<div class="flav">
       <button type="button" class="fp" data-lightbox="%s" data-lightbox-alt="%s" aria-label="View a larger photo of %s">
-        <img src="%s" alt="%s" width="96" height="126" loading="lazy" decoding="async">
+        <img src="%s" alt="%s" width="420" height="525" loading="lazy" decoding="async">
       </button>
-      <div>
-        <h4>%s</h4>
-        <div class="badges">%s</div>
-        <p class="story">%s</p>
-        <details class="ing">
-          <summary>Ingredients &amp; allergen advice</summary>
-          <div class="ing-body">
-            <span class="lbl">Ingredients</span><p>%s</p>
-            <span class="lbl mt">Allergen advice · contains</span>
-            <div class="algs">%s</div>
-            <p class="trace">%s</p>
-          </div>
-        </details>
-      </div>
+      <h4>%s</h4>
+      <div class="badges">%s</div>
+      <p class="story">%s</p>
+      <details class="ing">
+        <summary>Ingredients &amp; allergen advice</summary>
+        <div class="ing-body">
+          <span class="lbl">Ingredients</span><p>%s</p>
+          <span class="lbl mt">Allergen advice &middot; contains</span>
+          <div class="algs">%s</div>
+          <p class="trace">%s</p>
+        </div>
+      </details>
     </div>""" % (src, alt, name, src, alt, name, b, story, ing, a, trace)
 
 
 HALAL = ("sage", "Halal certified")
 VEG = ("sage", "Vegetarian")
-
-
-def w(g):
-    return ("", "%s" % g)
-
 
 RANGES = [
     {
@@ -442,14 +620,14 @@ RANGES = [
                  [HALAL, VEG, ("", "160g")],
                  "Smooth <strong>white lotus paste</strong> studded with melon seeds and wrapped around a <strong>golden salted egg yolk</strong>, baked the <strong>time honoured Cantonese way</strong>. <strong>The one everyone reaches for first.</strong>",
                  "White lotus paste, wheat flour, salted egg yolk, golden syrup, blended cooking oil (palm, peanut, sesame), melon seed, egg, milk.",
-                 ["🌾 Gluten (wheat)", "🥚 Egg", "🥛 Milk", "Sesame", "🥜 Peanuts"],
+                 ["Gluten (wheat)", "Egg", "Milk", "Sesame", "Peanuts"],
                  "May contain traces of soy."),
             flav("trad-no-yolk.webp", "Traditional white lotus mooncake without yolk",
                  "Lotus with Melon Seeds",
                  [HALAL, VEG, ("", "160g")],
                  "Pure <strong>white lotus paste</strong> with melon seeds folded through, in a classic baked skin. Quiet, smooth and traditional, <strong>for those who like it simple</strong>.",
                  "White lotus paste, melon seed, wheat flour, golden syrup, blended cooking oil (palm, peanut, sesame), egg, milk.",
-                 ["🌾 Gluten (wheat)", "🥚 Egg", "🥛 Milk", "Sesame", "🥜 Peanuts"],
+                 ["Gluten (wheat)", "Egg", "Milk", "Sesame", "Peanuts"],
                  "May contain traces of soy."),
         ],
     },
@@ -463,28 +641,28 @@ RANGES = [
                  [HALAL, VEG, ("", "160g")],
                  "Created for the <strong>youngest at the table</strong>. Chocolate is a flavour children already know and love, so this is their first step into mooncakes: a <strong>double hit of chocolate in both the skin and the paste</strong>, finished with a pinch of <strong>Himalayan salt</strong> that sharpens the cocoa from the first bite to the last.",
                  "Chocolate lotus paste, Maruchi dough, chocolate paste (Master Martini), melon seeds, blended cooking oil (palm, peanut, sesame), cocoa powder, Himalayan salt.",
-                 ["🌾 Gluten (wheat)", "🥛 Milk", "🌰 Tree nuts", "Sesame", "🥚 Egg", "🥜 Peanuts", "🫘 Soy"],
+                 ["Gluten (wheat)", "Milk", "Tree nuts", "Sesame", "Egg", "Peanuts", "Soy"],
                  "May contain traces of nuts."),
             flav("momo-sesame.webp", "Momoyama black sesame peanut butter mooncake",
                  "Black Sesame Peanut Butter",
                  [HALAL, VEG, ("", "160g")],
                  "Created for <strong>parents and grandparents with a sweet tooth</strong>. Toasty <strong>black sesame</strong> meets smooth <strong>peanut butter</strong>, a nod to the black sesame and peanut pastes they grew up ordering at Singapore dessert stalls, carried in a soft Momoyama skin.",
                  "Black sesame lotus paste, Maruchi dough, peanut butter, melon seeds, blended cooking oil (palm, peanut, sesame), pumpkin powder.",
-                 ["🌾 Gluten (wheat)", "🥚 Egg", "Sesame", "🥜 Peanuts", "🥛 Milk", "🫘 Soy"],
+                 ["Gluten (wheat)", "Egg", "Sesame", "Peanuts", "Milk", "Soy"],
                  "May contain traces of nuts."),
             flav("momo-pandan.webp", "Momoyama emerald pandan mooncake with golden yolk",
                  "Emerald Pandan Golden Yolk",
                  [HALAL, VEG, ("", "160g")],
                  "Created for <strong>every generation</strong>. The sweet <strong>pandan fragrance</strong> everyone knows from kaya, carried in a modern Momoyama skin, with the <strong>golden yolk from the traditional mooncake</strong> at its centre. The <strong>best of both worlds</strong> in one bite.",
                  "Pandan paste, Maruchi dough, custard salted egg yolk paste, melon seed, blended cooking oil (palm, peanut, sesame), purple sweet potato powder.",
-                 ["🌾 Gluten (wheat)", "🥛 Milk", "🥚 Egg", "Sesame", "🥜 Peanuts", "🫘 Soy"],
+                 ["Gluten (wheat)", "Milk", "Egg", "Sesame", "Peanuts", "Soy"],
                  "May contain traces of nuts."),
             flav("momo-reddates.webp", "Momoyama red dates longan mooncake",
                  "Red Dates Longan",
                  [HALAL, VEG, ("", "160g")],
                  "Created with our <strong>elders</strong> in mind. <strong>Red dates</strong> and <strong>longan</strong> are flavours they've known all their lives, long treasured in Chinese tradition as nourishing and warming, folded into a rose hued Momoyama skin. Gentle, familiar and easy to love.",
                  "Red date lotus, Maruchi dough, longan bits, melon seeds, blended cooking oil (palm, peanut, sesame), colour (102, 110, 124).",
-                 ["🌾 Gluten (wheat)", "🥚 Egg", "Sesame", "🥜 Peanuts", "🥛 Milk", "🫘 Soy"],
+                 ["Gluten (wheat)", "Egg", "Sesame", "Peanuts", "Milk", "Soy"],
                  "May contain traces of nuts."),
         ],
     },
@@ -497,25 +675,25 @@ RANGES = [
                  "Truffle Muscat Grape", [("chill", "Chilled"), ("", "63g")],
                  "A pale green snowskin of soft glutinous rice, filled with smooth lotus paste and a <strong>muscat grape truffle</strong> at its heart. <strong>Fragrant, delicate and quietly refreshing.</strong>",
                  "Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, lotus paste, muscat grape truffle (white couverture, cream, green tea powder, white grape flavour).",
-                 ["🥛 Milk"],
+                 ["Milk"],
                  "May contain traces of gluten, egg, nuts, sesame, peanuts and soy."),
             flav("snow-passionfruit.webp", "Truffle Passionfruit snowskin mooncake with cream and passionfruit truffle centre",
                  "Truffle Passionfruit", [("chill", "Chilled"), ("", "63g")],
                  "A sunny golden snowskin of soft glutinous rice, filled with smooth lotus paste and a <strong>passionfruit truffle</strong> that lands <strong>bright and tangy</strong>. A little tropical sunshine that wakes the whole box up.",
                  "Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, lotus paste, passionfruit truffle (white couverture, Unigra passionfruit, cream).",
-                 ["🥛 Milk"],
+                 ["Milk"],
                  "May contain traces of gluten, egg, nuts, sesame, peanuts and soy."),
             flav("snow-popping.webp", "Truffle Popping Candy snowskin mooncake with dragon fruit paste and popping candy centre",
                  "Truffle Popping Candy", [("chill", "Chilled"), ("", "63g")],
                  "A blush pink snowskin of soft glutinous rice, filled with vivid <strong>dragonfruit paste</strong> and a <strong>popping candy truffle that crackles as you bite</strong>. <strong>The one that makes everyone at the table laugh first</strong> and reach for seconds after.",
                  "Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, dragon fruit paste (lotus paste, dragon fruit powder), popping candy truffle (white couverture, pink popping candy filling, blue popping candy filling).",
-                 ["🥛 Milk"],
+                 ["Milk"],
                  "May contain traces of gluten, egg, nuts, sesame, peanuts and soy."),
             flav("snow-pistachio.webp", "Truffle Pistachio Kunafa snowskin mooncake with almond filling and pistachio paste centre",
                  "Truffle Pistachio Kunafa", [("chill", "Chilled"), ("", "63g")],
                  "An ivory snowskin of soft glutinous rice, filled with smooth lotus paste and a rich <strong>pistachio kunafa truffle</strong>. Our nod to the beloved <strong>Middle Eastern dessert</strong>, reimagined for the mooncake table.",
                  "Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, lotus paste, pistachio kunafa truffle (milk couverture, almond filling, pistachio paste, pistachio nuts, feuilletine).",
-                 ["🌰 Tree nuts (pistachio, almond)", "🥛 Milk"],
+                 ["Tree nuts (pistachio, almond)", "Milk"],
                  "May contain traces of gluten, egg, sesame, peanuts and soy."),
         ],
     },
@@ -523,70 +701,173 @@ RANGES = [
 
 
 # --------------------------------------------------------------------------
-# Builders
+# Helpers
 # --------------------------------------------------------------------------
 def wa(number, text):
     from urllib.parse import quote
     return "https://wa.me/%s?text=%s" % (number, quote(text))
 
 
-def keepsake_card(k):
-    chan_cls = "chan" if k["channel"] == "online" else "chan booth"
-    chan_lbl = "Order online" if k["channel"] == "online" else "At our booths"
-    var = ' <span class="var">(%s)</span>' % k["variant"] if k.get("variant") else ""
+def by_id(kid):
+    for k in KEEPSAKES:
+        if k["id"] == kid:
+            return k
+    raise KeyError(kid)
 
+
+def chan_label(k):
+    return "Order online" if k["channel"] == "online" else "At our booths"
+
+
+def tags_for(k):
     tags = ['<span class="tag">%s</span>' % k["pcs"]]
     if "G" in k["sets"]:
-        tags.append('<span class="tag chill">Snowskin · chilled</span>')
+        tags.append('<span class="tag chill">Snowskin &middot; chilled</span>')
     else:
         tags.append('<span class="tag sage">Halal certified</span>')
     if k.get("artist"):
         tags.append('<span class="tag rose">Artist edition</span>')
     if k.get("bcf"):
         tags.append('<span class="tag gold">$1 to charity</span>')
+    return "".join(tags)
 
+
+def cta_for(k, small=True):
+    sm = " sm" if small else ""
     if k["channel"] == "online":
-        cta = ('<a class="btn sm" href="%s" target="_blank" rel="noopener" '
-               'data-order="%s" data-name="%s">Order online</a>'
-               % (k["url"], k["id"], k["name"]))
-    else:
-        msg = ("Hello! I'd like to ask about the %s Mid-Autumn gift set. "
-               "Which booths have it in stock?" % k["name"])
-        cta = ('<a class="btn sm gold" href="%s" target="_blank" rel="noopener" '
-               'data-booth="%s" data-name="%s">Check booth stock</a>'
-               '<a class="btn sm ghost" href="#where">See booths</a>'
-               % (wa(WA_CUSTOMER, msg), k["id"], k["name"]))
+        return ('<a class="btn%s" href="%s" target="_blank" rel="noopener" '
+                'data-order="%s" data-name="%s">Order online</a>'
+                % (sm, k["url"], k["id"], k["name"]))
+    msg = ("Hello! I'd like to ask about the %s Mid-Autumn gift set. "
+           "Which booths have it in stock?" % k["name"])
+    return ('<a class="btn%s gold" href="%s" target="_blank" rel="noopener" '
+            'data-booth="%s" data-name="%s">Check booth stock</a>'
+            '<a class="tlink" href="#where">See booths</a>'
+            % (sm, wa(WA_CUSTOMER, msg), k["id"], k["name"]))
 
-    note = '<p class="note">%s</p>' % k["note"] if k.get("note") else ""
+
+# --------------------------------------------------------------------------
+# Keepsake layouts
+# --------------------------------------------------------------------------
+def feature(kid, reverse=False):
+    """A hero keepsake: big photo one side, the full story the other."""
+    k = by_id(kid)
+    var = '<span class="var">%s</span>' % k["variant"] if k.get("variant") else ""
     body = "".join("<p>%s</p>" % p for p in k["body"])
-
-    return """<article class="pack" id="k-%s">
-  <div class="pack-photo"><span class="%s">%s</span>
-    <img src="assets/%s?v=%d" alt="%s" width="700" height="875" loading="lazy" decoding="async"></div>
-  <div class="pack-body">
+    note = '<p class="note">%s</p>' % k["note"] if k.get("note") else ""
+    extra = ""
+    if k.get("bcf"):
+        extra = ('<a class="tlink" href="%s" target="_blank" rel="noopener" '
+                 'data-bcf="card">About the Breast Cancer Foundation</a>' % BCF_URL)
+    return """<article class="feat%s" id="k-%s">
+  <div class="fimg"><img src="%s" alt="%s" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="ftxt">
+    <span class="chan%s">%s</span>
     <span class="fmt">%s</span>
-    <h4>%s%s</h4>
-    <p class="pcn">%s</p>
-    <p class="pgloss">%s · %s</p>
+    <h3>%s%s</h3>
+    <p class="fcn"><span class="cnmark han">%s</span> <span class="gloss">%s &middot; %s</span></p>
+    <div class="desc">%s</div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>%s</p></div>
-    <details class="more"><summary>The full story</summary><div class="desc">%s</div>%s</details>
-    <div class="pack-foot">%s</div>
-    <div class="res-meta" style="margin-top:14px">%s</div>
+    %s
+    <div class="foot">%s%s</div>
+    <div class="res-meta meta">%s</div>
   </div>
-</article>""" % (k["id"], chan_cls, chan_lbl, k["img"], ASSET_V, k["alt"],
+</article>""" % (" rev" if reverse else "", k["id"], v(k["img"]), k["alt"],
+                 "" if k["channel"] == "online" else " booth", chan_label(k),
                  k["format"], k["name"], var, k["cn"], k["pinyin"], k["gloss"],
-                 k["becomes"], body, note, cta, "".join(tags))
+                 body, k["becomes"], note, cta_for(k, small=False), extra, tags_for(k))
+
+
+def pair_band(id_a, id_b):
+    """The Dawn and The Dusk: two halves of one day, so they share a band."""
+    halves = ""
+    for kid in (id_a, id_b):
+        k = by_id(kid)
+        halves += """<div class="half">
+      <div class="hi"><img src="%s" alt="%s" width="900" height="1125" loading="lazy" decoding="async"></div>
+      <h4>%s</h4>
+      <p class="dcn han">%s</p>
+      <p class="dgloss">%s &middot; %s</p>
+      <p class="db">%s</p>
+      <div class="foot">%s</div>
+    </div>""" % (v(k["img"]), k["alt"], k["name"], k["cn"], k["pinyin"], k["gloss"],
+                 k["becomes"], cta_for(k))
+    return """<section class="pairband bleed" id="k-%s">
+  <img src="%s" alt="" width="1700" height="1133" loading="lazy" decoding="async" aria-hidden="true">
+  <div class="pinner wrap">
+    <div class="phead">
+      <span class="eyebrow">A pair &middot; 花晨月夕</span>
+      <h3>Flower mornings and moonlit evenings</h3>
+      <p>The old idiom names the two loveliest hours of any day. We split it across a pair of leather bags, one for each. Give one, or give both and bookend the day.</p>
+    </div>
+    <div class="duo">%s</div>
+  </div>
+</section>""" % (id_a, v("band-dawn-dusk.webp"), halves)
+
+
+def grid_item(kid):
+    k = by_id(kid)
+    var = ' <span class="var">(%s)</span>' % k["variant"] if k.get("variant") else ""
+    body = "".join("<p>%s</p>" % p for p in k["body"])
+    note = '<p class="note">%s</p>' % k["note"] if k.get("note") else ""
+    return """<article class="item" id="k-%s">
+  <div class="ri"><img src="%s" alt="%s" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <span class="chan%s">%s &middot; %s</span>
+  <h4>%s%s</h4>
+  <p class="icn han">%s</p>
+  <p class="igloss">%s &middot; %s</p>
+  <div class="ibec"><span class="lbl">After Mid-Autumn it becomes</span><p>%s</p></div>
+  <details class="more"><summary>The full story</summary><div class="desc">%s</div>%s</details>
+  <div class="foot">%s</div>
+  <div class="res-meta meta">%s</div>
+</article>""" % (k["id"], v(k["img"]), k["alt"],
+                 "" if k["channel"] == "online" else " booth",
+                 chan_label(k), k["format"],
+                 k["name"], var, k["cn"], k["pinyin"], k["gloss"],
+                 k["becomes"], body, note, cta_for(k), tags_for(k))
+
+
+# Editorial running order. Deliberately not a uniform loop: the pieces with the
+# most to say get the room, and The Dawn/The Dusk share a band because the
+# idiom behind them is a pair.
+FEATURES_TOP = ["the-painted-garden", "the-painted-garden-box"]
+FEATURES_MID = ["a-court-of-peonies"]
+FEATURES_END = ["blossom-drawer-chest"]
+GRID = ["the-painted-garden-duo", "a-court-of-peonies-duo", "orchid-reverie",
+        "weaving-moments", "tote-of-good-health", "tote-of-bliss",
+        "treasure-scroll", "elegance-reunion-turntable"]
+
+
+def keepsakes_html():
+    out = []
+    for i, kid in enumerate(FEATURES_TOP):
+        out.append(feature(kid, reverse=bool(i % 2)))
+    out.append(pair_band("the-dawn", "the-dusk"))
+    for i, kid in enumerate(FEATURES_MID):
+        out.append(feature(kid, reverse=False))
+    for i, kid in enumerate(FEATURES_END):
+        out.append(feature(kid, reverse=True))
+    out.append('<div class="rest">%s</div>' % "".join(grid_item(k) for k in GRID))
+    return "".join(out)
+
+
+def check_layout_covers_data():
+    laid = set(FEATURES_TOP + FEATURES_MID + FEATURES_END + GRID + ["the-dawn", "the-dusk"])
+    have = {k["id"] for k in KEEPSAKES}
+    missing, extra = have - laid, laid - have
+    if missing or extra:
+        raise SystemExit("Keepsake layout out of sync with data.py.\n"
+                         "  not laid out: %s\n  unknown ids: %s" % (sorted(missing), sorted(extra)))
 
 
 def sets_table():
     rows = ['<div class="r hdr"><div>Set</div><div>Range</div><div>What\'s inside</div></div>']
     for s in SETS:
         fl = "".join("<li>%s</li>" % f for f in s["flavours"])
-        halal = " · Halal certified, vegetarian" if s["halal"] else " · not Halal certified"
-        rows.append(
-            '<div class="r"><div class="price">%s</div>'
-            '<div class="g">%s%s</div><ul>%s</ul></div>'
-            % (s["id"], s["group"], halal, fl))
+        halal = " &middot; Halal certified, vegetarian" if s["halal"] else " &middot; not Halal certified"
+        rows.append('<div class="r"><div class="sid">%s</div>'
+                    '<div class="g">%s%s</div><ul>%s</ul></div>'
+                    % (s["id"], s["group"], halal, fl))
     return '<div class="settable">%s</div>' % "".join(rows)
 
 
@@ -598,25 +879,19 @@ def booths_html():
     out = []
     for name, level, flag, lat, lng in BOOTHS:
         f = '<span class="bf">Flagship store</span>' if flag else ""
-        out.append('<button type="button" class="booth%s" data-loc="%s">'
+        out.append('<button type="button" class="booth" data-loc="%s">'
                    '<p class="bn">%s</p><p class="bl">%s</p>%s</button>'
-                   % (" flag" if flag else "", slugify(name), name, level, f))
+                   % (slugify(name), name, level, f))
     return '<div class="booths">%s</div>' % "".join(out)
 
 
 def booths_json():
-    out = []
-    for name, level, flag, lat, lng in BOOTHS:
-        out.append({
-            "id": slugify(name), "name": name, "level": level, "flag": flag,
-            "lat": lat, "lng": lng,
-            "maps": "https://www.google.com/maps/search/?api=1&query=%s,%s" % (lat, lng),
-        })
-    return out
+    return [{"id": slugify(n), "name": n, "level": lv, "flag": fg, "lat": la, "lng": lo,
+             "maps": "https://www.google.com/maps/search/?api=1&query=%s,%s" % (la, lo)}
+            for n, lv, fg, la, lo in BOOTHS]
 
 
 def js_data():
-    """Trim the keepsake data down to what the browser tools need."""
     out = []
     for k in KEEPSAKES:
         out.append({
@@ -633,41 +908,66 @@ def js_data():
     return out
 
 
+# --------------------------------------------------------------------------
+# JS
+# --------------------------------------------------------------------------
 JS = """
 (function(){
-  var K = %(keepsakes)s;
-  var S = %(sets)s;
-  var B = %(booths)s;
-  var TABLE_SET = %(tableset)s;
-  var BUDGET = %(budget)s;
-  var RECIP = %(recip)s;
-  var WA_CUSTOMER = "%(wacust)s";
-  var SITE = "%(site)s";
+  var K = {{KEEPSAKES}};
+  var S = {{SETS}};
+  var B = {{BOOTHS}};
+  var TABLE_SET = {{TABLESET}};
+  var BUDGET = {{BUDGET}};
+  var RECIP = {{RECIP}};
+  var WA_CUSTOMER = "{{WACUST}}";
+  var SITE = "{{SITE}}";
+  var AV = "{{AV}}";
+  var BCF = "{{BCF}}";
 
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function ga(name, params){ if(window.gtag){ window.gtag('event', name, params||{}); } }
   function byId(id){ return document.getElementById(id); }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function find(id){ for(var i=0;i<K.length;i++){ if(K[i].id===id) return K[i]; } return null; }
+  function asset(f){ return 'assets/' + f + '?v=' + AV; }
   function setById(id){ for(var i=0;i<S.length;i++){ if(S[i].id===id) return S[i]; } return null; }
 
-  /* ---------------- the unwrapping ----------------
-     Shows once per session. Any tap, scroll or key opens it. Skipped entirely
-     for reduced-motion, for a repeat visit, and for anyone arriving on a deep
-     link (an EDM pointing at #where should land on #where). */
+  /* ---------------- into the garden ----------------
+     The shoot's own rose hedge, filmed, which parts to let you in. Shows once
+     per session. Any tap, scroll or key opens it. Skipped entirely for
+     reduced-motion, for a repeat visit, and for anyone arriving on a deep link
+     (an EDM pointing at #where should land on #where, not on a gate). */
   (function(){
     var intro = byId('intro');
     if (!intro) return;
-    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var seen;
     try { seen = window.sessionStorage.getItem('mlbIntro'); } catch(e){ seen = null; }
-    if (reduced || seen || window.location.hash){ intro.parentNode.removeChild(intro); return; }
+    if (reduced || seen || window.location.hash){
+      if (intro.parentNode) intro.parentNode.removeChild(intro);
+      return;
+    }
 
     if (!window.matchMedia('(pointer: coarse)').matches){
       var verb = byId('introVerb');
       if (verb) verb.textContent = 'Click';
     }
     intro.classList.add('show');
+
+    /* Point the parting halves at whichever poster matches this viewport, and
+       start the matching clip. Phones get the portrait cut so we are not
+       upscaling a 16:9 frame across a tall screen. */
+    var portrait = window.matchMedia('(max-aspect-ratio: 1/1)').matches;
+    var poster = portrait ? 'intro-garden-p.jpg' : 'intro-garden.jpg';
+    intro.style.setProperty('--hedge', 'url("' + asset(poster) + '")');
+    var vid = byId('introVid');
+    if (vid){
+      var src = portrait ? 'intro-garden-p.mp4' : 'intro-garden.mp4';
+      vid.setAttribute('poster', asset(poster));
+      vid.src = asset(src);
+      var p = vid.play();
+      if (p && p.catch) p.catch(function(){ /* poster carries it */ });
+    }
+
     var prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     var opened = false;
@@ -680,8 +980,9 @@ JS = """
       document.body.style.overflow = prevOverflow;
       ga('intro_open', {});
       window.setTimeout(function(){
+        if (vid){ try { vid.pause(); vid.removeAttribute('src'); vid.load(); } catch(e){} }
         if (intro.parentNode) intro.parentNode.removeChild(intro);
-      }, 900);
+      }, 1400);
     }
 
     intro.addEventListener('click', open);
@@ -691,32 +992,108 @@ JS = """
     window.addEventListener('wheel', open, {passive:true, once:true});
     window.addEventListener('touchmove', open, {passive:true, once:true});
     window.addEventListener('keydown', open, {once:true});
-    /* Never trap anyone: open on its own after a few seconds of no input. */
-    window.setTimeout(open, 6000);
+    /* Never trap anyone: it opens on its own after a few seconds of no input. */
+    window.setTimeout(open, 7000);
     intro.focus({preventScroll:true});
+  })();
+
+  /* ---------------- drifting petals ----------------
+     Real defocused rose petals cut from the campaign shoot, so they read as
+     petals passing the lens rather than CSS confetti. Off for reduced-motion,
+     paused when the tab is hidden, and thinned right out on small screens. */
+  (function(){
+    var cv = byId('petals');
+    if (!cv || reduced) { if (cv) cv.style.display = 'none'; return; }
+    var ctx = cv.getContext('2d');
+    var imgs = [], loaded = 0, N = 4;
+    for (var i=0;i<N;i++){
+      var im = new Image();
+      im.onload = function(){ loaded++; };
+      im.src = asset('petal' + i + '.png');
+      imgs.push(im);
+    }
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W = 0, H = 0, petals = [], raf = null;
+
+    function count(){
+      var a = window.innerWidth * window.innerHeight;
+      return Math.max(7, Math.min(20, Math.round(a / 78000)));
+    }
+    function mk(seedTop){
+      return {
+        img: imgs[(Math.random()*N)|0],
+        x: Math.random()*W,
+        y: seedTop ? -80 - Math.random()*H : Math.random()*H,
+        s: 0.20 + Math.random()*0.42,
+        vy: 12 + Math.random()*24,
+        vx: -9 + Math.random()*18,
+        rot: Math.random()*Math.PI*2,
+        vr: (-0.5 + Math.random())*0.35,
+        sw: 0.3 + Math.random()*0.9,
+        ph: Math.random()*Math.PI*2,
+        op: 0.34 + Math.random()*0.46
+      };
+    }
+    function resize(){
+      W = window.innerWidth; H = window.innerHeight;
+      cv.width = Math.floor(W*dpr); cv.height = Math.floor(H*dpr);
+      cv.style.width = W+'px'; cv.style.height = H+'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      var want = count();
+      while (petals.length < want) petals.push(mk(false));
+      if (petals.length > want) petals.length = want;
+    }
+    var last = 0;
+    function frame(t){
+      raf = window.requestAnimationFrame(frame);
+      if (!last) last = t;
+      var dt = Math.min((t-last)/1000, 0.05); last = t;
+      ctx.clearRect(0,0,W,H);
+      if (loaded === 0) return;
+      for (var i=0;i<petals.length;i++){
+        var p = petals[i];
+        p.ph += dt*p.sw;
+        p.y += p.vy*dt;
+        p.x += (p.vx + Math.sin(p.ph)*14)*dt;
+        p.rot += p.vr*dt;
+        if (p.y - 120 > H) { petals[i] = mk(true); continue; }
+        if (p.x < -140) p.x = W + 120; else if (p.x > W + 140) p.x = -120;
+        if (!p.img || !p.img.width) continue;
+        ctx.save();
+        ctx.globalAlpha = p.op;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.drawImage(p.img, -p.img.width*p.s/2, -p.img.height*p.s/2,
+                      p.img.width*p.s, p.img.height*p.s);
+        ctx.restore();
+      }
+    }
+    function start(){ if (raf === null){ last = 0; raf = window.requestAnimationFrame(frame); } }
+    function stop(){ if (raf !== null){ window.cancelAnimationFrame(raf); raf = null; } }
+    resize();
+    window.addEventListener('resize', resize, {passive:true});
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) stop(); else start();
+    });
+    start();
   })();
 
   /* ---------------- jump nav ---------------- */
   var links = [].slice.call(document.querySelectorAll('.jump a[href^="#"]'));
   var secs  = links.map(function(a){ return byId(a.getAttribute('href').slice(1)); });
-  var bar = byId('navProgress'), toTop = byId('toTop');
+  var bar = byId('navProgress');
   function onScroll(){
     var h = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%%';
-    toTop.classList.toggle('show', window.scrollY > 700);
+    if (bar) bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
     var idx = -1;
     for (var i=0;i<secs.length;i++){
-      if (secs[i] && secs[i].getBoundingClientRect().top <= 100) idx = i;
+      if (secs[i] && secs[i].getBoundingClientRect().top <= 120) idx = i;
     }
     links.forEach(function(a,i){ a.classList.toggle('active', i===idx); });
   }
   window.addEventListener('scroll', onScroll, {passive:true});
   window.addEventListener('resize', onScroll, {passive:true});
   onScroll();
-  toTop.addEventListener('click', function(){
-    var r = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({top:0, behavior: r ? 'auto' : 'smooth'});
-  });
 
   /* ---------------- outbound click tracking ---------------- */
   document.addEventListener('click', function(e){
@@ -725,9 +1102,10 @@ JS = """
     if(a.dataset.order) ga('order_click', {item_id:a.dataset.order, item_name:a.dataset.name});
     if(a.dataset.booth) ga('booth_click', {item_id:a.dataset.booth, item_name:a.dataset.name});
     if(a.dataset.brochure) ga('brochure_download', {});
+    if(a.dataset.bcf) ga('bcf_click', {placement:a.dataset.bcf});
   });
 
-  /* ---------------- gift concierge ---------------- */
+  /* ---------------- gift matcher ---------------- */
   var ans = {}, step = 0;
   var qs = [].slice.call(document.querySelectorAll('.q'));
   var pips = [].slice.call(document.querySelectorAll('.qsteps i'));
@@ -762,7 +1140,7 @@ JS = """
       return true;
     });
     if (hard.length) return {list:hard, relaxed:false};
-    /* Nothing survived. Drop the budget rail last, and say so. */
+    /* Nothing survived. Drop the budget rail last, and say so on screen. */
     var soft = K.filter(function(k){
       if (ans.table === 'halal'   && !k.halalSafe) return false;
       if (ans.table === 'chilled' && k.sets.indexOf('G') < 0) return false;
@@ -789,11 +1167,10 @@ JS = """
   function finish(){
     var p = pool();
     var ranked = p.list.slice().sort(function(a,b){ return scoreOf(b) - scoreOf(a); });
-    var top = ranked[0], alt = ranked[1];
-    render(top, alt, p.relaxed);
+    render(ranked[0], ranked[1], p.relaxed);
     ga('concierge_complete', {
       recipient: ans.recipient, priority: ans.priority,
-      table: ans.table, budget: ans.budget, match: top.id
+      table: ans.table, budget: ans.budget, match: ranked[0].id
     });
   }
 
@@ -802,14 +1179,14 @@ JS = """
     var s = st ? setById(st) : null;
     var recipLabel = RECIP[ans.recipient] || 'them';
 
-    var meta = ['<span class="tag">' + esc(k.format) + ' · ' + esc(k.pcs) + '</span>'];
-    if (k.sets.indexOf('G') >= 0) meta.push('<span class="tag chill">Snowskin · chilled</span>');
+    var meta = ['<span class="tag">' + esc(k.format) + ' &middot; ' + esc(k.pcs) + '</span>'];
+    if (k.sets.indexOf('G') >= 0) meta.push('<span class="tag chill">Snowskin &middot; chilled</span>');
     else meta.push('<span class="tag sage">Halal certified</span>');
     if (k.bcf) meta.push('<span class="tag gold">$1 to charity</span>');
     if (k.channel === 'booth') meta.push('<span class="tag">At our booths</span>');
 
     var setLine = s
-      ? '<p class="res-note"><strong>Recommended mooncake set ' + s.id + '</strong> · ' +
+      ? '<p class="res-note"><strong>Recommended mooncake set ' + s.id + '</strong> &middot; ' +
         esc(s.flavours.join(', ')) + '</p>'
       : (k.duoNote ? '<p class="res-note">' + esc(k.duoNote) + '</p>' : '');
 
@@ -830,21 +1207,22 @@ JS = """
 
     var html =
       '<div class="res-grid">' +
-        '<div class="res-photo"><img src="assets/' + k.img + '?v=%(v)d" alt="' + esc(k.alt) + '"></div>' +
+        '<div class="res-photo"><img src="' + asset(k.img) + '" alt="' + esc(k.alt) + '"></div>' +
         '<div class="res-body">' +
           '<span class="tool-kicker">Your match</span>' +
-          '<h4>' + esc(k.name) + (k.variant ? ' <span style="font-weight:400;font-size:18px;color:var(--muted)">(' + esc(k.variant) + ')</span>' : '') + '</h4>' +
-          '<p class="rcn">' + esc(k.cn) + '</p>' +
-          '<p class="rgloss">' + esc(k.pinyin) + ' · ' + esc(k.gloss) + '</p>' +
+          '<h4>' + esc(k.name) + (k.variant ? ' <span style="font-weight:400;font-size:.6em;color:var(--muted)">(' + esc(k.variant) + ')</span>' : '') + '</h4>' +
+          '<p class="rcn han">' + esc(k.cn) + '</p>' +
+          '<p class="rgloss">' + esc(k.pinyin) + ' &middot; ' + esc(k.gloss) + '</p>' +
           '<p class="res-why">For ' + esc(recipLabel) + ', ' + esc(k.why) + '</p>' +
           '<div class="res-meta">' + meta.join('') + '</div>' +
           setLine +
           (relaxed ? '<p class="res-note">Nothing in the collection sits inside that budget with those requirements, so this is the closest fit.</p>' : '') +
           (k.note ? '<p class="res-note">' + esc(k.note) + '</p>' : '') +
+          (k.bcf ? '<p class="res-note">Every one of these sends <strong>$1 to the Breast Cancer Foundation</strong>. <a class="tlink" href="' + BCF + '" target="_blank" rel="noopener" data-bcf="match">Read about their work</a></p>' : '') +
           '<div class="res-acts">' + cta +
             '<a class="btn ghost" href="https://wa.me/?text=' + encodeURIComponent(shareMsg) +
               '" target="_blank" rel="noopener" id="cShare">Send to someone</a>' +
-            '<button class="btn ghost" id="cAgain" type="button">Start again</button>' +
+            '<button class="qback" id="cAgain" type="button" style="margin:0">Start again</button>' +
           '</div>' +
           (alt ? '<p class="res-alt">Also worth a look: <a href="#k-' + alt.id + '">' + esc(alt.name) +
                  '</a>, ' + esc(alt.becomes.charAt(0).toLowerCase() + alt.becomes.slice(1)) + '</p>' : '') +
@@ -858,7 +1236,7 @@ JS = """
     pips.forEach(function(p){ p.classList.add('on'); });
     byId('cAgain').addEventListener('click', function(){ ans = {}; show(0); });
     byId('cShare').addEventListener('click', function(){ ga('concierge_share', {match:k.id}); });
-    box.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth', block:'start'});
+    box.scrollIntoView({behavior: reduced ? 'auto':'smooth', block:'start'});
   }
 
   /* ---------------- build your gift ---------------- */
@@ -866,7 +1244,7 @@ JS = """
   K.forEach(function(k){
     var c = document.createElement('button');
     c.type = 'button'; c.className = 'chip';
-    c.innerHTML = '<img src="assets/' + k.img + '?v=%(v)d" alt="' + esc(k.alt) + '" loading="lazy" decoding="async">' +
+    c.innerHTML = '<img src="' + asset(k.img) + '" alt="' + esc(k.alt) + '" loading="lazy" decoding="async">' +
       '<span>' + esc(k.name) + (k.variant ? ' (' + esc(k.variant) + ')' : '') + '</span>';
     c.addEventListener('click', function(){
       [].slice.call(bpick.children).forEach(function(x){ x.classList.remove('on'); });
@@ -906,18 +1284,18 @@ JS = """
 
     bout.innerHTML =
       '<div class="bhead">' +
-        '<img src="assets/' + k.img + '?v=%(v)d" alt="' + esc(k.alt) + '">' +
+        '<img src="' + asset(k.img) + '" alt="' + esc(k.alt) + '">' +
         '<div><h4>' + esc(k.name) + '</h4>' +
-          '<p class="rgloss" style="margin:4px 0 0">' + esc(k.cn) + ' · ' + esc(k.pinyin) + '</p>' +
+          '<p class="igloss" style="margin:6px 0 0">' + esc(k.cn) + ' &middot; ' + esc(k.pinyin) + '</p>' +
           '<div class="res-meta" style="margin-top:12px">' +
-          '<span class="tag">' + esc(k.format) + ' · ' + esc(k.pcs) + '</span>' +
+          '<span class="tag">' + esc(k.format) + ' &middot; ' + esc(k.pcs) + '</span>' +
           '<span class="tag' + (k.channel === 'booth' ? ' gold' : '') + '">' +
             (k.channel === 'booth' ? 'At our booths' : 'Order online') + '</span></div>' +
           '<div class="res-acts" style="margin-top:16px">' + cta +
-            '<a class="btn sm ghost" href="#k-' + k.id + '">Read its story</a></div>' +
+            '<a class="tlink" href="#k-' + k.id + '">Read its story</a></div>' +
         '</div>' +
       '</div>' +
-      '<p class="rgloss" style="margin:0 0 12px">Choose one mooncake set to go inside</p>' +
+      '<p class="igloss" style="margin:0 0 14px">Choose one mooncake set to go inside</p>' +
       '<div class="setlist">' + rows + '</div>' +
       (k.note ? '<p class="res-note">' + esc(k.note) + '</p>' : '');
     bout.classList.add('on');
@@ -928,7 +1306,6 @@ JS = """
     var lb = byId('lightbox'), lbImg = byId('lbImg'), lbCap = byId('lbCap'), lbClose = byId('lbClose');
     if (!lb) return;
     var prevOverflow, lastFocus;
-
     function open(src, alt){
       lbImg.src = src; lbImg.alt = alt || '';
       lbCap.textContent = alt || '';
@@ -993,14 +1370,14 @@ JS = """
     var boothBtns = [].slice.call(document.querySelectorAll('.booth[data-loc]'));
     boothBtns.forEach(function(btn){
       btn.addEventListener('click', function(){
-        var id = btn.dataset.loc, m = markers[id];
+        var m = markers[btn.dataset.loc];
         if (!m) return;
         boothBtns.forEach(function(x){ x.classList.remove('on'); });
         btn.classList.add('on');
-        mapEl.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+        mapEl.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
         map.setView(m.getLatLng(), 15, { animate: false });
         m.openPopup();
-        ga('booth_map_open', { location: id });
+        ga('booth_map_open', { location: btn.dataset.loc });
       });
     });
 
@@ -1015,21 +1392,26 @@ JS = """
 """
 
 
+# --------------------------------------------------------------------------
+# Build
+# --------------------------------------------------------------------------
 def build():
-    ks = json.dumps(js_data(), ensure_ascii=False, separators=(",", ":"))
-    st = json.dumps(SETS, ensure_ascii=False, separators=(",", ":"))
-    bo = json.dumps(booths_json(), ensure_ascii=False, separators=(",", ":"))
-    tableset = json.dumps({t[0]: t[2] for t in TABLES}, ensure_ascii=False)
-    budget = json.dumps({b[0]: {"min": b[2], "max": b[3]} for b in BUDGETS}, ensure_ascii=False)
-    recip = json.dumps({r[0]: r[2] for r in RECIPIENTS}, ensure_ascii=False)
+    check_layout_covers_data()
 
-    js = JS % {"keepsakes": ks, "sets": st, "booths": bo, "tableset": tableset, "budget": budget,
-               "recip": recip, "wacust": WA_CUSTOMER, "site": SITE_URL, "v": ASSET_V}
+    js = fill(
+        JS,
+        KEEPSAKES=json.dumps(js_data(), ensure_ascii=False, separators=(",", ":")),
+        SETS=json.dumps(SETS, ensure_ascii=False, separators=(",", ":")),
+        BOOTHS=json.dumps(booths_json(), ensure_ascii=False, separators=(",", ":")),
+        TABLESET=json.dumps({t[0]: t[2] for t in TABLES}, ensure_ascii=False),
+        BUDGET=json.dumps({b[0]: {"min": b[2], "max": b[3]} for b in BUDGETS}, ensure_ascii=False),
+        RECIP=json.dumps({r[0]: r[2] for r in RECIPIENTS}, ensure_ascii=False),
+        WACUST=WA_CUSTOMER, SITE=SITE_URL, AV=ASSET_V, BCF=BCF_URL,
+    )
 
-    # ---- concierge questions ----
     def optset(key, opts, n, total, title):
-        o = "".join('<button type="button" class="opt" data-val="%s">%s</button>' % (v, l)
-                    for v, l in opts)
+        o = "".join('<button type="button" class="opt" data-val="%s">%s</button>' % (val, lab)
+                    for val, lab in opts)
         back = '<button type="button" class="qback">Back</button>' if n > 1 else ""
         return ('<div class="q%s" data-key="%s"><span class="qn">Question %d of %d</span>'
                 '<h4>%s</h4><div class="opts">%s</div>%s</div>'
@@ -1052,22 +1434,26 @@ def build():
 
     online = sum(1 for k in KEEPSAKES if k["channel"] == "online")
 
-    html = TEMPLATE % {
-        "css": CSS, "js": js, "qs": qs,
-        "packs": "".join(keepsake_card(k) for k in KEEPSAKES),
-        "sets_table": sets_table(),
-        "ranges": ranges,
-        "booths": booths_html(),
-        "ga": GA_ID, "site": SITE_URL, "v": ASSET_V,
-        "n_keepsakes": len(KEEPSAKES), "n_online": online,
-        "n_booths": len(BOOTHS),
-        "wa_cust": wa(WA_CUSTOMER, "Hello! I have a question about your Mid-Autumn 2026 mooncakes."),
-        "free_del": FREE_DELIVERY,
-        "tel_cust": "+65 8468 0201",
-    }
+    html = fill(
+        TEMPLATE,
+        CSS=CSS, JS=js, QS=qs,
+        KEEPSAKES=keepsakes_html(),
+        SETS_TABLE=sets_table(),
+        RANGES=ranges,
+        BOOTHS=booths_html(),
+        GA=GA_ID, SITE=SITE_URL, AV=ASSET_V,
+        N_KEEPSAKES=len(KEEPSAKES), N_ONLINE=online, N_BOOTHS=len(BOOTHS),
+        WA_CUST=wa(WA_CUSTOMER, "Hello! I have a question about your Mid-Autumn 2026 mooncakes."),
+        FREE_DEL=FREE_DELIVERY, TEL_CUST="+65 8468 0201",
+        BCF=BCF_URL, ARTIST_IG=ARTIST_IG,
+    )
+
     out = os.path.join(HERE, "index.html")
     with open(out, "w", encoding="utf-8") as f:
         f.write(html)
+    left = re.findall(r"\{\{[A-Z_]+\}\}", html)
+    if left:
+        raise SystemExit("Unfilled placeholders remain: %s" % sorted(set(left)))
     print("wrote %s  (%.1f KB)" % (out, len(html) / 1024.0))
     print("keepsakes: %d  ·  online: %d  ·  booth: %d"
           % (len(KEEPSAKES), online, len(KEEPSAKES) - online))
@@ -1080,13 +1466,13 @@ TEMPLATE = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mdm Ling Bakery · Mid-Autumn 2026</title>
 <meta name="description" content="Mdm Ling Bakery Mid-Autumn 2026. Fourteen keepsake gift sets and three mooncake ranges, with a gift matcher to help you choose. 花月情长, A Bond in Lasting Bloom. Halal certified, made in Singapore.">
-<link rel="canonical" href="%(site)s">
+<link rel="canonical" href="{{SITE}}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mdm Ling Bakery">
 <meta property="og:title" content="Mdm Ling Bakery · Mid-Autumn 2026">
 <meta property="og:description" content="Fourteen keepsake gift sets built to outlive the season. 花月情长 · A Bond in Lasting Bloom.">
-<meta property="og:url" content="%(site)s">
-<meta property="og:image" content="%(site)sassets/og-midautumn-2026.jpg">
+<meta property="og:url" content="{{SITE}}">
+<meta property="og:image" content="{{SITE}}assets/og-midautumn-2026-v2.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -1094,36 +1480,41 @@ TEMPLATE = """<!DOCTYPE html>
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mdm Ling Bakery · Mid-Autumn 2026">
 <meta name="twitter:description" content="Fourteen keepsake gift sets built to outlive the season. 花月情长 · A Bond in Lasting Bloom.">
-<meta name="twitter:image" content="%(site)sassets/og-midautumn-2026.jpg">
-<meta name="theme-color" content="#A97F78">
-<link rel="icon" href="data:image/svg+xml,%%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%%3E%%3Crect width='64' height='64' fill='%%23A97F78'/%%3E%%3Ccircle cx='32' cy='31' r='15' fill='none' stroke='%%23C7A66A' stroke-width='3'/%%3E%%3C/svg%%3E">
+<meta name="twitter:image" content="{{SITE}}assets/og-midautumn-2026-v2.jpg">
+<meta name="theme-color" content="#4E3C37">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23A97F78'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23F0E2C4' font-family='sans-serif'%3E花%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Work+Sans:wght@500;600&display=swap" rel="stylesheet">
-<script async src="https://www.googletagmanager.com/gtag/js?id=%(ga)s"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Work+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/band-hero.webp?v={{AV}}" imagesrcset="assets/band-hero-p.webp?v={{AV}} 900w, assets/band-hero.webp?v={{AV}} 1500w" imagesizes="100vw">
+<script async src="https://www.googletagmanager.com/gtag/js?id={{GA}}"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', '%(ga)s');
+  gtag('config', '{{GA}}');
 </script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<style>%(css)s</style>
+<style>{{CSS}}</style>
 </head>
 <body>
 
-<!-- The Unwrapping. Hidden by default so a no-JS visitor never meets a locked door. -->
-<div class="intro" id="intro" role="button" tabindex="0" aria-label="Open the Mid-Autumn 2026 collection">
-  <div class="pane l"></div>
-  <div class="pane r"></div>
-  <div class="seam"></div>
+<!-- Into the garden. Hidden by default so a no-JS visitor never meets a locked door. -->
+<div class="intro" id="intro" role="button" tabindex="0" aria-label="Enter the Mid-Autumn 2026 collection">
+  <video class="gv" id="introVid" muted playsinline autoplay loop preload="none" aria-hidden="true"></video>
+  <div class="leaf l" aria-hidden="true"></div>
+  <div class="leaf r" aria-hidden="true"></div>
+  <div class="veil" aria-hidden="true"></div>
   <div class="seal">
-    <span class="s-eyebrow">Mdm Ling Bakery</span>
-    <div class="s-plate"><span>花</span><span>月</span><span>情</span><span>长</span></div>
-    <span class="s-sub">Mid-Autumn 2026</span>
+    <span class="s-brand">Mdm Ling Bakery</span>
+    <span class="s-han han">花月情长</span>
+    <span class="s-en">Mid-Autumn 2026</span>
+    <span class="s-rule"></span>
   </div>
-  <div class="prompt"><span id="introVerb">Tap</span> to open<i></i></div>
+  <div class="prompt"><span id="introVerb">Tap</span> to enter the garden<i></i></div>
 </div>
+
+<canvas id="petals" aria-hidden="true"></canvas>
 
 <nav class="jump">
   <div class="in">
@@ -1139,62 +1530,90 @@ TEMPLATE = """<!DOCTYPE html>
 </nav>
 
 <header class="hero">
-  <div class="wrap hgrid">
-    <div>
-      <span class="eyebrow">Mdm Ling Bakery · Mid-Autumn 2026</span>
-      <h1>Gifts that outlive the season</h1>
-      <p class="cn"><span class="han">花月情长</span> <span class="en">· A Bond in Lasting Bloom</span></p>
-      <p>Fourteen keepsakes and three mooncake ranges. Every piece is made to be kept, used and remembered long after the last mooncake is gone.</p>
-      <div class="acts">
-        <a class="btn light" href="#concierge">Find the right gift</a>
-        <a class="btn ghost" href="#builder" style="color:#FBF8F6">Build your gift</a>
+  <div class="hfig">
+    <picture>
+      <source media="(max-aspect-ratio: 1/1)" srcset="assets/band-hero-p.webp?v={{AV}}">
+      <img class="hbg" src="assets/band-hero.webp?v={{AV}}" alt="The Mdm Ling Bakery Mid-Autumn 2026 collection laid out on a white garden table under a fringed parasol, surrounded by roses" width="1500" height="1500" fetchpriority="high" decoding="async">
+    </picture>
+  </div>
+  <div class="hcap">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Mdm Ling Bakery &middot; Mid-Autumn 2026</span>
+        <h1>Gifts that outlive the season</h1>
+        <p class="hcn"><span class="han">花月情长</span> <span class="en">&middot; A Bond in Lasting Bloom</span></p>
+      </div>
+      <div>
+        <p class="lede">Fourteen keepsakes and three mooncake ranges, photographed in the garden they were made for. Every piece is built to be kept, used and remembered long after the last mooncake is gone.</p>
+        <div class="acts">
+          <a class="btn light" href="#concierge">Find the right gift</a>
+          <a class="btn ghost" href="#keepsakes" style="color:#FBF6F2">See the collection</a>
+        </div>
+        <p class="hcred">The collection, shot in a Singapore garden</p>
       </div>
     </div>
-    <figure class="hshot">
-      <img src="assets/painted-garden-tin.webp?v=%(v)d" alt="The Painted Garden keepsake tin, this year's artist edition, painted by Phuay Li Ying" width="700" height="875" fetchpriority="high" decoding="async">
-    </figure>
   </div>
 </header>
 
-<section class="ethos">
+<section class="manifesto">
   <div class="wrap">
-    <h2>What we stand for</h2>
-    <p>At Mdm Ling Bakery, gifting is the whole point. We design gift sets that are sustainable, heartfelt and genuinely useful, the kind kept and reused long after the mooncakes are gone. Every piece carries a little of Singapore's heritage with a modern spirit, made for the simple, universal act of bringing something to share.</p>
-    <div class="pillars">
-      <div><span class="n">01</span><span class="l">Sustainably designed keepsakes</span></div>
-      <div><span class="n">02</span><span class="l">Heartfelt, functional, meaningful</span></div>
-      <div><span class="n">03</span><span class="l">Singapore heritage, modern spirit</span></div>
-      <div><span class="n">04</span><span class="l">Made to be shared</span></div>
+    <div>
+      <p class="mhan han">花月情长</p>
+      <span class="msub">A Bond in Lasting Bloom</span>
+    </div>
+    <div>
+      <p>In Singapore you don't visit someone empty-handed. You bring something to share. That single gesture is the whole reason this collection exists.</p>
+      <p>So we design the <strong>keepsake first</strong> and the season second. A tin that holds trinkets for years. A bag someone actually wears. A turntable that comes back out at every reunion dinner. <strong>Sustainably made, genuinely useful, and Singaporean in spirit</strong>, with a four character name apiece the way heirlooms in a Chinese household always have.</p>
+      <p>The mooncakes are yours to choose. <strong>All our baked sets are Halal certified and vegetarian.</strong></p>
     </div>
   </div>
 </section>
 
 <div class="wrap">
 
-  <!-- ================= GIFT CONCIERGE ================= -->
+  <!-- ================= GIFT MATCHER ================= -->
   <section class="part" id="concierge">
     <div class="tool">
       <span class="tool-kicker">The gift matcher</span>
       <h3>Tell us who it's for</h3>
       <p class="sub">Fourteen keepsakes, seven mooncake sets. Four quick questions and we'll narrow it to one, with the mooncake set that suits their table.</p>
       <div class="qsteps"><i class="on"></i><i></i><i></i><i></i></div>
-      <div id="cQuiz">%(qs)s</div>
+      <div id="cQuiz">{{QS}}</div>
       <div class="result" id="cResult"></div>
     </div>
   </section>
+</div>
 
+<!-- ================= BAND: the garden table ================= -->
+<section class="band">
+  <picture>
+    <source media="(max-aspect-ratio: 4/5)" srcset="assets/band-tea-p.webp?v={{AV}}">
+    <img src="assets/band-tea.webp?v={{AV}}" alt="Three friends at a white garden table with Mdm Ling Bakery mooncake tins, in front of a flowering rose hedge" width="1700" height="1133" loading="lazy" decoding="async">
+  </picture>
+  <div class="bt">
+    <span class="eyebrow">Part one</span>
+    <p>Everything here was made to still be in the house next year.</p>
+  </div>
+</section>
+
+<div class="wrap">
   <!-- ================= KEEPSAKES ================= -->
   <section class="part" id="keepsakes">
     <div class="part-head">
-      <span class="part-num">Part One</span>
-      <h2>The Keepsakes</h2>
-      <p class="lede">The heart of this year's collection. Every keepsake belongs to one family, <strong>花月情长 · A Bond in Lasting Bloom</strong>, and carries its own four character name the way heirlooms in a Chinese household always have. Fill any of them with the mooncake set of your choice.</p>
-      <p class="lede" style="margin-top:12px"><strong>%(n_online)d of the %(n_keepsakes)d</strong> can be ordered online right now. The rest are at our %(n_booths)d booths across the island, and we'll help you find one.</p>
+      <span class="mark">01</span>
+      <div class="inner">
+        <span class="eyebrow">The keepsakes</span>
+        <h2>Fourteen things worth keeping</h2>
+        <p class="lede">Every keepsake belongs to one family, <strong>花月情长 &middot; A Bond in Lasting Bloom</strong>, and carries its own four character name. Fill any of them with the mooncake set of your choice.</p>
+        <p class="lede" style="margin-top:12px"><strong>{{N_ONLINE}} of the {{N_KEEPSAKES}}</strong> can be ordered online right now. The rest are at our {{N_BOOTHS}} booths across the island, and we'll help you find one.</p>
+      </div>
     </div>
-    <img src="assets/group-packaging.webp?v=%(v)d" alt="The full Mdm Ling Bakery Mid-Autumn 2026 gift set collection, tins, leather bags and gift boxes" width="1120" height="745" loading="lazy" decoding="async" style="border:1px solid var(--hair); margin-bottom:2px;">
-    <div class="packs">%(packs)s</div>
   </section>
+</div>
 
+<div class="wrap">{{KEEPSAKES}}</div>
+
+<div class="wrap">
   <!-- ================= BUILDER ================= -->
   <section class="part" id="builder">
     <div class="tool">
@@ -1209,22 +1628,41 @@ TEMPLATE = """<!DOCTYPE html>
   <!-- ================= MOONCAKE SETS ================= -->
   <section class="part" id="sets">
     <div class="part-head">
-      <span class="part-num">Part Two</span>
-      <h2>The Mooncake Sets</h2>
-      <p class="lede">Choose your keepsake, then choose what fills it. <strong>All baked sets, A to F, are Halal certified and vegetarian.</strong> The snowskin set G is <strong>not Halal certified</strong> and comes only in the Orchid Reverie tin. Our duo tins carry two traditional mooncakes rather than a lettered set.</p>
+      <span class="mark">02</span>
+      <div class="inner">
+        <span class="eyebrow">The mooncake sets</span>
+        <h2>Then choose what fills it</h2>
+        <p class="lede"><strong>All baked sets, A to F, are Halal certified and vegetarian.</strong> The snowskin set G is <strong>not Halal certified</strong> and comes only in the Orchid Reverie tin. Our duo tins carry two traditional mooncakes rather than a lettered set.</p>
+      </div>
     </div>
-    %(sets_table)s
+    {{SETS_TABLE}}
   </section>
+</div>
 
+<!-- ================= BAND: at the table ================= -->
+<section class="band short">
+  <picture>
+    <source media="(max-aspect-ratio: 4/5)" srcset="assets/band-mooncake-p.webp?v={{AV}}">
+    <img src="assets/band-mooncake.webp?v={{AV}}" alt="Two friends sharing mooncakes at a garden table beneath a fringed parasol" width="1800" height="1200" loading="lazy" decoding="async">
+  </picture>
+  <div class="bt">
+    <span class="eyebrow">Part three</span>
+    <p>Three ranges, and a flavour for every generation at the table.</p>
+  </div>
+</section>
+
+<div class="wrap">
   <!-- ================= MOONCAKES ================= -->
   <section class="part" id="mooncakes">
     <div class="part-head">
-      <span class="part-num">Part Three</span>
-      <h2>The Mooncakes</h2>
-      <p class="lede">Three ranges this year. Our premium traditional baked classics, our signature assorted range with a low sugar skin for each flavour, and our premium truffle snowskin range served chilled.</p>
+      <span class="mark">03</span>
+      <div class="inner">
+        <span class="eyebrow">The mooncakes</span>
+        <h2>What goes inside</h2>
+        <p class="lede">Our premium traditional baked classics, our signature assorted range with a low sugar skin for each flavour, and our premium truffle snowskin range served chilled.</p>
+      </div>
     </div>
-    <img src="assets/group-mooncakes.webp?v=%(v)d" alt="The Mdm Ling Bakery Mid-Autumn 2026 mooncake range, traditional and Momoyama Cantonese" width="1120" height="1680" loading="lazy" decoding="async" style="border:1px solid var(--hair); max-height:520px; object-fit:cover;">
-    %(ranges)s
+    {{RANGES}}
 
     <div class="panel" id="storage">
       <h4>Storage and freshness</h4>
@@ -1232,63 +1670,69 @@ TEMPLATE = """<!DOCTYPE html>
       <p>Snowskin mooncakes are <strong>best served chilled</strong>. Keep them away from direct heat and sunlight, and never leave them in the car boot. Within <strong>2 hours of purchase</strong>, place them in the freezer at <strong>&minus;12&deg;C or below</strong>, where they'll keep for <strong>up to 8 weeks</strong>. Once thawed, <strong>do not refreeze</strong>.</p>
     </div>
   </section>
+</div>
 
-  <!-- ================= THE PAINTED GARDEN ================= -->
-  <section class="part" id="garden">
-    <div class="part-head">
-      <span class="part-num">The artist</span>
-      <h2>A garden painted for Mdm Ling</h2>
-    </div>
-    <div class="feature">
-      <div class="fimg"><img src="assets/painted-garden-box.webp?v=%(v)d" alt="The Painted Garden Box, watercolour florals by Singaporean artist Phuay Li Ying" width="700" height="875" loading="lazy" decoding="async"></div>
-      <div class="ftxt">
-        <span class="tool-kicker">百花迎月 · The Painted Garden</span>
-        <h3>The flowers she painted</h3>
-        <p>Singaporean artist <strong>Phuay Li Ying</strong> painted this year's garden as a quiet portrait of Mdm Ling herself. The central bloom is her. The smaller flowers are the people she gathers around her, <strong>wildflowers of many colours and origins rising together to greet the festival moon</strong>.</p>
-        <p>Her artwork runs across three pieces in the collection: the <strong>heritage tin</strong>, the <strong>duo tin</strong> and the <strong>silk paper gift box</strong>, each washed in gentle pinks, lilacs and gold with a quiet glow of foil.</p>
-        <p>And the giving reaches further than the table. For every <strong>Painted Garden Box</strong> bought, <strong>we donate $1 to the Breast Cancer Foundation</strong>, supporting awareness, screening and survivor care here in Singapore. Each garden you give helps look after someone else's.</p>
-        <div class="res-acts">
-          <a class="btn" href="#k-the-painted-garden-box" >See The Painted Garden Box</a>
-          <a class="btn ghost" href="https://www.instagram.com/theworldofying/" target="_blank" rel="noopener">Ying's work</a>
-        </div>
+<!-- ================= THE PAINTED GARDEN / YING / BCF ================= -->
+<section class="artist" id="garden">
+  <picture>
+    <source media="(max-aspect-ratio: 4/5)" srcset="assets/band-open-box-p.webp?v={{AV}}">
+    <img src="assets/band-open-box.webp?v={{AV}}" alt="The Painted Garden gift box open on a rattan garden table, with mooncakes and tea" width="1800" height="1200" loading="lazy" decoding="async">
+  </picture>
+  <div class="ainner wrap">
+    <div class="acol">
+      <span class="eyebrow">百花迎月 &middot; The Painted Garden</span>
+      <h3>A garden painted for Mdm Ling</h3>
+      <p>Singaporean artist <strong>Phuay Li Ying</strong> painted this year's garden as a quiet portrait of Mdm Ling herself. The central bloom is her. The smaller flowers are the people she gathers around her, <strong>wildflowers of many colours and origins rising together to greet the festival moon</strong>.</p>
+      <p>Her artwork runs across three pieces in the collection: the <strong>heritage tin</strong>, the <strong>duo tin</strong> and the <strong>silk paper gift box</strong>, each washed in gentle pinks, lilacs and gold with a quiet glow of foil.</p>
+      <div class="bcfnote">
+        <span class="amt">$1</span>
+        <p>from every <strong>Painted Garden Box</strong> goes to the <strong>Breast Cancer Foundation</strong>, supporting awareness, screening and survivor care here in Singapore. Each garden you give helps look after someone else's.</p>
+      </div>
+      <div class="acts">
+        <a class="btn light" href="#k-the-painted-garden-box">See The Painted Garden Box</a>
+        <a class="btn ghost" href="{{BCF}}" target="_blank" rel="noopener" data-bcf="feature" style="color:#FBF6F2">Breast Cancer Foundation</a>
+        <a class="tlink" href="{{ARTIST_IG}}" target="_blank" rel="noopener" style="color:#EFDCB4;border-color:#C7A66A">Ying's work</a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
+<div class="wrap">
   <!-- ================= WHERE TO BUY ================= -->
   <section class="part" id="where">
     <div class="part-head">
-      <span class="part-num">Where to buy</span>
-      <h2>Find us across Singapore</h2>
-      <p class="lede">Every keepsake in this collection is at our booths. <strong>%(n_online)d of the %(n_keepsakes)d</strong> can also be ordered online, with <strong>free delivery above $%(free_del)d</strong>. If you're after one of the booth only pieces, message us and we'll check stock for you.</p>
-      <div class="res-acts" style="margin-bottom:26px">
-        <a class="btn" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" data-order="store" data-name="Online store">Shop online</a>
-        <a class="btn ghost" href="%(wa_cust)s" target="_blank" rel="noopener" data-booth="general" data-name="General enquiry">WhatsApp us · %(tel_cust)s</a>
-        <a class="btn ghost" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="1">Download the brochure</a>
+      <span class="mark">04</span>
+      <div class="inner">
+        <span class="eyebrow">Where to buy</span>
+        <h2>Find us across Singapore</h2>
+        <p class="lede">Every keepsake in this collection is at our booths. <strong>{{N_ONLINE}} of the {{N_KEEPSAKES}}</strong> can also be ordered online, with <strong>free delivery above ${{FREE_DEL}}</strong>. If you're after one of the booth only pieces, message us and we'll check stock for you.</p>
+        <div class="res-acts" style="margin-bottom:8px">
+          <a class="btn" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" data-order="store" data-name="Online store">Shop online</a>
+          <a class="btn ghost" href="{{WA_CUST}}" target="_blank" rel="noopener" data-booth="general" data-name="General enquiry">WhatsApp us &middot; {{TEL_CUST}}</a>
+          <a class="tlink" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="1">Download the brochure</a>
+        </div>
       </div>
     </div>
     <div class="booth-map" id="boothMap" role="img" aria-label="Map of Mdm Ling Bakery Mid-Autumn booths across Singapore"></div>
     <div class="map-tools">
       <button type="button" class="btn ghost sm" id="boothMapReset">View full map</button>
     </div>
-    %(booths)s
+    {{BOOTHS}}
   </section>
-
 </div>
 
 <footer>
   <div class="wrap">
     <span class="fb">Mdm Ling Bakery</span>
-    <span class="fcn">花月情长 · A Bond in Lasting Bloom</span>
-    <div class="res-acts" style="margin:0 0 24px">
+    <span class="fcn han">花月情长 &middot; A Bond in Lasting Bloom</span>
+    <div class="fnav">
       <a class="btn ghost sm" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" style="color:#C9BDB7">mdmlingbakery.com</a>
-      <a class="btn ghost sm" href="%(wa_cust)s" target="_blank" rel="noopener" style="color:#C9BDB7">%(tel_cust)s</a>
+      <a class="btn ghost sm" href="{{WA_CUST}}" target="_blank" rel="noopener" style="color:#C9BDB7">{{TEL_CUST}}</a>
+      <a class="btn ghost sm" href="{{BCF}}" target="_blank" rel="noopener" data-bcf="footer" style="color:#C9BDB7">Breast Cancer Foundation</a>
     </div>
-    <p class="fl">Ingredients and allergen advice on this page follow the printed product labels. If you're gifting to someone with a food allergy, do check the label on the box as well. Prices shown are retail prices in Singapore dollars. Halal certification covers our baked mooncakes; the truffle snowskin range isn't Halal certified.</p>
+    <p class="fl">Ingredients and allergen advice on this page follow the printed product labels. If you're gifting to someone with a food allergy, do check the label on the box as well. Halal certification covers our baked mooncakes; the truffle snowskin range isn't Halal certified. Campaign photography shot in Singapore, 2026. Artwork for The Painted Garden by Phuay Li Ying.</p>
   </div>
 </footer>
-
-<button id="toTop" aria-label="Back to top">&uarr;</button>
 
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged mooncake photo">
   <button type="button" class="lb-close" id="lbClose" aria-label="Close">&times;</button>
@@ -1296,7 +1740,7 @@ TEMPLATE = """<!DOCTYPE html>
   <p class="lb-cap" id="lbCap"></p>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>%(js)s</script>
+<script>{{JS}}</script>
 </body>
 </html>
 """

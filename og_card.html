@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,500;14..32,600&display=swap" rel="stylesheet">
 <style>
+  /* 1200x630 share card. Mirrors the site's split opening: the garden
+     photograph runs undimmed on the right, the title sits on cocoa at the
+     left. No decorative geometry - the old version had a ring motif, which
+     is exactly the generic look the rebuild removed. */
   *{margin:0;padding:0;box-sizing:border-box;}
   body{width:1200px;height:630px;overflow:hidden;font-family:'Inter',sans-serif;}
-  .card{width:1200px;height:630px;background:#A97F78;display:grid;
-    grid-template-columns:1fr 470px;position:relative;overflow:hidden;}
-  .card::after{content:"";position:absolute;left:-70px;bottom:-120px;width:300px;height:300px;
-    border-radius:50%;border:1px solid rgba(251,248,246,.22);}
-  .txt{padding:64px 40px 60px 68px;display:flex;flex-direction:column;justify-content:center;
+  .card{width:1200px;height:630px;background:#4E3C37;display:grid;
+    grid-template-columns:1fr 560px;position:relative;overflow:hidden;}
+  .txt{padding:0 46px 0 66px;display:flex;flex-direction:column;justify-content:center;
     position:relative;z-index:2;}
-  .eyebrow{font-size:15px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:#EBD9AE;}
-  h1{font-size:64px;font-weight:600;letter-spacing:-.03em;line-height:1.02;color:#FBF8F6;margin:22px 0 0;}
-  .cn{margin:24px 0 0;color:#F0E2C4;font-size:27px;font-weight:500;}
-  .cn .han{letter-spacing:.14em;}
-  .cn .en{letter-spacing:.01em;font-size:.82em;}
-  .rule{width:74px;height:2px;background:#C7A66A;margin:30px 0 0;}
-  .foot{margin:26px 0 0;color:#F3E6E2;font-size:20px;font-weight:500;}
+  .eyebrow{font-size:14px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:#C7A66A;}
+  h1{font-size:60px;font-weight:600;letter-spacing:-.032em;line-height:.99;color:#FBF6F2;margin:22px 0 0;}
+  .cn{margin:24px 0 0;color:#F0E2C4;font-size:26px;font-weight:500;}
+  .cn .han{letter-spacing:.16em;}
+  .cn .en{letter-spacing:.01em;font-size:.8em;color:#E4D2C4;}
+  .rule{width:64px;height:1px;background:#C7A66A;margin:30px 0 0;}
+  .foot{margin:24px 0 0;color:#CBBDB7;font-size:18px;font-weight:500;letter-spacing:.01em;}
   .shot{position:relative;overflow:hidden;background:#D8CEC3;}
-  .shot img{width:100%;height:100%;object-fit:cover;}
+  .shot img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;}
+  /* soften the seam into the cocoa panel rather than boxing the photo */
   .shot::before{content:"";position:absolute;inset:0;z-index:2;
-    box-shadow:inset 42px 0 46px -30px rgba(169,127,120,.85);}
+    background:linear-gradient(to right, rgba(78,60,55,.96) 0%, rgba(78,60,55,.45) 12%, rgba(78,60,55,0) 34%);}
 </style></head>
 <body>
   <div class="card">
@@ -29,8 +32,8 @@
       <h1>Gifts that outlive the season</h1>
       <p class="cn"><span class="han">花月情长</span> <span class="en">· A Bond in Lasting Bloom</span></p>
       <div class="rule"></div>
-      <p class="foot">Mid-Autumn 2026 · 14 keepsakes</p>
+      <p class="foot">Mid-Autumn 2026 · 14 keepsakes, 3 mooncake ranges</p>
     </div>
-    <div class="shot"><img src="assets/painted-garden-tin.webp"></div>
+    <div class="shot"><img src="assets/band-hero.webp"></div>
   </div>
 </body></html>
