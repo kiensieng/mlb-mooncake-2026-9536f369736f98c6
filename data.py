@@ -13,9 +13,6 @@ mdmlingbakery.com, checked 3 Aug 2026.
 """
 
 WA_CUSTOMER = "6584680201"      # general customer service
-WA_CORPORATE = "6584286006"     # corporate gifting & bulk orders
-EMAIL_CORPORATE = "corporate@mdmlingbakery.com"
-CORPORATE_MIN = 1500
 FREE_DELIVERY = 100
 
 SITE_URL = "https://kiensieng.github.io/mlb-mooncake-2026-9536f369736f98c6/"

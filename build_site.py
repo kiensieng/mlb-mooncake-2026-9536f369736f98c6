@@ -14,8 +14,7 @@ import json
 import os
 import re
 from data import (KEEPSAKES, SETS, BOOTHS, RECIPIENTS, PRIORITIES, TABLES,
-                  BUDGETS, WA_CUSTOMER, WA_CORPORATE, EMAIL_CORPORATE,
-                  CORPORATE_MIN, FREE_DELIVERY, SITE_URL, GA_ID)
+                  BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ASSET_V = 3  # bump when an asset is replaced under the same filename
@@ -335,18 +334,6 @@ details.more[open] summary::after{content:" \\2212";}
 .feature p:last-of-type{margin-bottom:0;}
 .feature strong{color:var(--plum); font-weight:600;}
 
-/* ---------- corporate ---------- */
-.corp{background:var(--cocoa); color:#EDE6E2; padding:44px 40px; border-radius:3px;}
-.corp h3{color:#fff; font-size:clamp(24px,3.2vw,32px); font-weight:600; letter-spacing:-.022em; margin:10px 0 14px;}
-.corp p{color:#D7CCC6; max-width:56ch; margin:0 0 20px; font-size:16px;}
-.corp .facts{display:grid; gap:0; border-top:1px solid rgba(199,166,106,.4); margin:26px 0 28px;}
-@media(min-width:620px){ .corp .facts{grid-template-columns:repeat(3,1fr);} }
-.corp .facts div{padding:16px 20px 16px 0; border-right:1px solid rgba(199,166,106,.22);}
-.corp .facts div:last-child{border-right:0;}
-.corp .facts .n{font-family:var(--fn); font-size:26px; font-weight:600; color:var(--gold); display:block;}
-.corp .facts .l{font-size:13px; color:#C9BDB7;}
-.corp .acts{display:flex; flex-wrap:wrap; gap:11px;}
-
 /* ---------- booths ---------- */
 .booths{display:grid; gap:2px; background:var(--hair); border:1px solid var(--hair);}
 @media(min-width:560px){ .booths{grid-template-columns:1fr 1fr;} }
@@ -610,7 +597,7 @@ JS = """
   /* ---------------- the unwrapping ----------------
      Shows once per session. Any tap, scroll or key opens it. Skipped entirely
      for reduced-motion, for a repeat visit, and for anyone arriving on a deep
-     link (an EDM pointing at #corporate should land on #corporate). */
+     link (an EDM pointing at #where should land on #where). */
   (function(){
     var intro = byId('intro');
     if (!intro) return;
@@ -680,7 +667,6 @@ JS = """
     if(!a) return;
     if(a.dataset.order) ga('order_click', {item_id:a.dataset.order, item_name:a.dataset.name});
     if(a.dataset.booth) ga('booth_click', {item_id:a.dataset.booth, item_name:a.dataset.name});
-    if(a.dataset.corp)  ga('corporate_click', {method:a.dataset.corp});
     if(a.dataset.brochure) ga('brochure_download', {});
   });
 
@@ -918,8 +904,6 @@ def build():
                    % (r["id"], r["n"], r["title"], r["tag"], intro, "".join(r["items"])))
 
     online = sum(1 for k in KEEPSAKES if k["channel"] == "online")
-    corp_msg = ("Hello! I'd like to enquire about Mid-Autumn 2026 corporate gifting "
-                "and bulk orders.")
 
     html = TEMPLATE % {
         "css": CSS, "js": js, "qs": qs,
@@ -930,11 +914,9 @@ def build():
         "ga": GA_ID, "site": SITE_URL, "v": ASSET_V,
         "n_keepsakes": len(KEEPSAKES), "n_online": online,
         "n_booths": len(BOOTHS),
-        "wa_corp": wa(WA_CORPORATE, corp_msg),
         "wa_cust": wa(WA_CUSTOMER, "Hello! I have a question about your Mid-Autumn 2026 mooncakes."),
-        "email_corp": EMAIL_CORPORATE, "corp_min": "{:,}".format(CORPORATE_MIN),
         "free_del": FREE_DELIVERY,
-        "tel_corp": "+65 8428 6006", "tel_cust": "+65 8468 0201",
+        "tel_cust": "+65 8468 0201",
     }
     out = os.path.join(HERE, "index.html")
     with open(out, "w", encoding="utf-8") as f:
@@ -1003,7 +985,6 @@ TEMPLATE = """<!DOCTYPE html>
     <a href="#sets">Mooncake sets</a>
     <a href="#mooncakes">Mooncakes</a>
     <a href="#garden">The Painted Garden</a>
-    <a href="#corporate">Corporate</a>
     <a href="#where">Where to buy</a>
   </div>
   <div class="progress" id="navProgress"></div>
@@ -1126,25 +1107,6 @@ TEMPLATE = """<!DOCTYPE html>
     </div>
   </section>
 
-  <!-- ================= CORPORATE ================= -->
-  <section class="part" id="corporate">
-    <div class="corp">
-      <span class="tool-kicker">Corporate gifting</span>
-      <h3>When the list runs to a hundred names</h3>
-      <p>Client gifts, staff appreciation, festive hampers for the whole office. We handle bulk Mid-Autumn orders across the full collection, and we'll help you land on something that looks considered at any volume.</p>
-      <div class="facts">
-        <div><span class="n">$%(corp_min)s</span><span class="l">Minimum spend for corporate and bulk orders</span></div>
-        <div><span class="n">%(n_keepsakes)d</span><span class="l">Keepsakes to choose from, tins to leather</span></div>
-        <div><span class="n">$%(free_del)d</span><span class="l">Free delivery on standard orders above this</span></div>
-      </div>
-      <div class="acts">
-        <a class="btn gold" href="%(wa_corp)s" target="_blank" rel="noopener" data-corp="whatsapp">WhatsApp the corporate team</a>
-        <a class="btn ghost" href="mailto:%(email_corp)s?subject=Mid-Autumn%%202026%%20corporate%%20gifting" data-corp="email" style="color:#EDE6E2">%(email_corp)s</a>
-        <a class="btn ghost" href="tel:+6584286006" data-corp="phone" style="color:#EDE6E2">%(tel_corp)s</a>
-      </div>
-    </div>
-  </section>
-
   <!-- ================= WHERE TO BUY ================= -->
   <section class="part" id="where">
     <div class="part-head">
@@ -1169,7 +1131,6 @@ TEMPLATE = """<!DOCTYPE html>
     <div class="res-acts" style="margin:0 0 24px">
       <a class="btn ghost sm" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" style="color:#C9BDB7">mdmlingbakery.com</a>
       <a class="btn ghost sm" href="%(wa_cust)s" target="_blank" rel="noopener" style="color:#C9BDB7">%(tel_cust)s</a>
-      <a class="btn ghost sm" href="%(wa_corp)s" target="_blank" rel="noopener" style="color:#C9BDB7" data-corp="footer">Corporate %(tel_corp)s</a>
     </div>
     <p class="fl">Ingredients and allergen advice on this page follow the printed product labels. If you're gifting to someone with a food allergy, do check the label on the box as well. Prices shown are retail prices in Singapore dollars. Halal certification covers our baked mooncakes; the truffle snowskin range isn't Halal certified.</p>
   </div>
