@@ -294,8 +294,28 @@ details.more[open] summary::after{content:" \\2212";}
 .flavours{display:grid; gap:2px; background:var(--hair); border:1px solid var(--hair); margin-top:24px;}
 @media(min-width:700px){ .flavours{grid-template-columns:1fr 1fr;} }
 .flav{background:var(--paper); padding:22px 24px; display:flex; gap:18px;}
-.flav .fp{flex:0 0 96px;}
-.flav .fp img{width:96px; height:126px; object-fit:cover; background:var(--mushroom);}
+.flav .fp{flex:0 0 96px; padding:0; border:0; background:none; cursor:pointer; display:block;
+  position:relative;}
+.flav .fp img{width:96px; height:126px; object-fit:cover; background:var(--mushroom); display:block;}
+.flav .fp::after{content:""; position:absolute; inset:0; background:rgba(20,16,15,.28);
+  opacity:0; transition:opacity .14s;}
+.flav .fp::before{content:""; position:absolute; top:50%; left:50%; width:22px; height:22px;
+  transform:translate(-50%,-50%); z-index:1; opacity:0; transition:opacity .14s;
+  background-repeat:no-repeat; background-position:center;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='10' cy='10' r='7'/%3E%3Cline x1='20.5' y1='20.5' x2='15.2' y2='15.2'/%3E%3C/svg%3E");}
+.flav .fp:hover::after, .flav .fp:focus-visible::after,
+.flav .fp:hover::before, .flav .fp:focus-visible::before{opacity:1;}
+
+/* ---------- lightbox ---------- */
+.lightbox{position:fixed; inset:0; background:rgba(20,16,15,.9); display:none;
+  align-items:center; justify-content:center; padding:36px; z-index:80;}
+.lightbox.on{display:flex;}
+.lightbox img{max-width:min(520px,90vw); max-height:82vh; width:auto; height:auto;
+  object-fit:contain; box-shadow:0 24px 60px rgba(0,0,0,.45); background:var(--mushroom);}
+.lightbox .lb-close{position:absolute; top:16px; right:18px; background:none; border:0;
+  color:#fff; font-size:30px; line-height:1; cursor:pointer; padding:8px; font-family:var(--f);}
+.lightbox .lb-cap{position:absolute; bottom:26px; left:0; right:0; text-align:center;
+  color:#EDE6E2; font-size:13px; padding:0 20px;}
 .flav h4{font-size:19px; font-weight:600; letter-spacing:-.015em; margin:0 0 8px; line-height:1.2;}
 .flav .badges{display:flex; gap:6px; margin:0 0 10px; flex-wrap:wrap;}
 .flav .story{font-size:14.5px; color:#5E4F49; margin:0;}
@@ -382,8 +402,11 @@ footer a{color:var(--gold);}
 def flav(img, alt, name, badges, story, ing, algs, trace):
     b = "".join('<span class="tag %s">%s</span>' % (c, t) for c, t in badges)
     a = "".join('<span class="alg">%s</span>' % x for x in algs)
+    src = "assets/%s?v=%d" % (img, ASSET_V)
     return """<div class="flav">
-      <div class="fp"><img src="assets/%s?v=%d" alt="%s" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="%s" data-lightbox-alt="%s" aria-label="View a larger photo of %s">
+        <img src="%s" alt="%s" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>%s</h4>
         <div class="badges">%s</div>
@@ -398,7 +421,7 @@ def flav(img, alt, name, badges, story, ing, algs, trace):
           </div>
         </details>
       </div>
-    </div>""" % (img, ASSET_V, alt, name, b, story, ing, a, trace)
+    </div>""" % (src, alt, name, src, alt, name, b, story, ing, a, trace)
 
 
 HALAL = ("sage", "Halal certified")
@@ -900,6 +923,38 @@ JS = """
     bout.classList.add('on');
   }
 
+  /* ---------------- photo lightbox ---------------- */
+  (function(){
+    var lb = byId('lightbox'), lbImg = byId('lbImg'), lbCap = byId('lbCap'), lbClose = byId('lbClose');
+    if (!lb) return;
+    var prevOverflow, lastFocus;
+
+    function open(src, alt){
+      lbImg.src = src; lbImg.alt = alt || '';
+      lbCap.textContent = alt || '';
+      lastFocus = document.activeElement;
+      lb.classList.add('on');
+      prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      lbClose.focus();
+    }
+    function close(){
+      lb.classList.remove('on');
+      document.body.style.overflow = prevOverflow;
+      lbImg.src = '';
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    document.addEventListener('click', function(e){
+      var t = e.target.closest && e.target.closest('[data-lightbox]');
+      if (t){ open(t.dataset.lightbox, t.dataset.lightboxAlt); return; }
+      if (e.target === lb) close();
+    });
+    lbClose.addEventListener('click', close);
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && lb.classList.contains('on')) close();
+    });
+  })();
+
   /* ---------------- booth map ---------------- */
   (function(){
     var mapEl = byId('boothMap');
@@ -1092,7 +1147,7 @@ TEMPLATE = """<!DOCTYPE html>
       <p>Fourteen keepsakes and three mooncake ranges. Every piece is made to be kept, used and remembered long after the last mooncake is gone.</p>
       <div class="acts">
         <a class="btn light" href="#concierge">Find the right gift</a>
-        <a class="btn ghost" href="#keepsakes" style="color:#FBF8F6">See the keepsakes</a>
+        <a class="btn ghost" href="#builder" style="color:#FBF8F6">Build your gift</a>
       </div>
     </div>
     <figure class="hshot">
@@ -1234,6 +1289,12 @@ TEMPLATE = """<!DOCTYPE html>
 </footer>
 
 <button id="toTop" aria-label="Back to top">&uarr;</button>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged mooncake photo">
+  <button type="button" class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <img id="lbImg" src="" alt="">
+  <p class="lb-cap" id="lbCap"></p>
+</div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>%(js)s</script>
 </body>

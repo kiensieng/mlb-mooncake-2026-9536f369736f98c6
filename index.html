@@ -304,8 +304,28 @@ details.more[open] summary::after{content:" \2212";}
 .flavours{display:grid; gap:2px; background:var(--hair); border:1px solid var(--hair); margin-top:24px;}
 @media(min-width:700px){ .flavours{grid-template-columns:1fr 1fr;} }
 .flav{background:var(--paper); padding:22px 24px; display:flex; gap:18px;}
-.flav .fp{flex:0 0 96px;}
-.flav .fp img{width:96px; height:126px; object-fit:cover; background:var(--mushroom);}
+.flav .fp{flex:0 0 96px; padding:0; border:0; background:none; cursor:pointer; display:block;
+  position:relative;}
+.flav .fp img{width:96px; height:126px; object-fit:cover; background:var(--mushroom); display:block;}
+.flav .fp::after{content:""; position:absolute; inset:0; background:rgba(20,16,15,.28);
+  opacity:0; transition:opacity .14s;}
+.flav .fp::before{content:""; position:absolute; top:50%; left:50%; width:22px; height:22px;
+  transform:translate(-50%,-50%); z-index:1; opacity:0; transition:opacity .14s;
+  background-repeat:no-repeat; background-position:center;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='10' cy='10' r='7'/%3E%3Cline x1='20.5' y1='20.5' x2='15.2' y2='15.2'/%3E%3C/svg%3E");}
+.flav .fp:hover::after, .flav .fp:focus-visible::after,
+.flav .fp:hover::before, .flav .fp:focus-visible::before{opacity:1;}
+
+/* ---------- lightbox ---------- */
+.lightbox{position:fixed; inset:0; background:rgba(20,16,15,.9); display:none;
+  align-items:center; justify-content:center; padding:36px; z-index:80;}
+.lightbox.on{display:flex;}
+.lightbox img{max-width:min(520px,90vw); max-height:82vh; width:auto; height:auto;
+  object-fit:contain; box-shadow:0 24px 60px rgba(0,0,0,.45); background:var(--mushroom);}
+.lightbox .lb-close{position:absolute; top:16px; right:18px; background:none; border:0;
+  color:#fff; font-size:30px; line-height:1; cursor:pointer; padding:8px; font-family:var(--f);}
+.lightbox .lb-cap{position:absolute; bottom:26px; left:0; right:0; text-align:center;
+  color:#EDE6E2; font-size:13px; padding:0 20px;}
 .flav h4{font-size:19px; font-weight:600; letter-spacing:-.015em; margin:0 0 8px; line-height:1.2;}
 .flav .badges{display:flex; gap:6px; margin:0 0 10px; flex-wrap:wrap;}
 .flav .story{font-size:14.5px; color:#5E4F49; margin:0;}
@@ -422,7 +442,7 @@ footer a{color:var(--gold);}
       <p>Fourteen keepsakes and three mooncake ranges. Every piece is made to be kept, used and remembered long after the last mooncake is gone.</p>
       <div class="acts">
         <a class="btn light" href="#concierge">Find the right gift</a>
-        <a class="btn ghost" href="#keepsakes" style="color:#FBF8F6">See the keepsakes</a>
+        <a class="btn ghost" href="#builder" style="color:#FBF8F6">Build your gift</a>
       </div>
     </div>
     <figure class="hshot">
@@ -682,7 +702,9 @@ footer a{color:var(--gold);}
     </div>
     <img src="assets/group-mooncakes.webp?v=3" alt="The Mdm Ling Bakery Mid-Autumn 2026 mooncake range, traditional and Momoyama Cantonese" width="1120" height="1680" loading="lazy" decoding="async" style="border:1px solid var(--hair); max-height:520px; object-fit:cover;">
     <section class="range" id="traditional"><div class="range-head"><span class="range-num">1</span><h3>Premium Traditional Baked</h3><span class="tag2">The classics, baked golden</span></div><div class="flavours"><div class="flav">
-      <div class="fp"><img src="assets/trad-yolk.webp?v=3" alt="Traditional white lotus mooncake with salted egg yolk" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="assets/trad-yolk.webp?v=3" data-lightbox-alt="Traditional white lotus mooncake with salted egg yolk" aria-label="View a larger photo of Lotus with Melon Seeds and Yolk">
+        <img src="assets/trad-yolk.webp?v=3" alt="Traditional white lotus mooncake with salted egg yolk" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>Lotus with Melon Seeds and Yolk</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -698,7 +720,9 @@ footer a{color:var(--gold);}
         </details>
       </div>
     </div><div class="flav">
-      <div class="fp"><img src="assets/trad-no-yolk.webp?v=3" alt="Traditional white lotus mooncake without yolk" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="assets/trad-no-yolk.webp?v=3" data-lightbox-alt="Traditional white lotus mooncake without yolk" aria-label="View a larger photo of Lotus with Melon Seeds">
+        <img src="assets/trad-no-yolk.webp?v=3" alt="Traditional white lotus mooncake without yolk" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>Lotus with Melon Seeds</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -714,7 +738,9 @@ footer a{color:var(--gold);}
         </details>
       </div>
     </div></div></section><section class="range" id="assorted"><div class="range-head"><span class="range-num">2</span><h3>Signature Assorted Baked</h3><span class="tag2">A flavour for every generation</span></div><p class="range-intro">Our signature assorted range carries the modern side of Mdm Ling Bakery. Each flavour gets its own <strong>low sugar Momoyama skin</strong> and a softer bite, and each was created with a <strong>different generation at the table</strong> in mind. From the littlest ones to the grandparents, everyone finds a mooncake made for them.</p><div class="flavours"><div class="flav">
-      <div class="fp"><img src="assets/momo-choc.webp?v=3" alt="Momoyama Belgian double chocolate mooncake" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="assets/momo-choc.webp?v=3" data-lightbox-alt="Momoyama Belgian double chocolate mooncake" aria-label="View a larger photo of Belgian Double Chocolate">
+        <img src="assets/momo-choc.webp?v=3" alt="Momoyama Belgian double chocolate mooncake" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>Belgian Double Chocolate</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -730,7 +756,9 @@ footer a{color:var(--gold);}
         </details>
       </div>
     </div><div class="flav">
-      <div class="fp"><img src="assets/momo-sesame.webp?v=3" alt="Momoyama black sesame peanut butter mooncake" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="assets/momo-sesame.webp?v=3" data-lightbox-alt="Momoyama black sesame peanut butter mooncake" aria-label="View a larger photo of Black Sesame Peanut Butter">
+        <img src="assets/momo-sesame.webp?v=3" alt="Momoyama black sesame peanut butter mooncake" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>Black Sesame Peanut Butter</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -746,7 +774,9 @@ footer a{color:var(--gold);}
         </details>
       </div>
     </div><div class="flav">
-      <div class="fp"><img src="assets/momo-pandan.webp?v=3" alt="Momoyama emerald pandan mooncake with golden yolk" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="assets/momo-pandan.webp?v=3" data-lightbox-alt="Momoyama emerald pandan mooncake with golden yolk" aria-label="View a larger photo of Emerald Pandan Golden Yolk">
+        <img src="assets/momo-pandan.webp?v=3" alt="Momoyama emerald pandan mooncake with golden yolk" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>Emerald Pandan Golden Yolk</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -762,7 +792,9 @@ footer a{color:var(--gold);}
         </details>
       </div>
     </div><div class="flav">
-      <div class="fp"><img src="assets/momo-reddates.webp?v=3" alt="Momoyama red dates longan mooncake" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="assets/momo-reddates.webp?v=3" data-lightbox-alt="Momoyama red dates longan mooncake" aria-label="View a larger photo of Red Dates Longan">
+        <img src="assets/momo-reddates.webp?v=3" alt="Momoyama red dates longan mooncake" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>Red Dates Longan</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -778,7 +810,9 @@ footer a{color:var(--gold);}
         </details>
       </div>
     </div></div></section><section class="range" id="snowskin"><div class="range-head"><span class="range-num">3</span><h3>Premium Truffle Snowskin</h3><span class="tag2">Chilled, with a truffle centre</span></div><p class="range-intro">The playful side of the collection. Each snowskin mooncake hides a <strong>truffle centre</strong> beneath its soft, delicate skin, best enjoyed chilled. Elegant enough for the table, fun enough that the last one never lasts. <strong>This range isn't Halal certified.</strong></p><div class="flavours"><div class="flav">
-      <div class="fp"><img src="assets/snow-muscat.webp?v=3" alt="Truffle Muscat Grape snowskin mooncake with white grape truffle centre" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="assets/snow-muscat.webp?v=3" data-lightbox-alt="Truffle Muscat Grape snowskin mooncake with white grape truffle centre" aria-label="View a larger photo of Truffle Muscat Grape">
+        <img src="assets/snow-muscat.webp?v=3" alt="Truffle Muscat Grape snowskin mooncake with white grape truffle centre" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>Truffle Muscat Grape</h4>
         <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
@@ -794,7 +828,9 @@ footer a{color:var(--gold);}
         </details>
       </div>
     </div><div class="flav">
-      <div class="fp"><img src="assets/snow-passionfruit.webp?v=3" alt="Truffle Passionfruit snowskin mooncake with cream and passionfruit truffle centre" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="assets/snow-passionfruit.webp?v=3" data-lightbox-alt="Truffle Passionfruit snowskin mooncake with cream and passionfruit truffle centre" aria-label="View a larger photo of Truffle Passionfruit">
+        <img src="assets/snow-passionfruit.webp?v=3" alt="Truffle Passionfruit snowskin mooncake with cream and passionfruit truffle centre" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>Truffle Passionfruit</h4>
         <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
@@ -810,7 +846,9 @@ footer a{color:var(--gold);}
         </details>
       </div>
     </div><div class="flav">
-      <div class="fp"><img src="assets/snow-popping.webp?v=3" alt="Truffle Popping Candy snowskin mooncake with dragon fruit paste and popping candy centre" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="assets/snow-popping.webp?v=3" data-lightbox-alt="Truffle Popping Candy snowskin mooncake with dragon fruit paste and popping candy centre" aria-label="View a larger photo of Truffle Popping Candy">
+        <img src="assets/snow-popping.webp?v=3" alt="Truffle Popping Candy snowskin mooncake with dragon fruit paste and popping candy centre" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>Truffle Popping Candy</h4>
         <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
@@ -826,7 +864,9 @@ footer a{color:var(--gold);}
         </details>
       </div>
     </div><div class="flav">
-      <div class="fp"><img src="assets/snow-pistachio.webp?v=3" alt="Truffle Pistachio Kunafa snowskin mooncake with almond filling and pistachio paste centre" width="96" height="126" loading="lazy" decoding="async"></div>
+      <button type="button" class="fp" data-lightbox="assets/snow-pistachio.webp?v=3" data-lightbox-alt="Truffle Pistachio Kunafa snowskin mooncake with almond filling and pistachio paste centre" aria-label="View a larger photo of Truffle Pistachio Kunafa">
+        <img src="assets/snow-pistachio.webp?v=3" alt="Truffle Pistachio Kunafa snowskin mooncake with almond filling and pistachio paste centre" width="96" height="126" loading="lazy" decoding="async">
+      </button>
       <div>
         <h4>Truffle Pistachio Kunafa</h4>
         <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
@@ -906,6 +946,12 @@ footer a{color:var(--gold);}
 </footer>
 
 <button id="toTop" aria-label="Back to top">&uarr;</button>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged mooncake photo">
+  <button type="button" class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <img id="lbImg" src="" alt="">
+  <p class="lb-cap" id="lbCap"></p>
+</div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 (function(){
@@ -1196,6 +1242,38 @@ footer a{color:var(--gold);}
       (k.note ? '<p class="res-note">' + esc(k.note) + '</p>' : '');
     bout.classList.add('on');
   }
+
+  /* ---------------- photo lightbox ---------------- */
+  (function(){
+    var lb = byId('lightbox'), lbImg = byId('lbImg'), lbCap = byId('lbCap'), lbClose = byId('lbClose');
+    if (!lb) return;
+    var prevOverflow, lastFocus;
+
+    function open(src, alt){
+      lbImg.src = src; lbImg.alt = alt || '';
+      lbCap.textContent = alt || '';
+      lastFocus = document.activeElement;
+      lb.classList.add('on');
+      prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      lbClose.focus();
+    }
+    function close(){
+      lb.classList.remove('on');
+      document.body.style.overflow = prevOverflow;
+      lbImg.src = '';
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    document.addEventListener('click', function(e){
+      var t = e.target.closest && e.target.closest('[data-lightbox]');
+      if (t){ open(t.dataset.lightbox, t.dataset.lightboxAlt); return; }
+      if (e.target === lb) close();
+    });
+    lbClose.addEventListener('click', close);
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && lb.classList.contains('on')) close();
+    });
+  })();
 
   /* ---------------- booth map ---------------- */
   (function(){
