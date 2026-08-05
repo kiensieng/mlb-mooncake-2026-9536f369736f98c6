@@ -334,13 +334,29 @@ details.more[open] summary::after{content:" \\2212";}
 .feature p:last-of-type{margin-bottom:0;}
 .feature strong{color:var(--plum); font-weight:600;}
 
+/* ---------- booth map ---------- */
+.booth-map{height:420px; margin:0 0 24px; border:1px solid var(--hair); background:var(--mushroom);}
+.booth-map .leaflet-popup-content-wrapper{border-radius:2px; box-shadow:0 6px 20px rgba(78,60,55,.18);}
+.booth-map .leaflet-popup-tip{box-shadow:none;}
+.booth-map .leaflet-popup-content{margin:14px 16px; font-family:var(--f);}
+.bpop .bn{font-size:15px; font-weight:600; margin:0 0 2px; color:var(--ink);}
+.bpop .bl{font-size:12.5px; color:var(--muted); margin:0;}
+.bpop .bf{display:inline-block; margin-top:6px; font-size:10px; font-weight:700;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--gold);}
+.bpop a{display:inline-block; margin-top:9px; font-size:12.5px; font-weight:600; color:var(--rose);}
+.pin{display:block; filter:drop-shadow(0 2px 3px rgba(78,60,55,.35));}
+
 /* ---------- booths ---------- */
 .booths{display:grid; gap:2px; background:var(--hair); border:1px solid var(--hair);}
 @media(min-width:560px){ .booths{grid-template-columns:1fr 1fr;} }
 @media(min-width:900px){ .booths{grid-template-columns:repeat(3,1fr);} }
-.booth{background:var(--paper); padding:16px 20px;}
+.booth{background:var(--paper); padding:16px 20px; border:0; width:100%; text-align:left;
+  font-family:var(--f); cursor:pointer; display:block; transition:background .14s;}
+.booth:hover{background:#F6F1EC;}
 .booth.flag{background:#FBF6EA;}
-.booth .bn{font-size:15.5px; font-weight:600; margin:0;}
+.booth.flag:hover{background:#F7EFD9;}
+.booth.on{box-shadow:inset 0 0 0 2px var(--rose);}
+.booth .bn{font-size:15.5px; font-weight:600; margin:0; color:var(--ink);}
 .booth .bl{font-size:13.5px; color:var(--muted); margin:2px 0 0;}
 .booth .bf{display:inline-block; margin-top:6px; font-size:10.5px; font-weight:700;
   letter-spacing:.14em; text-transform:uppercase; color:var(--gold);}
@@ -550,13 +566,29 @@ def sets_table():
     return '<div class="settable">%s</div>' % "".join(rows)
 
 
+def slugify(name):
+    return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", name.lower())).strip("-")
+
+
 def booths_html():
     out = []
-    for name, level, flag in BOOTHS:
+    for name, level, flag, lat, lng in BOOTHS:
         f = '<span class="bf">Flagship store</span>' if flag else ""
-        out.append('<div class="booth%s"><p class="bn">%s</p><p class="bl">%s</p>%s</div>'
-                   % (" flag" if flag else "", name, level, f))
+        out.append('<button type="button" class="booth%s" data-loc="%s">'
+                   '<p class="bn">%s</p><p class="bl">%s</p>%s</button>'
+                   % (" flag" if flag else "", slugify(name), name, level, f))
     return '<div class="booths">%s</div>' % "".join(out)
+
+
+def booths_json():
+    out = []
+    for name, level, flag, lat, lng in BOOTHS:
+        out.append({
+            "id": slugify(name), "name": name, "level": level, "flag": flag,
+            "lat": lat, "lng": lng,
+            "maps": "https://www.google.com/maps/search/?api=1&query=%s,%s" % (lat, lng),
+        })
+    return out
 
 
 def js_data():
@@ -581,6 +613,7 @@ JS = """
 (function(){
   var K = %(keepsakes)s;
   var S = %(sets)s;
+  var B = %(booths)s;
   var TABLE_SET = %(tableset)s;
   var BUDGET = %(budget)s;
   var RECIP = %(recip)s;
@@ -865,6 +898,54 @@ JS = """
       (k.note ? '<p class="res-note">' + esc(k.note) + '</p>' : '');
     bout.classList.add('on');
   }
+
+  /* ---------------- booth map ---------------- */
+  (function(){
+    var mapEl = byId('boothMap');
+    if (!mapEl || typeof L === 'undefined') return;
+
+    function pinIcon(flag){
+      var fill = flag ? '#C7A66A' : '#A97F78';
+      var h = flag ? 40 : 34, w = flag ? 30 : 26;
+      var svg = '<svg width="' + w + '" height="' + h + '" viewBox="0 0 26 34" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M13 0C5.8 0 0 5.8 0 13c0 9.4 11 20 12.2 21.1a1.1 1.1 0 0 0 1.6 0C15 33 26 22.4 26 13 26 5.8 20.2 0 13 0z" fill="' + fill + '"/>' +
+        '<circle cx="13" cy="13" r="5.4" fill="#FBF8F6"/></svg>';
+      return L.divIcon({
+        className: 'pin', html: svg, iconSize: [w, h], iconAnchor: [w/2, h], popupAnchor: [0, -h+6]
+      });
+    }
+
+    var map = L.map('boothMap', { scrollWheelZoom: false, attributionControl: true })
+      .setView([1.345, 103.82], 11);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO', maxZoom: 18
+    }).addTo(map);
+
+    var markers = {};
+    B.forEach(function(b){
+      var m = L.marker([b.lat, b.lng], { icon: pinIcon(b.flag) }).addTo(map);
+      m.bindPopup(
+        '<div class="bpop"><p class="bn">' + esc(b.name) + '</p><p class="bl">' + esc(b.level) + '</p>' +
+        (b.flag ? '<span class="bf">Flagship store</span>' : '') +
+        '<br><a href="' + b.maps + '" target="_blank" rel="noopener">View on Google Maps &#8599;</a></div>'
+      );
+      markers[b.id] = m;
+    });
+
+    var boothBtns = [].slice.call(document.querySelectorAll('.booth[data-loc]'));
+    boothBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.dataset.loc, m = markers[id];
+        if (!m) return;
+        boothBtns.forEach(function(x){ x.classList.remove('on'); });
+        btn.classList.add('on');
+        map.setView(m.getLatLng(), 15, { animate: true });
+        m.openPopup();
+        mapEl.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+        ga('booth_map_open', { location: id });
+      });
+    });
+  })();
 })();
 """
 
@@ -872,11 +953,12 @@ JS = """
 def build():
     ks = json.dumps(js_data(), ensure_ascii=False, separators=(",", ":"))
     st = json.dumps(SETS, ensure_ascii=False, separators=(",", ":"))
+    bo = json.dumps(booths_json(), ensure_ascii=False, separators=(",", ":"))
     tableset = json.dumps({t[0]: t[2] for t in TABLES}, ensure_ascii=False)
     budget = json.dumps({b[0]: {"min": b[2], "max": b[3]} for b in BUDGETS}, ensure_ascii=False)
     recip = json.dumps({r[0]: r[2] for r in RECIPIENTS}, ensure_ascii=False)
 
-    js = JS % {"keepsakes": ks, "sets": st, "tableset": tableset, "budget": budget,
+    js = JS % {"keepsakes": ks, "sets": st, "booths": bo, "tableset": tableset, "budget": budget,
                "recip": recip, "wacust": WA_CUSTOMER, "site": SITE_URL, "v": ASSET_V}
 
     # ---- concierge questions ----
@@ -960,6 +1042,7 @@ TEMPLATE = """<!DOCTYPE html>
   gtag('js', new Date());
   gtag('config', '%(ga)s');
 </script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>%(css)s</style>
 </head>
 <body>
@@ -1119,6 +1202,7 @@ TEMPLATE = """<!DOCTYPE html>
         <a class="btn ghost" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="1">Download the brochure</a>
       </div>
     </div>
+    <div class="booth-map" id="boothMap" role="img" aria-label="Map of Mdm Ling Bakery Mid-Autumn booths across Singapore"></div>
     %(booths)s
   </section>
 
@@ -1137,6 +1221,7 @@ TEMPLATE = """<!DOCTYPE html>
 </footer>
 
 <button id="toTop" aria-label="Back to top">&uarr;</button>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>%(js)s</script>
 </body>
 </html>

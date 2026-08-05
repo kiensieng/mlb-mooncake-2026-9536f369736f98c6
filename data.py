@@ -372,21 +372,22 @@ BUDGETS = [
 
 # --------------------------------------------------------------------------
 # WHERE TO BUY — brochure page 3
+# Coordinates geocoded via OpenStreetMap Nominatim, 5 Aug 2026.
 # --------------------------------------------------------------------------
 BOOTHS = [
-    ("Jewel Changi Airport", "L1, Lobby H", True),
-    ("CIMB Plaza", "L1", False),
-    ("Compass One", "L2", False),
-    ("Junction 8", "L2", False),
-    ("Jurong Point", "L1", False),
-    ("Lot One", "L1", False),
-    ("NEX", "L1", False),
-    ("Raffles Xchange", "B1", False),
-    ("Takashimaya Square", "B2", False),
-    ("Tampines Mall", "L1", False),
-    ("TANGS at Tang Plaza", "B1-25", False),
-    ("The Clementi Mall", "L3", False),
-    ("Velocity @ Novena Square", "L1", False),
-    ("VivoCity", "L1", False),
-    ("Westgate", "L2", False),
+    ("Jewel Changi Airport",     "L1, Lobby H", True,  1.3602243, 103.9896749),
+    ("CIMB Plaza",               "L1",          False, 1.2842625, 103.8522209),
+    ("Compass One",              "L2",          False, 1.3920337, 103.8949526),
+    ("Junction 8",               "L2",          False, 1.3505893, 103.8487447),
+    ("Jurong Point",             "L1",          False, 1.3394964, 103.7052540),
+    ("Lot One",                  "L1",          False, 1.3850739, 103.7450166),
+    ("NEX",                      "L1",          False, 1.3504943, 103.8722727),
+    ("Raffles Xchange",          "B1",          False, 1.2937426, 103.8538363),
+    ("Takashimaya Square",       "B2",          False, 1.3025211, 103.8353202),
+    ("Tampines Mall",            "L1",          False, 1.3525218, 103.9447221),
+    ("TANGS at Tang Plaza",      "B1-25",       False, 1.3047546, 103.8330692),
+    ("The Clementi Mall",        "L3",          False, 1.3149814, 103.7644695),
+    ("Velocity @ Novena Square", "L1",          False, 1.3197981, 103.8440434),
+    ("VivoCity",                 "L1",          False, 1.2643707, 103.8229537),
+    ("Westgate",                 "L2",          False, 1.3341940, 103.7428671),
 ]
