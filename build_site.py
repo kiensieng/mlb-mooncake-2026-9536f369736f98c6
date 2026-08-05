@@ -1111,7 +1111,7 @@ TEMPLATE = """<!DOCTYPE html>
       <h2>A garden painted for Mdm Ling</h2>
     </div>
     <div class="feature">
-      <div class="fimg"><img src="assets/painted-garden-tin.webp?v=%(v)d" alt="The Painted Garden keepsake tin, watercolour florals by Singaporean artist Phuay Li Ying" width="700" height="875" loading="lazy" decoding="async"></div>
+      <div class="fimg"><img src="assets/painted-garden-box.webp?v=%(v)d" alt="The Painted Garden Box, watercolour florals by Singaporean artist Phuay Li Ying" width="700" height="875" loading="lazy" decoding="async"></div>
       <div class="ftxt">
         <span class="tool-kicker">百花迎月 · The Painted Garden</span>
         <h3>The flowers she painted</h3>
