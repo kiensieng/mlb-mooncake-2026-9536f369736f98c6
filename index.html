@@ -255,12 +255,18 @@ details.more summary::after{content:" +";}
 details.more[open] summary::after{content:" \2212";}
 
 /* ---------- builder ---------- */
-.bpick{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 26px;}
-.chip{font-family:var(--f); font-size:13.5px; font-weight:500; padding:9px 15px; cursor:pointer;
+.bpick{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:0 0 30px;}
+@media(min-width:560px){ .bpick{grid-template-columns:repeat(3,1fr);} }
+@media(min-width:820px){ .bpick{grid-template-columns:repeat(5,1fr);} }
+.chip{font-family:var(--f); padding:0; cursor:pointer; text-align:left;
   background:#FCFAF9; border:1.5px solid var(--hair); border-radius:2px; color:var(--ink);
-  transition:border-color .16s,background .16s;}
+  overflow:hidden; transition:border-color .16s;}
+.chip img{width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:var(--cloud);}
+.chip span{display:block; font-size:12.5px; font-weight:500; line-height:1.32; padding:9px 11px;
+  transition:background .16s,color .16s;}
 .chip:hover{border-color:var(--rose);}
-.chip.on{border-color:var(--rose); background:var(--rose); color:#fff;}
+.chip.on{border-color:var(--rose);}
+.chip.on span{background:var(--rose); color:#fff;}
 .bout{display:none; border-top:1px solid var(--hair); padding-top:26px;}
 .bout.on{display:block;}
 .bhead{display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start; margin-bottom:22px;}
@@ -304,6 +310,12 @@ details.more[open] summary::after{content:" \2212";}
 .flav .story{font-size:14.5px; color:#5E4F49; margin:0;}
 .flav .story strong{color:var(--plum); font-weight:600;}
 .ing{margin-top:13px; padding-top:11px; border-top:1px dashed var(--hair);}
+.ing summary{cursor:pointer; font-size:10.5px; font-weight:700; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--gold); list-style:none; padding:1px 0;}
+.ing summary::-webkit-details-marker{display:none;}
+.ing summary::after{content:" +"; color:var(--muted); font-weight:600;}
+.ing[open] summary::after{content:" \2212";}
+.ing .ing-body{margin-top:11px;}
 .ing .lbl{display:block; font-size:10px; font-weight:700; letter-spacing:.16em;
   text-transform:uppercase; color:var(--gold); margin:0 0 3px;}
 .ing .lbl.mt{margin-top:10px;}
@@ -670,12 +682,15 @@ footer a{color:var(--gold);}
         <h4>Lotus with Melon Seeds and Yolk</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
         <p class="story">Smooth <strong>white lotus paste</strong> studded with melon seeds and wrapped around a <strong>golden salted egg yolk</strong>, baked the <strong>time honoured Cantonese way</strong>. <strong>The one everyone reaches for first.</strong></p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>White lotus paste, wheat flour, salted egg yolk, golden syrup, blended cooking oil (palm, peanut, sesame), melon seed, egg, milk.</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg">🥛 Milk</span><span class="alg">Sesame</span><span class="alg">🥜 Peanuts</span></div>
-          <p class="trace">May contain traces of soy.</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>White lotus paste, wheat flour, salted egg yolk, golden syrup, blended cooking oil (palm, peanut, sesame), melon seed, egg, milk.</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg">🥛 Milk</span><span class="alg">Sesame</span><span class="alg">🥜 Peanuts</span></div>
+            <p class="trace">May contain traces of soy.</p>
+          </div>
+        </details>
       </div>
     </div><div class="flav">
       <div class="fp"><img src="assets/trad-no-yolk.webp?v=3" alt="Traditional white lotus mooncake without yolk" width="96" height="126" loading="lazy" decoding="async"></div>
@@ -683,12 +698,15 @@ footer a{color:var(--gold);}
         <h4>Lotus with Melon Seeds</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
         <p class="story">Pure <strong>white lotus paste</strong> with melon seeds folded through, in a classic baked skin. Quiet, smooth and traditional, <strong>for those who like it simple</strong>.</p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>White lotus paste, melon seed, wheat flour, golden syrup, blended cooking oil (palm, peanut, sesame), egg, milk.</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg">🥛 Milk</span><span class="alg">Sesame</span><span class="alg">🥜 Peanuts</span></div>
-          <p class="trace">May contain traces of soy.</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>White lotus paste, melon seed, wheat flour, golden syrup, blended cooking oil (palm, peanut, sesame), egg, milk.</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg">🥛 Milk</span><span class="alg">Sesame</span><span class="alg">🥜 Peanuts</span></div>
+            <p class="trace">May contain traces of soy.</p>
+          </div>
+        </details>
       </div>
     </div></div></section><section class="range" id="assorted"><div class="range-head"><span class="range-num">2</span><h3>Signature Assorted Baked</h3><span class="tag2">A flavour for every generation</span></div><p class="range-intro">Our signature assorted range carries the modern side of Mdm Ling Bakery. Each flavour gets its own <strong>low sugar Momoyama skin</strong> and a softer bite, and each was created with a <strong>different generation at the table</strong> in mind. From the littlest ones to the grandparents, everyone finds a mooncake made for them.</p><div class="flavours"><div class="flav">
       <div class="fp"><img src="assets/momo-choc.webp?v=3" alt="Momoyama Belgian double chocolate mooncake" width="96" height="126" loading="lazy" decoding="async"></div>
@@ -696,12 +714,15 @@ footer a{color:var(--gold);}
         <h4>Belgian Double Chocolate</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
         <p class="story">Created for the <strong>youngest at the table</strong>. Chocolate is a flavour children already know and love, so this is their first step into mooncakes: a <strong>double hit of chocolate in both the skin and the paste</strong>, finished with a pinch of <strong>Himalayan salt</strong> that sharpens the cocoa from the first bite to the last.</p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>Chocolate lotus paste, Maruchi dough, chocolate paste (Master Martini), melon seeds, blended cooking oil (palm, peanut, sesame), cocoa powder, Himalayan salt.</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥛 Milk</span><span class="alg">🌰 Tree nuts</span><span class="alg">Sesame</span><span class="alg">🥚 Egg</span><span class="alg">🥜 Peanuts</span><span class="alg">🫘 Soy</span></div>
-          <p class="trace">May contain traces of nuts.</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>Chocolate lotus paste, Maruchi dough, chocolate paste (Master Martini), melon seeds, blended cooking oil (palm, peanut, sesame), cocoa powder, Himalayan salt.</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥛 Milk</span><span class="alg">🌰 Tree nuts</span><span class="alg">Sesame</span><span class="alg">🥚 Egg</span><span class="alg">🥜 Peanuts</span><span class="alg">🫘 Soy</span></div>
+            <p class="trace">May contain traces of nuts.</p>
+          </div>
+        </details>
       </div>
     </div><div class="flav">
       <div class="fp"><img src="assets/momo-sesame.webp?v=3" alt="Momoyama black sesame peanut butter mooncake" width="96" height="126" loading="lazy" decoding="async"></div>
@@ -709,12 +730,15 @@ footer a{color:var(--gold);}
         <h4>Black Sesame Peanut Butter</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
         <p class="story">Created for <strong>parents and grandparents with a sweet tooth</strong>. Toasty <strong>black sesame</strong> meets smooth <strong>peanut butter</strong>, a nod to the black sesame and peanut pastes they grew up ordering at Singapore dessert stalls, carried in a soft Momoyama skin.</p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>Black sesame lotus paste, Maruchi dough, peanut butter, melon seeds, blended cooking oil (palm, peanut, sesame), pumpkin powder.</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg">Sesame</span><span class="alg">🥜 Peanuts</span><span class="alg">🥛 Milk</span><span class="alg">🫘 Soy</span></div>
-          <p class="trace">May contain traces of nuts.</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>Black sesame lotus paste, Maruchi dough, peanut butter, melon seeds, blended cooking oil (palm, peanut, sesame), pumpkin powder.</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg">Sesame</span><span class="alg">🥜 Peanuts</span><span class="alg">🥛 Milk</span><span class="alg">🫘 Soy</span></div>
+            <p class="trace">May contain traces of nuts.</p>
+          </div>
+        </details>
       </div>
     </div><div class="flav">
       <div class="fp"><img src="assets/momo-pandan.webp?v=3" alt="Momoyama emerald pandan mooncake with golden yolk" width="96" height="126" loading="lazy" decoding="async"></div>
@@ -722,12 +746,15 @@ footer a{color:var(--gold);}
         <h4>Emerald Pandan Golden Yolk</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
         <p class="story">Created for <strong>every generation</strong>. The sweet <strong>pandan fragrance</strong> everyone knows from kaya, carried in a modern Momoyama skin, with the <strong>golden yolk from the traditional mooncake</strong> at its centre. The <strong>best of both worlds</strong> in one bite.</p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>Pandan paste, Maruchi dough, custard salted egg yolk paste, melon seed, blended cooking oil (palm, peanut, sesame), purple sweet potato powder.</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥛 Milk</span><span class="alg">🥚 Egg</span><span class="alg">Sesame</span><span class="alg">🥜 Peanuts</span><span class="alg">🫘 Soy</span></div>
-          <p class="trace">May contain traces of nuts.</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>Pandan paste, Maruchi dough, custard salted egg yolk paste, melon seed, blended cooking oil (palm, peanut, sesame), purple sweet potato powder.</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥛 Milk</span><span class="alg">🥚 Egg</span><span class="alg">Sesame</span><span class="alg">🥜 Peanuts</span><span class="alg">🫘 Soy</span></div>
+            <p class="trace">May contain traces of nuts.</p>
+          </div>
+        </details>
       </div>
     </div><div class="flav">
       <div class="fp"><img src="assets/momo-reddates.webp?v=3" alt="Momoyama red dates longan mooncake" width="96" height="126" loading="lazy" decoding="async"></div>
@@ -735,12 +762,15 @@ footer a{color:var(--gold);}
         <h4>Red Dates Longan</h4>
         <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
         <p class="story">Created with our <strong>elders</strong> in mind. <strong>Red dates</strong> and <strong>longan</strong> are flavours they've known all their lives, long treasured in Chinese tradition as nourishing and warming, folded into a rose hued Momoyama skin. Gentle, familiar and easy to love.</p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>Red date lotus, Maruchi dough, longan bits, melon seeds, blended cooking oil (palm, peanut, sesame), colour (102, 110, 124).</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg">Sesame</span><span class="alg">🥜 Peanuts</span><span class="alg">🥛 Milk</span><span class="alg">🫘 Soy</span></div>
-          <p class="trace">May contain traces of nuts.</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>Red date lotus, Maruchi dough, longan bits, melon seeds, blended cooking oil (palm, peanut, sesame), colour (102, 110, 124).</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs"><span class="alg">🌾 Gluten (wheat)</span><span class="alg">🥚 Egg</span><span class="alg">Sesame</span><span class="alg">🥜 Peanuts</span><span class="alg">🥛 Milk</span><span class="alg">🫘 Soy</span></div>
+            <p class="trace">May contain traces of nuts.</p>
+          </div>
+        </details>
       </div>
     </div></div></section><section class="range" id="snowskin"><div class="range-head"><span class="range-num">3</span><h3>Premium Truffle Snowskin</h3><span class="tag2">Chilled, with a truffle centre</span></div><p class="range-intro">The playful side of the collection. Each snowskin mooncake hides a <strong>truffle centre</strong> beneath its soft, delicate skin, best enjoyed chilled. Elegant enough for the table, fun enough that the last one never lasts. <strong>This range isn't Halal certified.</strong></p><div class="flavours"><div class="flav">
       <div class="fp"><img src="assets/snow-muscat.webp?v=3" alt="Truffle Muscat Grape snowskin mooncake with white grape truffle centre" width="96" height="126" loading="lazy" decoding="async"></div>
@@ -748,12 +778,15 @@ footer a{color:var(--gold);}
         <h4>Truffle Muscat Grape</h4>
         <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
         <p class="story">A pale green snowskin of soft glutinous rice, filled with smooth lotus paste and a <strong>muscat grape truffle</strong> at its heart. <strong>Fragrant, delicate and quietly refreshing.</strong></p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, lotus paste, muscat grape truffle (white couverture, cream, green tea powder, white grape flavour).</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs"><span class="alg">🥛 Milk</span></div>
-          <p class="trace">May contain traces of gluten, egg, nuts, sesame, peanuts and soy.</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, lotus paste, muscat grape truffle (white couverture, cream, green tea powder, white grape flavour).</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs"><span class="alg">🥛 Milk</span></div>
+            <p class="trace">May contain traces of gluten, egg, nuts, sesame, peanuts and soy.</p>
+          </div>
+        </details>
       </div>
     </div><div class="flav">
       <div class="fp"><img src="assets/snow-passionfruit.webp?v=3" alt="Truffle Passionfruit snowskin mooncake with cream and passionfruit truffle centre" width="96" height="126" loading="lazy" decoding="async"></div>
@@ -761,12 +794,15 @@ footer a{color:var(--gold);}
         <h4>Truffle Passionfruit</h4>
         <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
         <p class="story">A sunny golden snowskin of soft glutinous rice, filled with smooth lotus paste and a <strong>passionfruit truffle</strong> that lands <strong>bright and tangy</strong>. A little tropical sunshine that wakes the whole box up.</p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, lotus paste, passionfruit truffle (white couverture, Unigra passionfruit, cream).</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs"><span class="alg">🥛 Milk</span></div>
-          <p class="trace">May contain traces of gluten, egg, nuts, sesame, peanuts and soy.</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, lotus paste, passionfruit truffle (white couverture, Unigra passionfruit, cream).</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs"><span class="alg">🥛 Milk</span></div>
+            <p class="trace">May contain traces of gluten, egg, nuts, sesame, peanuts and soy.</p>
+          </div>
+        </details>
       </div>
     </div><div class="flav">
       <div class="fp"><img src="assets/snow-popping.webp?v=3" alt="Truffle Popping Candy snowskin mooncake with dragon fruit paste and popping candy centre" width="96" height="126" loading="lazy" decoding="async"></div>
@@ -774,12 +810,15 @@ footer a{color:var(--gold);}
         <h4>Truffle Popping Candy</h4>
         <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
         <p class="story">A blush pink snowskin of soft glutinous rice, filled with vivid <strong>dragonfruit paste</strong> and a <strong>popping candy truffle that crackles as you bite</strong>. <strong>The one that makes everyone at the table laugh first</strong> and reach for seconds after.</p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, dragon fruit paste (lotus paste, dragon fruit powder), popping candy truffle (white couverture, pink popping candy filling, blue popping candy filling).</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs"><span class="alg">🥛 Milk</span></div>
-          <p class="trace">May contain traces of gluten, egg, nuts, sesame, peanuts and soy.</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, dragon fruit paste (lotus paste, dragon fruit powder), popping candy truffle (white couverture, pink popping candy filling, blue popping candy filling).</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs"><span class="alg">🥛 Milk</span></div>
+            <p class="trace">May contain traces of gluten, egg, nuts, sesame, peanuts and soy.</p>
+          </div>
+        </details>
       </div>
     </div><div class="flav">
       <div class="fp"><img src="assets/snow-pistachio.webp?v=3" alt="Truffle Pistachio Kunafa snowskin mooncake with almond filling and pistachio paste centre" width="96" height="126" loading="lazy" decoding="async"></div>
@@ -787,12 +826,15 @@ footer a{color:var(--gold);}
         <h4>Truffle Pistachio Kunafa</h4>
         <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
         <p class="story">An ivory snowskin of soft glutinous rice, filled with smooth lotus paste and a rich <strong>pistachio kunafa truffle</strong>. Our nod to the beloved <strong>Middle Eastern dessert</strong>, reimagined for the mooncake table.</p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, lotus paste, pistachio kunafa truffle (milk couverture, almond filling, pistachio paste, pistachio nuts, feuilletine).</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs"><span class="alg">🌰 Tree nuts (pistachio, almond)</span><span class="alg">🥛 Milk</span></div>
-          <p class="trace">May contain traces of gluten, egg, sesame, peanuts and soy.</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, lotus paste, pistachio kunafa truffle (milk couverture, almond filling, pistachio paste, pistachio nuts, feuilletine).</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs"><span class="alg">🌰 Tree nuts (pistachio, almond)</span><span class="alg">🥛 Milk</span></div>
+            <p class="trace">May contain traces of gluten, egg, sesame, peanuts and soy.</p>
+          </div>
+        </details>
       </div>
     </div></div></section>
 
@@ -1107,8 +1149,9 @@ footer a{color:var(--gold);}
   var bpick = byId('bPick'), bout = byId('bOut');
   K.forEach(function(k){
     var c = document.createElement('button');
-    c.type = 'button'; c.className = 'chip'; c.textContent = k.name +
-      (k.variant ? ' (' + k.variant + ')' : '');
+    c.type = 'button'; c.className = 'chip';
+    c.innerHTML = '<img src="assets/' + k.img + '?v=3" alt="' + esc(k.alt) + '" loading="lazy" decoding="async">' +
+      '<span>' + esc(k.name) + (k.variant ? ' (' + esc(k.variant) + ')' : '') + '</span>';
     c.addEventListener('click', function(){
       [].slice.call(bpick.children).forEach(function(x){ x.classList.remove('on'); });
       c.classList.add('on');

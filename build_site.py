@@ -247,12 +247,18 @@ details.more summary::after{content:" +";}
 details.more[open] summary::after{content:" \\2212";}
 
 /* ---------- builder ---------- */
-.bpick{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 26px;}
-.chip{font-family:var(--f); font-size:13.5px; font-weight:500; padding:9px 15px; cursor:pointer;
+.bpick{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:0 0 30px;}
+@media(min-width:560px){ .bpick{grid-template-columns:repeat(3,1fr);} }
+@media(min-width:820px){ .bpick{grid-template-columns:repeat(5,1fr);} }
+.chip{font-family:var(--f); padding:0; cursor:pointer; text-align:left;
   background:#FCFAF9; border:1.5px solid var(--hair); border-radius:2px; color:var(--ink);
-  transition:border-color .16s,background .16s;}
+  overflow:hidden; transition:border-color .16s;}
+.chip img{width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:var(--cloud);}
+.chip span{display:block; font-size:12.5px; font-weight:500; line-height:1.32; padding:9px 11px;
+  transition:background .16s,color .16s;}
 .chip:hover{border-color:var(--rose);}
-.chip.on{border-color:var(--rose); background:var(--rose); color:#fff;}
+.chip.on{border-color:var(--rose);}
+.chip.on span{background:var(--rose); color:#fff;}
 .bout{display:none; border-top:1px solid var(--hair); padding-top:26px;}
 .bout.on{display:block;}
 .bhead{display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start; margin-bottom:22px;}
@@ -296,6 +302,12 @@ details.more[open] summary::after{content:" \\2212";}
 .flav .story{font-size:14.5px; color:#5E4F49; margin:0;}
 .flav .story strong{color:var(--plum); font-weight:600;}
 .ing{margin-top:13px; padding-top:11px; border-top:1px dashed var(--hair);}
+.ing summary{cursor:pointer; font-size:10.5px; font-weight:700; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--gold); list-style:none; padding:1px 0;}
+.ing summary::-webkit-details-marker{display:none;}
+.ing summary::after{content:" +"; color:var(--muted); font-weight:600;}
+.ing[open] summary::after{content:" \\2212";}
+.ing .ing-body{margin-top:11px;}
 .ing .lbl{display:block; font-size:10px; font-weight:700; letter-spacing:.16em;
   text-transform:uppercase; color:var(--gold); margin:0 0 3px;}
 .ing .lbl.mt{margin-top:10px;}
@@ -372,12 +384,15 @@ def flav(img, alt, name, badges, story, ing, algs, trace):
         <h4>%s</h4>
         <div class="badges">%s</div>
         <p class="story">%s</p>
-        <div class="ing">
-          <span class="lbl">Ingredients</span><p>%s</p>
-          <span class="lbl mt">Allergen advice · contains</span>
-          <div class="algs">%s</div>
-          <p class="trace">%s</p>
-        </div>
+        <details class="ing">
+          <summary>Ingredients &amp; allergen advice</summary>
+          <div class="ing-body">
+            <span class="lbl">Ingredients</span><p>%s</p>
+            <span class="lbl mt">Allergen advice · contains</span>
+            <div class="algs">%s</div>
+            <p class="trace">%s</p>
+          </div>
+        </details>
       </div>
     </div>""" % (img, ASSET_V, alt, name, b, story, ing, a, trace)
 
@@ -807,8 +822,9 @@ JS = """
   var bpick = byId('bPick'), bout = byId('bOut');
   K.forEach(function(k){
     var c = document.createElement('button');
-    c.type = 'button'; c.className = 'chip'; c.textContent = k.name +
-      (k.variant ? ' (' + k.variant + ')' : '');
+    c.type = 'button'; c.className = 'chip';
+    c.innerHTML = '<img src="assets/' + k.img + '?v=%(v)d" alt="' + esc(k.alt) + '" loading="lazy" decoding="async">' +
+      '<span>' + esc(k.name) + (k.variant ? ' (' + esc(k.variant) + ')' : '') + '</span>';
     c.addEventListener('click', function(){
       [].slice.call(bpick.children).forEach(function(x){ x.classList.remove('on'); });
       c.classList.add('on');
