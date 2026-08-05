@@ -345,21 +345,22 @@ details.more[open] summary::after{content:" \\2212";}
   letter-spacing:.13em; text-transform:uppercase; color:var(--gold);}
 .bpop a{display:inline-block; margin-top:9px; font-size:12.5px; font-weight:600; color:var(--rose);}
 .pin{display:block; filter:drop-shadow(0 2px 3px rgba(78,60,55,.35));}
+.map-tools{display:flex; justify-content:flex-end; margin:-14px 0 14px;}
 
 /* ---------- booths ---------- */
 .booths{display:grid; gap:2px; background:var(--hair); border:1px solid var(--hair);}
 @media(min-width:560px){ .booths{grid-template-columns:1fr 1fr;} }
 @media(min-width:900px){ .booths{grid-template-columns:repeat(3,1fr);} }
-.booth{background:var(--paper); padding:16px 20px; border:0; width:100%; text-align:left;
+.booth{background:var(--paper); padding:10px 14px; border:0; width:100%; text-align:left;
   font-family:var(--f); cursor:pointer; display:block; transition:background .14s;}
 .booth:hover{background:#F6F1EC;}
 .booth.flag{background:#FBF6EA;}
 .booth.flag:hover{background:#F7EFD9;}
 .booth.on{box-shadow:inset 0 0 0 2px var(--rose);}
-.booth .bn{font-size:15.5px; font-weight:600; margin:0; color:var(--ink);}
-.booth .bl{font-size:13.5px; color:var(--muted); margin:2px 0 0;}
-.booth .bf{display:inline-block; margin-top:6px; font-size:10.5px; font-weight:700;
-  letter-spacing:.14em; text-transform:uppercase; color:var(--gold);}
+.booth .bn{font-size:13.5px; font-weight:600; margin:0; color:var(--ink);}
+.booth .bl{font-size:12px; color:var(--muted); margin:1px 0 0;}
+.booth .bf{display:inline-block; margin-top:4px; font-size:9.5px; font-weight:700;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--gold);}
 
 /* ---------- footer ---------- */
 footer{margin-top:104px; background:var(--cocoa); color:#C9BDB7; padding:52px 0 44px; font-size:14px;}
@@ -915,8 +916,9 @@ JS = """
       });
     }
 
+    var DEFAULT_CENTER = [1.345, 103.82], DEFAULT_ZOOM = 11;
     var map = L.map('boothMap', { scrollWheelZoom: false, attributionControl: true })
-      .setView([1.345, 103.82], 11);
+      .setView(DEFAULT_CENTER, DEFAULT_ZOOM);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap contributors &copy; CARTO', maxZoom: 18
     }).addTo(map);
@@ -927,7 +929,8 @@ JS = """
       m.bindPopup(
         '<div class="bpop"><p class="bn">' + esc(b.name) + '</p><p class="bl">' + esc(b.level) + '</p>' +
         (b.flag ? '<span class="bf">Flagship store</span>' : '') +
-        '<br><a href="' + b.maps + '" target="_blank" rel="noopener">View on Google Maps &#8599;</a></div>'
+        '<br><a href="' + b.maps + '" target="_blank" rel="noopener">View on Google Maps &#8599;</a></div>',
+        { autoPan: false }
       );
       markers[b.id] = m;
     });
@@ -939,11 +942,18 @@ JS = """
         if (!m) return;
         boothBtns.forEach(function(x){ x.classList.remove('on'); });
         btn.classList.add('on');
-        map.setView(m.getLatLng(), 15, { animate: true });
-        m.openPopup();
         mapEl.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+        map.setView(m.getLatLng(), 15, { animate: false });
+        m.openPopup();
         ga('booth_map_open', { location: id });
       });
+    });
+
+    var resetBtn = byId('boothMapReset');
+    if (resetBtn) resetBtn.addEventListener('click', function(){
+      boothBtns.forEach(function(x){ x.classList.remove('on'); });
+      map.closePopup();
+      map.setView(DEFAULT_CENTER, DEFAULT_ZOOM, { animate: true });
     });
   })();
 })();
@@ -1203,6 +1213,9 @@ TEMPLATE = """<!DOCTYPE html>
       </div>
     </div>
     <div class="booth-map" id="boothMap" role="img" aria-label="Map of Mdm Ling Bakery Mid-Autumn booths across Singapore"></div>
+    <div class="map-tools">
+      <button type="button" class="btn ghost sm" id="boothMapReset">View full map</button>
+    </div>
     %(booths)s
   </section>
 
