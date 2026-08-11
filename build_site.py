@@ -202,10 +202,23 @@ nav.jump.scrolled .edge.l{opacity:1;}
    frame slightly the way an opening spread does. */
 header.hero{background:var(--cocoa);}
 /* the brand strip: centred logo at the very top of the page, season below it */
-.hbrand{background:var(--cloud); text-align:center; padding:clamp(26px,4vw,44px) 20px clamp(22px,3.4vw,36px);}
+.hbrand{position:relative; background:var(--cloud); text-align:center;
+  padding:clamp(26px,4vw,44px) 20px clamp(22px,3.4vw,36px);}
 .hbrand img{display:inline-block; width:min(58vw,240px); height:auto;}
 .hbrand .hseason{display:block; margin:14px 0 0; font-size:11.5px; font-weight:600;
   letter-spacing:.32em; text-transform:uppercase; color:var(--gold);}
+/* the campaign name writes itself across the strip, bows out, then the logo
+   takes its place (once per session, skipped for reduced-motion and deep links) */
+.hb-title{position:absolute; inset:0; display:none; flex-direction:column;
+  align-items:center; justify-content:center; pointer-events:none;}
+.hb-title .cs-en{font-size:clamp(30px,5.4vw,46px); color:#96762F;}
+.hb-title .cs-cn{font-size:clamp(20px,3.2vw,28px); color:var(--rose); margin-top:6px;}
+.hbrand.anim .hb-title{display:flex; opacity:0; animation:hbT 2.8s ease forwards;}
+.hbrand.anim .hb-logo{opacity:0; animation:hbL .9s ease 2.9s forwards;}
+@keyframes hbT{0%{opacity:0; transform:translateY(12px);}
+  18%{opacity:1; transform:none;} 70%{opacity:1; transform:none;}
+  100%{opacity:0; transform:translateY(-10px);}}
+@keyframes hbL{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
 header.hero .hfig{position:relative; height:min(62svh,640px); overflow:hidden;
   background:var(--mushroom);}
 header.hero .hfig picture{position:absolute; inset:0;}
@@ -253,6 +266,18 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .hpop .hp-x{position:absolute; top:6px; right:6px; width:30px; height:30px; border:0;
   background:rgba(42,31,27,.65); color:#FBF6F2; font-size:17px; line-height:1;
   cursor:pointer; display:flex; align-items:center; justify-content:center;}
+/* the hint that the butterflies are alive */
+.htip{position:absolute; left:50%; bottom:clamp(16px,3.4vw,30px); z-index:4;
+  transform:translateX(-50%) translateY(8px); display:flex; align-items:center; gap:11px;
+  max-width:86vw; background:rgba(42,31,27,.86); color:#F4E9E2; font-size:13px;
+  font-weight:600; letter-spacing:.04em; padding:11px 18px;
+  border:1px solid rgba(199,166,106,.65); pointer-events:none;
+  opacity:0; visibility:hidden; transition:opacity .3s, transform .3s, visibility .3s;}
+.htip.on{opacity:1; visibility:visible; transform:translateX(-50%);}
+.htip svg{width:26px; height:26px; flex:none; transform:rotate(-8deg);}
+.htip svg path{fill:var(--gold); stroke:#FBF6F2; stroke-width:1.6; stroke-linejoin:round;}
+.htip svg ellipse{fill:#2A1F1B; stroke:#FBF6F2; stroke-width:1;}
+.htip svg .ant{fill:none; stroke:#FBF6F2; stroke-width:1.4; stroke-linecap:round;}
 @media(prefers-reduced-motion:reduce){
   .hspot, .hspot .wl, .hspot .wr{animation:none;}
 }
@@ -351,25 +376,27 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   padding:clamp(10px,2vw,20px) 0 clamp(56px,9vw,104px);}
 .manifesto .mtext{border-top:1px solid rgba(199,166,106,.35);
   padding-top:clamp(26px,4vw,44px);}
-.manifesto p{margin:0 0 16px; font-size:clamp(17px,2.2vw,20px); color:#E3D8D3; line-height:1.6;}
-.manifesto p:last-child{margin-bottom:0;}
 .manifesto p strong{color:#fff; font-weight:600;}
-/* the opening thought runs large across the full measure; the body sits left
-   and the practical note (halal, vegetarian) reads as a gilded aside on the
-   right, so the block fills the same width as the title spread above it */
-.manifesto p:first-child{font-size:clamp(19px,2.6vw,26px); color:#F0E7E2;
-  max-width:40ch; margin-bottom:clamp(24px,3.4vw,38px);}
-.manifesto p:last-child{border-left:2px solid var(--gold);
-  padding:6px 0 6px clamp(18px,2.4vw,26px); color:#EFE3DC;}
-@media(min-width:900px){
-  .manifesto .mtext{display:grid; grid-template-columns:1.25fr 1fr;
-    column-gap:clamp(48px,7vw,96px); align-items:center;}
-  .manifesto p:first-child{grid-column:1 / -1;}
-  .manifesto p{margin-bottom:0;}
-}
-@media(max-width:899px){
-  .manifesto p:last-child{margin-top:10px;}
-}
+/* one thought, read top to bottom: the why, the principle, three keepsakes
+   shown rather than described, then the practical note as a gilded aside */
+.manifesto .m-lede{font-size:clamp(19px,2.6vw,26px); color:#F0E7E2; line-height:1.55;
+  max-width:40ch; margin:0 0 clamp(22px,3.2vw,34px);}
+.manifesto .m-sub{font-size:clamp(17px,2.2vw,21px); color:#E3D8D3; line-height:1.6;
+  margin:0 0 clamp(20px,3vw,30px);}
+.manifesto .m-cards{display:grid; gap:clamp(14px,2.4vw,28px);
+  grid-template-columns:repeat(auto-fit, minmax(210px,1fr));
+  margin:0 0 clamp(26px,4vw,40px);}
+.manifesto .m-cards figure{margin:0;}
+.manifesto .m-cards img{width:100%; height:auto; aspect-ratio:4/3; object-fit:cover;
+  display:block; background:#3A2C27;}
+.manifesto .m-cards figcaption{margin-top:11px; font-size:14.5px; color:#D8CBC5;
+  line-height:1.55;}
+.manifesto .m-cards figcaption strong{color:#fff;}
+.manifesto .m-note{font-size:15.5px; color:#CDBFB9; line-height:1.6; max-width:64ch;
+  margin:0 0 clamp(18px,2.6vw,26px);}
+.manifesto .m-halal{border-left:2px solid var(--gold);
+  padding:6px 0 6px clamp(18px,2.4vw,26px); color:#EFE3DC;
+  font-size:clamp(16px,2vw,18px); line-height:1.6; margin:0;}
 
 /* ---------- tools (matcher + builder) ---------- */
 .tool{background:var(--linen); padding:clamp(30px,5vw,60px) clamp(22px,4vw,56px);}
@@ -669,7 +696,6 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .ablurb .as{display:block; font-size:13px; color:#CDBBB2; margin-top:3px;}
 .ablurb .awb{margin-left:auto; align-self:center;}
 @media(max-width:560px){ .ablurb .awb{margin-left:0; width:100%; justify-content:center;} }
-.artist .alede{font-size:clamp(19px,2.6vw,24px); color:#F4EBE6; font-weight:500;}
 .artist .acol{max-width:56ch; color:#EFE4DE;}
 .artist .eyebrow{color:#EFDCB4;}
 .artist h3{font-size:clamp(28px,4.8vw,52px); font-weight:600; letter-spacing:-.03em;
@@ -1105,6 +1131,20 @@ JS = """
      per session. Any tap, scroll or key opens it. Skipped entirely for
      reduced-motion, for a repeat visit, and for anyone arriving on a deep link
      (an EDM pointing at #where should land on #where, not on a gate). */
+  /* the campaign title writes itself across the brand strip, bows out, and
+     the logo takes its place. Once per session; never for reduced-motion or
+     a deep link; after the garden gate when the gate is showing. */
+  function startBrandAnim(){
+    if (reduced || window.location.hash) return;
+    var hb = byId('hbrand');
+    if (!hb) return;
+    var seen = null;
+    try { seen = window.sessionStorage.getItem('mlbTitle26'); } catch(e){}
+    if (seen) return;
+    try { window.sessionStorage.setItem('mlbTitle26','1'); } catch(e){}
+    hb.classList.add('anim');
+  }
+
   (function(){
     var intro = byId('intro');
     if (!intro) return;
@@ -1112,6 +1152,7 @@ JS = """
     try { seen = window.sessionStorage.getItem('mlbIntro'); } catch(e){ seen = null; }
     if (reduced || seen || window.location.hash){
       if (intro.parentNode) intro.parentNode.removeChild(intro);
+      startBrandAnim();
       return;
     }
 
@@ -1146,6 +1187,7 @@ JS = """
       intro.classList.add('open');
       document.body.style.overflow = prevOverflow;
       ga('intro_open', {});
+      window.setTimeout(startBrandAnim, 500);
       window.setTimeout(function(){
         if (vid){ try { vid.pause(); vid.removeAttribute('src'); vid.load(); } catch(e){} }
         if (intro.parentNode) intro.parentNode.removeChild(intro);
@@ -1421,12 +1463,32 @@ JS = """
       if (e.target.closest && e.target.closest('.hp-x')){ closePop(); return; }
       if (e.target.closest && e.target.closest('a')) closePop();
     });
+    /* a tap anywhere that isn't the card or a butterfly puts the card away */
     document.addEventListener('click', function(e){
-      if (pop.classList.contains('on') && !layer.contains(e.target)) closePop();
+      if (!pop.classList.contains('on')) return;
+      var t = e.target;
+      if (t.closest && (t.closest('.hpop') || t.closest('.hspot'))) return;
+      closePop();
     });
     document.addEventListener('keydown', function(e){
       if (e.key === 'Escape') closePop();
     });
+    /* one quiet hint that the butterflies open the collection */
+    var tip = document.createElement('div');
+    tip.className = 'htip';
+    var tipVerb = window.matchMedia('(hover: hover)').matches ? 'Hover over' : 'Tap';
+    tip.innerHTML = BFLY + '<span>' + tipVerb + ' a butterfly to discover the collection</span>';
+    layer.appendChild(tip);
+    var tipSeen = null;
+    try { tipSeen = window.sessionStorage.getItem('mlbHtip'); } catch(e){}
+    function hideTip(){ tip.classList.remove('on'); }
+    if (!tipSeen){
+      window.setTimeout(function(){
+        tip.classList.add('on');
+        try { window.sessionStorage.setItem('mlbHtip','1'); } catch(e){}
+        window.setTimeout(hideTip, 9000);
+      }, 1400);
+    }
     var spots = LAND.map(function(s, i){
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'hspot';
@@ -1434,9 +1496,11 @@ JS = """
       b.setAttribute('aria-label', 'See ' + nameOf(s[2]));
       b.innerHTML = BFLY + '<span class="hlabel">' + esc(nameOf(s[2])) + '</span>';
       b.addEventListener('click', function(){
+        hideTip();
         ga('hotspot_click', {item_id: s[2]});
         openPop(s[2], b);
       });
+      b.addEventListener('mouseenter', hideTip);
       layer.appendChild(b);
       return b;
     });
@@ -1992,9 +2056,12 @@ TEMPLATE = """<!DOCTYPE html>
 </nav>
 
 <header class="hero">
-  <div class="hbrand">
-    <img src="assets/mlb-logo-color.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="308" fetchpriority="high">
-    <span class="hseason">Mid-Autumn 2026</span>
+  <div class="hbrand" id="hbrand">
+    <span class="hb-title" aria-hidden="true"><span class="cs-en">A Bond in Lasting Bloom</span><span class="cs-cn">花月情长</span></span>
+    <div class="hb-logo">
+      <img src="assets/mlb-logo-color.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="308" fetchpriority="high">
+      <span class="hseason">Mid-Autumn 2026</span>
+    </div>
   </div>
   <div class="hfig" id="heroFig">
     <picture>
@@ -2022,9 +2089,24 @@ TEMPLATE = """<!DOCTYPE html>
 <section class="manifesto">
   <div class="wrap">
     <div class="mtext">
-      <p>In Singapore you don't visit someone empty-handed. You bring something to share. That single gesture is the whole reason this collection exists.</p>
-      <p>So we design the <strong>keepsake first</strong> and the season second. A tin that holds trinkets for years. A bag someone actually wears. A turntable that comes back out at every reunion dinner. <strong>Sustainably made, genuinely useful, and Singaporean in spirit</strong>, with a four character name apiece the way heirlooms in a Chinese household always have.</p>
-      <p>The mooncakes are yours to choose. <strong>All our baked sets are Halal certified and vegetarian.</strong> &#127765;</p>
+      <p class="m-lede">In Singapore you don't visit someone empty-handed. You bring something to share. That single gesture is the whole reason this collection exists.</p>
+      <p class="m-sub">So we design the <strong>keepsake first</strong> and the season second.</p>
+      <div class="m-cards">
+        <figure>
+          <img src="assets/painted-garden-tin.webp?v={{AV}}" alt="The Painted Garden keepsake tin on the garden table" width="800" height="600" loading="lazy" decoding="async">
+          <figcaption><strong>A tin</strong> that holds trinkets for years.</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/the-dusk.webp?v={{AV}}" alt="The Dusk leather gift bag among the flowers" width="800" height="600" loading="lazy" decoding="async">
+          <figcaption><strong>A bag</strong> someone actually wears.</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/elegance-turntable.webp?v={{AV}}" alt="The Elegance Reunion Turntable set for the table" width="800" height="600" loading="lazy" decoding="async">
+          <figcaption><strong>A turntable</strong> that comes back out at every reunion dinner.</figcaption>
+        </figure>
+      </div>
+      <p class="m-note"><strong>Sustainably made, genuinely useful, and Singaporean in spirit</strong>, with a four character name apiece the way heirlooms in a Chinese household always have.</p>
+      <p class="m-halal">The mooncakes are yours to choose. <strong>All our baked sets are Halal certified and vegetarian.</strong> &#127765;</p>
     </div>
   </div>
 </section>
@@ -2134,8 +2216,7 @@ TEMPLATE = """<!DOCTYPE html>
     <div class="agrid">
       <div class="acol">
         <span class="eyebrow">百花迎月 &middot; The Painted Garden</span>
-        <h3>A garden painted for Mdm Ling</h3>
-        <p class="alede">The people we love are worth caring for.</p>
+        <h3>The people we love are worth caring for</h3>
         <p>A garden only grows because someone tends it. As you pass this box on, we hope it's also a nudge for the women in your life to look after their breast health.</p>
         <div class="ablurb">
           <img src="assets/ying-portrait.webp?v={{AV}}" alt="Phuay Li Ying, the artist behind The Painted Garden" width="466" height="700" loading="lazy" decoding="async">
