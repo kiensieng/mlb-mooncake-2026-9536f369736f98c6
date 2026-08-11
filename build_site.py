@@ -223,23 +223,38 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
    Positioned by JS with object-fit cover maths, so they stay pinned to the
    products whatever the crop. */
 .hspots{position:absolute; inset:0; z-index:3;}
-.hspot{position:absolute; width:40px; height:40px; margin:-20px 0 0 -20px; padding:0;
+/* markers are gilded butterflies that hover over the products, wings beating */
+.hspot{position:absolute; width:52px; height:52px; margin:-26px 0 0 -26px; padding:0;
   border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent;
-  animation:bob 3.4s ease-in-out infinite;}
-.hspot i{position:absolute; inset:5px; border-radius:50%; background:var(--gold);
-  border:1.5px solid rgba(251,246,242,.95); box-shadow:0 5px 16px rgba(30,22,19,.5);
-  transition:transform .18s, background .18s;}
-.hspot i::after{content:"\\273F"; position:absolute; inset:0; display:flex; align-items:center;
-  justify-content:center; color:#3B2C28; font-size:16px; line-height:1;}
-.hspot:hover i, .hspot:focus-visible i{transform:scale(1.14); background:#D9BF86;}
-.hspot::before{content:""; position:absolute; inset:0; border-radius:50%;
-  border:1.5px solid rgba(231,197,133,.95); animation:spot 2.2s ease-out infinite;}
-@keyframes spot{0%{transform:scale(.55); opacity:.9;} 70%{transform:scale(1.3); opacity:0;}
-  100%{transform:scale(1.3); opacity:0;}}
-@keyframes bob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);}}
+  animation:bob 3.6s ease-in-out infinite;}
+.hspot svg{width:100%; height:100%; display:block; overflow:visible;
+  transform:rotate(-8deg);
+  filter:drop-shadow(0 4px 9px rgba(30,22,19,.6)); transition:transform .18s;}
+.hspot:hover svg, .hspot:focus-visible svg{transform:rotate(-8deg) scale(1.16);}
+.hspot svg path{fill:var(--gold); stroke:#FBF6F2; stroke-width:1.6; stroke-linejoin:round;}
+.hspot svg ellipse{fill:#4E3C37; stroke:#FBF6F2; stroke-width:1;}
+.hspot svg .ant{fill:none; stroke:#FBF6F2; stroke-width:1.4; stroke-linecap:round;}
+.hspot .wl, .hspot .wr{transform-box:fill-box; animation:flut 1.9s ease-in-out infinite;}
+.hspot .wl{transform-origin:100% 50%;}
+.hspot .wr{transform-origin:0% 50%;}
+@keyframes flut{0%,100%{transform:scaleX(1);} 50%{transform:scaleX(.74);}}
+@keyframes bob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-7px);}}
+/* the product card a butterfly opens */
+.hpop{position:absolute; z-index:6; width:min(270px,74vw); background:#FBF6F2; color:#4E3C37;
+  border:1px solid var(--gold); box-shadow:0 18px 50px rgba(20,14,12,.5);
+  opacity:0; visibility:hidden; transform:translateY(8px);
+  transition:opacity .18s, transform .18s, visibility .18s;}
+.hpop.on{opacity:1; visibility:visible; transform:none;}
+.hpop img{width:100%; height:132px; object-fit:cover; display:block;}
+.hpop .hp-b{padding:14px 16px 16px; display:flex; flex-direction:column; gap:4px;}
+.hpop .hp-n{font-weight:600; font-size:15.5px; color:#2A1F1B; padding-right:20px;}
+.hpop .hp-m{font-size:12.5px; color:#6F5F58;}
+.hpop .btn{margin-top:10px; justify-content:center;}
+.hpop .hp-x{position:absolute; top:6px; right:6px; width:30px; height:30px; border:0;
+  background:rgba(42,31,27,.65); color:#FBF6F2; font-size:17px; line-height:1;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;}
 @media(prefers-reduced-motion:reduce){
-  .hspot{animation:none;}
-  .hspot::before{animation:none; opacity:0;}
+  .hspot, .hspot .wl, .hspot .wr{animation:none;}
 }
 .hspot .hlabel{position:absolute; left:50%; bottom:calc(100% + 8px); transform:translateX(-50%);
   background:rgba(42,31,27,.92); color:#FBF6F2; font-size:11.5px; font-weight:600;
@@ -281,6 +296,23 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   padding-bottom:2px; transition:color .18s,border-color .18s;}
 .tlink:hover{color:var(--cocoa); border-color:var(--cocoa);}
 
+/* ---------- back buttons: previous section, and the top of the page ---------- */
+.backer{position:fixed; right:16px; bottom:18px; z-index:58; display:flex;
+  flex-direction:column; gap:8px; opacity:0; visibility:hidden; transform:translateY(10px);
+  transition:opacity .22s, transform .22s, visibility .22s;}
+.backer.on{opacity:1; visibility:visible; transform:none;}
+.backer button{width:52px; height:52px; padding:0; border:1.5px solid var(--gold);
+  background:rgba(42,31,27,.88); color:#F4E3C2; cursor:pointer; font-family:var(--f);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  transition:background .18s;}
+.backer button:hover{background:#4E3C37;}
+.backer button svg{width:15px; height:15px; display:block;}
+.backer button span{font-size:8.5px; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase;}
+@media (max-width:759px){
+  .backer{bottom:calc(66px + env(safe-area-inset-bottom) + 14px); right:12px;}
+}
+
 /* ---------- section furniture ---------- */
 .part{margin:clamp(74px,11vw,140px) 0 0;}
 .part-head{position:relative; margin-bottom:clamp(34px,5vw,58px);}
@@ -319,24 +351,38 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   padding:clamp(10px,2vw,20px) 0 clamp(56px,9vw,104px);}
 .manifesto .mtext{border-top:1px solid rgba(199,166,106,.35);
   padding-top:clamp(26px,4vw,44px);}
-/* on wide screens the thought runs across two columns, matching the full
-   width of the hero caption above instead of stranding a narrow block */
-@media(min-width:900px){
-  .manifesto .mtext{columns:2; column-gap:clamp(48px,7vw,96px);}
-  .manifesto p{break-inside:avoid;}
-  .manifesto p:first-child{column-span:all; font-size:clamp(19px,2.4vw,24px);
-    color:#F0E7E2; max-width:44ch; margin-bottom:30px;}
-}
 .manifesto p{margin:0 0 16px; font-size:clamp(17px,2.2vw,20px); color:#E3D8D3; line-height:1.6;}
 .manifesto p:last-child{margin-bottom:0;}
 .manifesto p strong{color:#fff; font-weight:600;}
+/* the opening thought runs large across the full measure; the body sits left
+   and the practical note (halal, vegetarian) reads as a gilded aside on the
+   right, so the block fills the same width as the title spread above it */
+.manifesto p:first-child{font-size:clamp(19px,2.6vw,26px); color:#F0E7E2;
+  max-width:40ch; margin-bottom:clamp(24px,3.4vw,38px);}
+.manifesto p:last-child{border-left:2px solid var(--gold);
+  padding:6px 0 6px clamp(18px,2.4vw,26px); color:#EFE3DC;}
+@media(min-width:900px){
+  .manifesto .mtext{display:grid; grid-template-columns:1.25fr 1fr;
+    column-gap:clamp(48px,7vw,96px); align-items:center;}
+  .manifesto p:first-child{grid-column:1 / -1;}
+  .manifesto p{margin-bottom:0;}
+}
+@media(max-width:899px){
+  .manifesto p:last-child{margin-top:10px;}
+}
 
 /* ---------- tools (matcher + builder) ---------- */
 .tool{background:var(--linen); padding:clamp(30px,5vw,60px) clamp(22px,4vw,56px);}
-.tool-kicker{display:block; font-size:11px; font-weight:600; letter-spacing:.26em;
-  text-transform:uppercase; color:var(--brass);}
-.tool h3{font-size:clamp(25px,4.2vw,40px); font-weight:600; letter-spacing:-.026em;
-  margin:12px 0 10px; line-height:1.06;}
+/* the tool name is the headline act, not a form label: large, gilded and
+   flanked by a rule so it can't be mistaken for a survey heading */
+.tool-kicker{display:flex; align-items:center; gap:18px; font-size:clamp(14px,1.9vw,18px);
+  font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:#96762F;
+  white-space:nowrap;}
+.tool-kicker::before{content:"\\273F"; font-size:.9em; color:var(--gold); letter-spacing:0;}
+.tool-kicker::after{content:""; height:1.5px; flex:1; max-width:220px;
+  background:linear-gradient(90deg,var(--gold),transparent);}
+.tool h3{font-size:clamp(28px,4.6vw,46px); font-weight:600; letter-spacing:-.026em;
+  margin:14px 0 10px; line-height:1.06;}
 .tool .sub{color:#6F5F58; font-size:16px; margin:0 0 30px; max-width:56ch;}
 .qsteps{display:flex; gap:5px; margin-bottom:30px; max-width:280px;}
 .qsteps i{flex:1; height:2px; background:#D6CBC2;}
@@ -599,6 +645,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   gap:clamp(16px,3vw,32px); margin:0 auto clamp(38px,5.5vw,58px);}
 .collab-logos img{height:28px; width:auto; display:block; opacity:.94;}
 .collab-logos img.ying{height:46px;}
+.collab-logos img.mlb{height:34px;}
 .collab-logos span{color:#C7A66A; font-size:13px; opacity:.8;}
 .agrid{display:grid; gap:clamp(30px,4.5vw,64px); align-items:start;}
 @media(min-width:900px){ .agrid{grid-template-columns:1fr 1.05fr;} }
@@ -609,15 +656,20 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .amedia figcaption{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
   color:#BBA89F; margin-top:12px; line-height:1.6;}
 @media(max-width:899px){ .agrid .amedia{order:-1;} }
-/* the artist appears as a compact byline blurb, portrait and a line */
-.ablurb{display:flex; gap:16px; align-items:center; margin:26px 0 0;
+/* the artist appears as a compact byline blurb: portrait, attribution and her link */
+.ablurb{display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin:26px 0 0;
   padding:16px 18px; border:1px solid rgba(199,166,106,.35);
   background:rgba(251,246,242,.05);}
 .ablurb img{width:72px; height:72px; border-radius:50%; object-fit:cover;
   object-position:50% 18%; flex:none; display:block;
   border:1.5px solid var(--gold); box-shadow:0 4px 16px rgba(20,14,12,.4);}
-.ablurb .an{display:block; font-size:15.5px; font-weight:600; color:#FBF6F2;}
+.ablurb .apre{display:block; font-size:11px; font-weight:600; letter-spacing:.18em;
+  text-transform:uppercase; color:#C7A66A; margin-bottom:4px;}
+.ablurb .an{display:block; font-size:16.5px; font-weight:600; color:#FBF6F2;}
 .ablurb .as{display:block; font-size:13px; color:#CDBBB2; margin-top:3px;}
+.ablurb .awb{margin-left:auto; align-self:center;}
+@media(max-width:560px){ .ablurb .awb{margin-left:0; width:100%; justify-content:center;} }
+.artist .alede{font-size:clamp(19px,2.6vw,24px); color:#F4EBE6; font-weight:500;}
 .artist .acol{max-width:56ch; color:#EFE4DE;}
 .artist .eyebrow{color:#EFDCB4;}
 .artist h3{font-size:clamp(28px,4.8vw,52px); font-weight:600; letter-spacing:-.03em;
@@ -625,7 +677,6 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .artist p{margin:18px 0 0; font-size:16.5px; color:#E0D3CD;}
 .artist p strong{color:#fff; font-weight:600;}
 .artist .acts{display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:30px 0 0;}
-.artist .blurb-act{margin-top:14px;}
 /* the giving note: boxed and gilded so the $1 pledge reads as the heart of the section */
 .artist .bcfnote{margin-top:34px; padding:clamp(22px,3.4vw,30px) clamp(20px,3vw,28px);
   border:1.5px solid rgba(199,166,106,.6); background:rgba(199,166,106,.10);
@@ -642,7 +693,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   text-transform:uppercase; color:#EBD9AE;}
 .artist .bcfnote p{margin:14px 0 0; font-size:15.5px;}
 /* under the artwork: its call to action, then the collaborators together */
-.amedia .amact{display:flex; margin:18px 0 0;}
+.amedia .amact{display:flex; justify-content:flex-end; margin:18px 0 0;}
 .amedia .agroup{margin-top:clamp(28px,4.5vw,46px);}
 .amedia .agroup figcaption.credit{text-transform:none; letter-spacing:0; font-size:13px;
   color:#CDBBB2; line-height:1.65; margin-top:12px;}
@@ -1295,45 +1346,102 @@ JS = """
     if (!fig || !layer || !img) return;
     /* [x%, y%, keepsake id] measured on the master frames */
     var LAND = [
-      [44.5, 46.5, 'the-painted-garden-box'],
+      [56, 70.5, 'the-painted-garden-box'],
       [46, 41, 'tote-of-bliss'],
       [29, 50, 'blossom-drawer-chest'],
       [51, 52, 'tote-of-good-health'],
       [52.5, 60, 'a-court-of-peonies'],
+      [41, 55, 'a-court-of-peonies-duo'],
+      [41, 59.5, 'the-painted-garden-duo'],
+      [45.5, 62, 'the-dawn'],
       [58, 64, 'the-painted-garden'],
       [70, 60, 'elegance-reunion-turntable'],
       [43, 69, 'the-dusk'],
       [68, 68, 'weaving-moments']
     ];
     var PORT = [
-      [47, 46, 'the-painted-garden-box'],
+      [57, 71.5, 'the-painted-garden-box'],
       [46.5, 39.5, 'tote-of-bliss'],
       [21, 52, 'blossom-drawer-chest'],
       [55, 54, 'tote-of-good-health'],
       [52, 62, 'a-court-of-peonies'],
+      [36, 58.5, 'a-court-of-peonies-duo'],
+      [35, 63.5, 'the-painted-garden-duo'],
+      [42, 65, 'the-dawn'],
       [60, 66, 'the-painted-garden'],
       [72, 60, 'elegance-reunion-turntable'],
       [40, 72, 'the-dusk'],
       [74, 68, 'weaving-moments']
     ];
-    function nameOf(id){
-      for (var i=0;i<K.length;i++){ if (K[i].id===id) return K[i].name; }
-      return '';
+    function kOf(id){
+      for (var i=0;i<K.length;i++){ if (K[i].id===id) return K[i]; }
+      return null;
     }
+    function nameOf(id){ var k = kOf(id); return k ? k.name : ''; }
+    var BFLY = '<svg viewBox="0 0 48 48" aria-hidden="true">' +
+      '<g class="wl">' +
+        '<path d="M21.5 22.5 C16 10 4 6 3.5 14.5 C3.2 20 10 24.5 21.5 25.5 Z"/>' +
+        '<path d="M21.5 27 C13 27.5 7 33 9.5 38.5 C11.8 43 19 39.5 22 30.5 Z"/>' +
+      '</g>' +
+      '<g class="wr">' +
+        '<path d="M26.5 22.5 C32 10 44 6 44.5 14.5 C44.8 20 38 24.5 26.5 25.5 Z"/>' +
+        '<path d="M26.5 27 C35 27.5 41 33 38.5 38.5 C36.2 43 29 39.5 26 30.5 Z"/>' +
+      '</g>' +
+      '<ellipse cx="24" cy="26" rx="2.1" ry="8.2"/>' +
+      '<path class="ant" d="M23 19 C21.5 14.5 18.5 11.5 15.5 10.5 M25 19 C26.5 14.5 29.5 11.5 32.5 10.5"/>' +
+      '</svg>';
+    /* the card a butterfly opens: product photo, name, and a button through */
+    var pop = document.createElement('div');
+    pop.className = 'hpop';
+    layer.appendChild(pop);
+    var popFor = null;
+    function closePop(){ pop.classList.remove('on'); popFor = null; }
+    function openPop(id, b){
+      if (popFor === id && pop.classList.contains('on')){ closePop(); return; }
+      var k = kOf(id); if (!k) return;
+      popFor = id;
+      pop.innerHTML =
+        '<img src="assets/' + k.img + '?v={{AV}}" alt="">' +
+        '<button type="button" class="hp-x" aria-label="Close">&times;</button>' +
+        '<div class="hp-b">' +
+          '<span class="hp-n">' + esc(k.name) + '</span>' +
+          '<span class="hp-m">' + esc(k.cn) + ' &middot; ' + esc(k.format) + '</span>' +
+          '<a class="btn gold sm" href="#k-' + k.id + '">See the product</a>' +
+        '</div>';
+      pop.classList.add('on');
+      var cw = fig.clientWidth, ch = fig.clientHeight;
+      var x = parseFloat(b.style.left) || 0, y = parseFloat(b.style.top) || 0;
+      var pw = pop.offsetWidth || 260, ph = pop.offsetHeight || 240;
+      var left = Math.max(10, Math.min(x - pw/2, cw - pw - 10));
+      var top = (y + 36 + ph > ch - 10) ? (y - ph - 40) : (y + 36);
+      if (top < 10) top = 10;
+      pop.style.left = left + 'px'; pop.style.top = top + 'px';
+    }
+    pop.addEventListener('click', function(e){
+      if (e.target.closest && e.target.closest('.hp-x')){ closePop(); return; }
+      if (e.target.closest && e.target.closest('a')) closePop();
+    });
+    document.addEventListener('click', function(e){
+      if (pop.classList.contains('on') && !layer.contains(e.target)) closePop();
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') closePop();
+    });
     var spots = LAND.map(function(s, i){
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'hspot';
       b.style.animationDelay = ((i * 0.45) % 2.7).toFixed(2) + 's';
       b.setAttribute('aria-label', 'See ' + nameOf(s[2]));
-      b.innerHTML = '<i></i><span class="hlabel">' + esc(nameOf(s[2])) + '</span>';
+      b.innerHTML = BFLY + '<span class="hlabel">' + esc(nameOf(s[2])) + '</span>';
       b.addEventListener('click', function(){
         ga('hotspot_click', {item_id: s[2]});
-        if (!revealKeepsake(s[2])) window.location.hash = '#k-' + s[2];
+        openPop(s[2], b);
       });
       layer.appendChild(b);
       return b;
     });
     function place(){
+      closePop();
       var cw = fig.clientWidth, ch = fig.clientHeight;
       var portrait = (img.currentSrc || img.src).indexOf('-p.webp') >= 0;
       var iw = portrait ? 900 : 1500, ih = portrait ? 1200 : 1500;
@@ -1355,6 +1463,61 @@ JS = """
     }
     if (img.complete) place(); else img.addEventListener('load', place);
     window.addEventListener('resize', place, {passive:true});
+  })();
+
+  /* ---------------- back to previous section / top ----------------
+     Two fixed buttons that appear once the reader is into the page: one walks
+     back up section by section, the other returns straight to the top. */
+  (function(){
+    var bk = byId('backer'), prev = byId('bkPrev'), top = byId('bkTop');
+    if (!bk || !prev || !top) return;
+    var ids = ['concierge','keepsakes','builder','mooncakes','garden','where'];
+    function go(target){
+      /* self-animated ease-out. The page sets scroll-behavior:smooth, which
+         turns every plain scrollTo into a competing smooth scroll, so CSS
+         smoothness is suspended for the duration and restored after. */
+      target = Math.max(0, target);
+      var html = document.documentElement, prevSB = html.style.scrollBehavior;
+      html.style.scrollBehavior = 'auto';
+      function done(){ html.style.scrollBehavior = prevSB; }
+      if (reduced){ window.scrollTo(0, target); done(); return; }
+      var start = window.scrollY, d = target - start, t0 = null, fired = false;
+      var dur = Math.min(900, 320 + Math.abs(d) * 0.05);
+      function step(ts){
+        fired = true;
+        if (t0 === null) t0 = ts;
+        var p = Math.min(1, (ts - t0) / dur);
+        var e = 1 - Math.pow(1 - p, 3);
+        window.scrollTo(0, start + d * e);
+        if (p < 1) requestAnimationFrame(step); else done();
+      }
+      requestAnimationFrame(step);
+      /* frames can be suspended (background webviews, some embeds): jump instead */
+      setTimeout(function(){ if (!fired){ window.scrollTo(0, target); done(); } }, 180);
+    }
+    prev.addEventListener('click', function(){
+      var y = window.scrollY, navh = 58, cur = -1;
+      var tops = [];
+      for (var i=0;i<ids.length;i++){
+        var el = byId(ids[i]);
+        if (el) tops.push(el.getBoundingClientRect().top + y - navh - 14);
+      }
+      for (var j=0;j<tops.length;j++){ if (tops[j] <= y + 8) cur = j; }
+      /* deep inside a section: first return to its start; already at a
+         section's start: step up to the one before it */
+      if (cur >= 0 && y > tops[cur] + 40) go(tops[cur]);
+      else if (cur >= 1) go(tops[cur - 1]);
+      else go(0);
+    });
+    top.addEventListener('click', function(){ go(0); });
+    var shown = null;
+    function vis(){
+      var on = window.scrollY > 600;
+      if (on !== shown){ shown = on; bk.classList.toggle('on', on); }
+    }
+    window.addEventListener('scroll', vis, {passive:true});
+    window.addEventListener('resize', vis, {passive:true});
+    vis();
   })();
 
   /* ---------------- outbound click tracking ---------------- */
@@ -1803,6 +1966,17 @@ TEMPLATE = """<!DOCTYPE html>
 
 <canvas id="petals" aria-hidden="true"></canvas>
 
+<div class="backer" id="backer">
+  <button type="button" id="bkPrev" aria-label="Back to the previous section">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10.5 8 5.5 13 10.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Prev</span>
+  </button>
+  <button type="button" id="bkTop" aria-label="Back to the top of the page">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8 8 3 13 8 M3 13 8 8 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Top</span>
+  </button>
+</div>
+
 <nav class="jump">
   <div class="in">
     <a href="#concierge">Gift matcher</a>
@@ -1949,11 +2123,11 @@ TEMPLATE = """<!DOCTYPE html>
 <!-- ================= THE PAINTED GARDEN / YING / BCF ================= -->
 <section class="artist" id="garden">
   <div class="ainner wrap">
-    <span class="collab">A collaboration by Mdm Ling Bakery<br>with World of Ying and Breast Cancer Foundation</span>
+    <span class="collab">A Mdm Ling Bakery collaboration with<br>World of Ying and Breast Cancer Foundation</span>
     <div class="collab-logos">
-      <img src="assets/mlb-logo-white.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="304" loading="lazy" decoding="async">
-      <span aria-hidden="true">&times;</span>
       <img class="ying" src="assets/logo-ying.png?v={{AV}}" alt="World of Ying" width="592" height="260" loading="lazy" decoding="async">
+      <span aria-hidden="true">&times;</span>
+      <img class="mlb" src="assets/mlb-logo-white.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="304" loading="lazy" decoding="async">
       <span aria-hidden="true">&times;</span>
       <img src="assets/logo-bcf.png?v={{AV}}" alt="Breast Cancer Foundation" width="359" height="64" loading="lazy" decoding="async">
     </div>
@@ -1961,21 +2135,20 @@ TEMPLATE = """<!DOCTYPE html>
       <div class="acol">
         <span class="eyebrow">百花迎月 &middot; The Painted Garden</span>
         <h3>A garden painted for Mdm Ling</h3>
-        <p>Singaporean artist <strong>Phuay Li Ying</strong> painted this year's garden as a quiet portrait of Mdm Ling herself. The central bloom is her. The smaller flowers are the people she gathers around her, <strong>wildflowers of many colours and origins rising together to greet the festival moon</strong>.</p>
-        <p>Her artwork runs across three pieces in the collection: the <strong>heritage tin</strong>, the <strong>duo tin</strong> and the <strong>silk paper gift box</strong>, each washed in gentle pinks, lilacs and gold with a quiet glow of foil.</p>
+        <p class="alede">The people we love are worth caring for.</p>
+        <p>A garden only grows because someone tends it. As you pass this box on, we hope it's also a nudge for the women in your life to look after their breast health.</p>
         <div class="ablurb">
           <img src="assets/ying-portrait.webp?v={{AV}}" alt="Phuay Li Ying, the artist behind The Painted Garden" width="466" height="700" loading="lazy" decoding="async">
           <div>
+            <span class="apre">Painted for Mdm Ling Bakery by</span>
             <span class="an">Phuay Li Ying</span>
-            <span class="as">Singapore print artist &middot; World of Ying</span>
+            <span class="as">@theworldofying &middot; Singapore print artist</span>
           </div>
-        </div>
-        <div class="acts blurb-act">
-          <a class="btn ghost sm" href="{{ARTIST_IG}}" target="_blank" rel="noopener">Visit World of Ying &#8599;</a>
+          <a class="btn ghost sm awb" href="{{ARTIST_IG}}" target="_blank" rel="noopener">Visit World of Ying &#8599;</a>
         </div>
         <div class="bcfnote">
           <span class="amt"><span class="d">$1</span><span class="dsub">with every box,<br>given onward</span></span>
-          <p>from every <strong>Painted Garden Box</strong> goes to the <strong>Breast Cancer Foundation</strong>, supporting awareness, screening and survivor care here in Singapore. Each garden you give helps look after someone else's.</p>
+          <p>From every <strong>Painted Garden Box</strong>, this dollar goes to the <strong>Breast Cancer Foundation</strong>, supporting awareness, screening and survivor care here in Singapore. Each garden you give helps look after someone else's.</p>
           <a class="btn gold sm" href="{{BCF}}" target="_blank" rel="noopener" data-bcf="feature">Visit Breast Cancer Foundation &#8599;</a>
         </div>
       </div>
