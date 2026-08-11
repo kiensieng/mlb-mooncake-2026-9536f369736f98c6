@@ -288,6 +288,9 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 /* the moment the hero leaves the screen, every wing rests */
 .hspots.offstage .hspot, .hspots.offstage .hspot .wl, .hspots.offstage .hspot .wr{
   animation-play-state:paused;}
+/* before the garden gate opens, the flock waits in the wings */
+.hspots.waiting .hspot, .hspots.waiting .hspot svg,
+.hspots.waiting .hspot .wl, .hspots.waiting .hspot .wr{animation-play-state:paused;}
 @media(max-width:600px){
   .hspot{width:34px; height:34px; margin:-17px 0 0 -17px;}
   .hpop{width:min(230px,68vw);}
@@ -516,10 +519,10 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .feat .fimg{position:relative;}
 .feat .fbadge{position:absolute; top:20px; left:-12px; z-index:2;
   display:inline-flex; align-items:center; gap:8px;
-  background:var(--gold); color:#33241F; font-size:13px; font-weight:700;
+  background:var(--cocoa); color:#FBF6F2; font-size:13px; font-weight:700;
   letter-spacing:.09em; text-transform:uppercase; padding:10px 16px;
-  box-shadow:0 8px 22px rgba(78,60,55,.35);}
-.feat .fbadge svg{width:16px; height:16px; fill:#33241F; flex:none;}
+  border:1.5px solid var(--gold); box-shadow:0 8px 22px rgba(30,22,19,.4);}
+.feat .fbadge svg{width:16px; height:16px; fill:var(--gold); flex:none;}
 .feat.rev .fbadge{left:auto; right:-12px;}
 @media(max-width:600px){ .feat .fbadge{left:12px; top:12px;} .feat.rev .fbadge{right:12px; left:auto;} }
 .tag.rose{border-color:#E0CBC6; color:var(--rose);}
@@ -670,8 +673,6 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   outline:1.5px solid var(--hair); outline-offset:-1.5px; transition:outline-color .16s;}
 .fov img{width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
   transform:scale(1.55); transform-origin:50% 96%;}
-/* the single yolk shot is framed closer in camera, so it needs less zoom */
-.fov img[src*="trad-yolk"]{transform:scale(1.4);}
 .fov a:hover .fw{outline-color:var(--rose);}
 .fov .fname{display:block; font-size:12.5px; font-weight:600; line-height:1.3; margin:9px 0 0;}
 .fov a:hover .fname{color:var(--rose);}
@@ -1254,6 +1255,21 @@ JS = """
      per session. Any tap, scroll or key opens it. Skipped entirely for
      reduced-motion, for a repeat visit, and for anyone arriving on a deep link
      (an EDM pointing at #where should land on #where, not on a gate). */
+  /* Everything choreographed to the moment of entry (title animation, the
+     butterflies' arrival) waits for the garden gate to open. When there is
+     no gate this session, entry is immediate. */
+  var gardenEntered = false, enterCbs = [];
+  function onGardenEnter(cb){
+    if (gardenEntered){ cb(); return; }
+    enterCbs.push(cb);
+  }
+  function fireGardenEnter(){
+    if (gardenEntered) return;
+    gardenEntered = true;
+    for (var i = 0; i < enterCbs.length; i++){ try { enterCbs[i](); } catch(e){} }
+    enterCbs = [];
+  }
+
   /* the campaign title writes itself across the brand strip, bows out, and
      the logo takes its place. Once per session; never for reduced-motion or
      a deep link; after the garden gate when the gate is showing. */
@@ -1270,12 +1286,13 @@ JS = """
 
   (function(){
     var intro = byId('intro');
-    if (!intro) return;
+    if (!intro){ startBrandAnim(); fireGardenEnter(); return; }
     var seen;
     try { seen = window.sessionStorage.getItem('mlbIntro'); } catch(e){ seen = null; }
     if (reduced || seen || window.location.hash){
       if (intro.parentNode) intro.parentNode.removeChild(intro);
       startBrandAnim();
+      fireGardenEnter();
       return;
     }
 
@@ -1311,6 +1328,7 @@ JS = """
       document.body.style.overflow = prevOverflow;
       ga('intro_open', {});
       window.setTimeout(startBrandAnim, 500);
+      window.setTimeout(fireGardenEnter, 450);
       window.setTimeout(function(){
         if (vid){ try { vid.pause(); vid.removeAttribute('src'); vid.load(); } catch(e){} }
         if (intro.parentNode) intro.parentNode.removeChild(intro);
@@ -1611,13 +1629,18 @@ JS = """
     var tipSeen = null;
     try { tipSeen = window.sessionStorage.getItem('mlbHtip'); } catch(e){}
     function hideTip(){ tip.classList.remove('on'); }
-    if (!tipSeen){
-      window.setTimeout(function(){
-        tip.classList.add('on');
-        try { window.sessionStorage.setItem('mlbHtip','1'); } catch(e){}
-        window.setTimeout(hideTip, 9000);
-      }, 1400);
-    }
+    /* the flock (and its hint) hold until the visitor steps through the gate */
+    layer.classList.add('waiting');
+    onGardenEnter(function(){
+      layer.classList.remove('waiting');
+      if (!tipSeen){
+        window.setTimeout(function(){
+          tip.classList.add('on');
+          try { window.sessionStorage.setItem('mlbHtip','1'); } catch(e){}
+          window.setTimeout(hideTip, 9000);
+        }, 2600);
+      }
+    });
     var spots = LAND.map(function(s, i){
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'hspot';
