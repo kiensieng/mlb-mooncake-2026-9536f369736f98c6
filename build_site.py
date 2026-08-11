@@ -319,6 +319,8 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   transition:opacity .18s, transform .18s, visibility .18s;}
 .hpop.on{opacity:1; visibility:visible; transform:none;}
 .hpop img{width:100%; height:132px; object-fit:cover; display:block;}
+/* the woven bag sits low in its photograph */
+.hpop img[src*="weaving-moments"]{object-position:50% 72%;}
 .hpop .hp-b{padding:14px 16px 16px; display:flex; flex-direction:column; gap:4px;}
 .hpop .hp-n{font-weight:600; font-size:15.5px; color:#2A1F1B; padding-right:20px;}
 .hpop .hp-m{font-size:12.5px; color:#6F5F58;}
@@ -774,7 +776,20 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   box-shadow:0 18px 60px rgba(20,14,12,.45);}
 .amedia figcaption{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
   color:#BBA89F; margin-top:12px; line-height:1.6;}
-@media(max-width:899px){ .agrid .amedia{order:-1;} }
+/* phones read the story as one column: collab line, logos, eyebrow, the
+   artwork, the message, the artist, the pledge, then the box */
+@media(max-width:899px){
+  .agrid{display:flex; flex-direction:column; gap:20px;}
+  .agrid .acol, .agrid .amedia{display:contents;}
+  .acol .eyebrow{order:1;}
+  .amedia .aart{order:2;}
+  .artist .acol h3{order:3; margin-top:0;}
+  .artist .acol p{order:4; margin-top:0;}
+  .ablurb{order:5; margin-top:0;}
+  .artist .bcfnote{order:6; margin-top:0;}
+  .amedia .amact{order:7; margin:0;}
+  .amedia .agroup{order:8; margin-top:6px;}
+}
 /* the artist appears as a compact byline blurb: portrait, attribution and her link */
 .ablurb{display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin:26px 0 0;
   padding:16px 18px; border:1px solid rgba(199,166,106,.35);
@@ -1771,8 +1786,13 @@ JS = """
     }
     form.addEventListener('submit', function(e){
       e.preventDefault();
-      var q = (inp.value || '').replace(/^\\s+|\\s+$/g, '');
-      if (!q){ inp.focus(); return; }
+      var q = (inp.value || '').replace(/\\D/g, '');
+      if (q.length !== 6){
+        out.hidden = false;
+        out.innerHTML = '<p class="near-note">Please enter your 6 digit postal code.</p>';
+        inp.focus();
+        return;
+      }
       out.hidden = false;
       out.innerHTML = '<p class="near-note">Finding booths near ' + esc(q) + '\\u2026</p>';
       ga('booth_search', {});
@@ -1782,8 +1802,8 @@ JS = """
         .then(function(d){
           var r0 = d && d.results && d.results[0];
           if (!r0 || !r0.LATITUDE){
-            out.innerHTML = '<p class="near-note">We couldn\\u2019t place that address. ' +
-              'Try just the 6 digit postal code.</p>';
+            out.innerHTML = '<p class="near-note">We couldn\\u2019t place that postal code. ' +
+              'Please check the 6 digits and try again.</p>';
             return;
           }
           var la = parseFloat(r0.LATITUDE), lo = parseFloat(r0.LONGITUDE);
@@ -2495,7 +2515,7 @@ TEMPLATE = """<!DOCTYPE html>
         </div>
         <div class="nearest">
           <form id="nearForm" novalidate>
-            <input id="nearIn" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="60" placeholder="Your postal code or address" aria-label="Your postal code or address">
+            <input id="nearIn" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="6" pattern="[0-9]{6}" placeholder="Your 6 digit postal code" aria-label="Your 6 digit postal code">
             <button class="btn sm" type="submit">Find my nearest booth</button>
           </form>
           <div id="nearOut" class="near-out" hidden></div>
