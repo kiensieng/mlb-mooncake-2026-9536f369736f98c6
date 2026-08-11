@@ -626,9 +626,13 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 @media(min-width:560px){ .fov{grid-template-columns:repeat(4,1fr);} }
 @media(min-width:900px){ .fov{grid-template-columns:repeat(4,1fr);} }
 .fov a{display:block; text-decoration:none; color:var(--ink);}
-.fov img{width:100%; aspect-ratio:1/1; object-fit:cover; background:var(--mushroom);
+/* the frame crops in tight on the mooncake itself: the full scene shots put
+   the cake small and low, so the thumb zooms to the plate */
+.fov .fw{display:block; aspect-ratio:1/1; overflow:hidden; background:var(--mushroom);
   outline:1.5px solid var(--hair); outline-offset:-1.5px; transition:outline-color .16s;}
-.fov a:hover img{outline-color:var(--rose);}
+.fov img{width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
+  transform:scale(1.9); transform-origin:50% 76%;}
+.fov a:hover .fw{outline-color:var(--rose);}
 .fov .fname{display:block; font-size:12.5px; font-weight:600; line-height:1.3; margin:9px 0 0;}
 .fov a:hover .fname{color:var(--rose);}
 
@@ -1108,7 +1112,7 @@ def flavour_overview():
     for rid, title, n in groups:
         items = ""
         for f in FLAV_INDEX[i:i + n]:
-            items += ('<a href="#%s"><img src="%s" alt="%s" loading="lazy" decoding="async">'
+            items += ('<a href="#%s"><span class="fw"><img src="%s" alt="%s" loading="lazy" decoding="async"></span>'
                       '<span class="fname">%s</span></a>'
                       % (f["slug"], v(f["img"]), f["name"], f["name"]))
         i += n
