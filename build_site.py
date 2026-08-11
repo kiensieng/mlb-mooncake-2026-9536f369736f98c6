@@ -39,7 +39,7 @@ from data import (KEEPSAKES, SETS, BOOTHS, CATEGORIES, RECIPIENTS, PRIORITIES,
                   TABLES, BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSET_V = 9  # bump when an asset is replaced under the same filename
+ASSET_V = 10  # bump when an asset is replaced under the same filename
 
 # Breast Cancer Foundation, Singapore. Verified 6 Aug 2026.
 BCF_URL = "https://www.bcf.org.sg"
@@ -673,6 +673,9 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   outline:1.5px solid var(--hair); outline-offset:-1.5px; transition:outline-color .16s;}
 .fov img{width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
   transform:scale(1.55); transform-origin:50% 96%;}
+/* the single yolk shot is already a close-up: shown unzoomed, its plate sits
+   at the same size as the zoomed wide shots beside it */
+.fov img[src*="trad-yolk"]{transform:none;}
 .fov a:hover .fw{outline-color:var(--rose);}
 .fov .fname{display:block; font-size:12.5px; font-weight:600; line-height:1.3; margin:9px 0 0;}
 .fov a:hover .fname{color:var(--rose);}
