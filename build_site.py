@@ -39,7 +39,7 @@ from data import (KEEPSAKES, SETS, BOOTHS, CATEGORIES, RECIPIENTS, PRIORITIES,
                   TABLES, BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSET_V = 5  # bump when an asset is replaced under the same filename
+ASSET_V = 6  # bump when an asset is replaced under the same filename
 
 # Breast Cancer Foundation, Singapore. Verified 6 Aug 2026.
 BCF_URL = "https://www.bcf.org.sg"
@@ -210,16 +210,11 @@ header.hero .hfig{position:relative; height:min(62svh,640px); overflow:hidden;
   background:var(--mushroom);}
 header.hero .hfig picture{position:absolute; inset:0;}
 header.hero .hbg{width:100%; height:100%; object-fit:cover; object-position:50% 40%;}
-/* Wide screens: the campaign photograph is square, so a full-bleed strip can
-   only ever crop it. Show the WHOLE frame instead: a centred square plate on
-   the cloud ground, nothing cut off. Phones keep the full-bleed portrait cut. */
+/* Wide screens: the photograph fills the whole screen below the logo strip,
+   framed on the band of the image where the products sit. */
 @media(min-width:760px){
-  header.hero{background:var(--cloud);}
-  header.hero .hfig{width:min(88vw,860px); height:auto; aspect-ratio:1/1;
-    margin:0 auto;}
-  header.hero .hfig::after{background:linear-gradient(to top, rgba(42,31,27,.30) 0%,
-    rgba(42,31,27,0) 18%);}
-  .hero .hcap{background:var(--cocoa); margin-top:clamp(26px,4vw,44px);}
+  header.hero .hfig{height:calc(100svh - var(--navh));}
+  header.hero .hbg{object-position:50% 58%;}
 }
 header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:none;
   background:linear-gradient(to top, rgba(42,31,27,.55) 0%, rgba(42,31,27,.10) 22%,
@@ -309,9 +304,13 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .band .bt .eyebrow{color:#EFDCB4;}
 .band.short{min-height:min(52svh,440px);}
 
-/* ---------- manifesto ---------- */
-.manifesto{background:var(--cocoa); color:#EFE7E2; padding:clamp(56px,9vw,104px) 0;}
-.manifesto .mtext{max-width:64ch;}
+/* ---------- manifesto ----------
+   Sits directly under the hero caption on the same cocoa ground, so it reads
+   as one closing thought rather than a second stranded block. */
+.manifesto{background:var(--cocoa); color:#EFE7E2;
+  padding:clamp(10px,2vw,20px) 0 clamp(56px,9vw,104px);}
+.manifesto .mtext{max-width:64ch; border-top:1px solid rgba(199,166,106,.35);
+  padding-top:clamp(26px,4vw,44px);}
 .manifesto p{margin:0 0 16px; font-size:clamp(17px,2.2vw,20px); color:#E3D8D3; line-height:1.6;}
 .manifesto p:last-child{margin-bottom:0;}
 .manifesto p strong{color:#fff; font-weight:600;}
@@ -531,7 +530,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .flav{display:flex; flex-direction:column;}
 .flav .fp{padding:0; border:0; background:none; cursor:pointer; display:block; position:relative;
   width:100%;}
-.flav .fp img{width:100%; aspect-ratio:4/5; object-fit:cover; background:var(--mushroom); display:block;}
+.flav .fp img{width:100%; height:auto; aspect-ratio:1/1; object-fit:cover; background:var(--mushroom); display:block;}
 .flav .fp::after{content:""; position:absolute; inset:0; background:rgba(20,16,15,.24);
   opacity:0; transition:opacity .16s;}
 .flav .fp::before{content:""; position:absolute; top:50%; left:50%; width:24px; height:24px;
@@ -570,7 +569,10 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 /* ---------- the artist / BCF feature ---------- */
 .artist{position:relative; overflow:hidden; background:var(--cocoa);
   margin:clamp(74px,11vw,140px) 0 0;}
-.artist .ainner{position:relative; z-index:2; padding:clamp(48px,8vw,100px) 0;}
+/* padding-block only: a padding SHORTHAND here would zero out the .wrap
+   side gutters and flush the text to the screen edge */
+.artist .ainner{position:relative; z-index:2;
+  padding-top:clamp(48px,8vw,100px); padding-bottom:clamp(48px,8vw,100px);}
 .artist .collab{display:block; text-align:center; color:#E4D6CE; font-size:12px;
   font-weight:600; letter-spacing:.24em; text-transform:uppercase; line-height:2;
   margin:0 auto clamp(34px,5vw,54px); position:relative; padding-bottom:20px;}
@@ -589,8 +591,9 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .ablurb{display:flex; gap:16px; align-items:center; margin:26px 0 0;
   padding:16px 18px; border:1px solid rgba(199,166,106,.35);
   background:rgba(251,246,242,.05);}
-.ablurb img{width:64px; height:80px; object-fit:cover; object-position:50% 12%;
-  flex:none; display:block;}
+.ablurb img{width:72px; height:72px; border-radius:50%; object-fit:cover;
+  object-position:50% 18%; flex:none; display:block;
+  border:1.5px solid var(--gold); box-shadow:0 4px 16px rgba(20,14,12,.4);}
 .ablurb .an{display:block; font-size:15.5px; font-weight:600; color:#FBF6F2;}
 .ablurb .as{display:block; font-size:13px; color:#CDBBB2; margin-top:3px;}
 .artist .acol{max-width:56ch; color:#EFE4DE;}
@@ -696,7 +699,7 @@ def flav(img, alt, name, badges, story, ing, algs, trace):
     FLAV_INDEX.append({"img": img, "name": name, "slug": slug})
     return """<div class="flav" id="%s">
       <button type="button" class="fp" data-lightbox="%s" data-lightbox-alt="%s" aria-label="View a larger photo of %s">
-        <img src="%s" alt="%s" width="420" height="525" loading="lazy" decoding="async">
+        <img src="%s" alt="%s" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>%s</h4>
       <div class="badges">%s</div>
@@ -1313,7 +1316,10 @@ JS = """
       var data = portrait ? PORT : LAND;
       var sc = Math.max(cw/iw, ch/ih);
       var dw = iw*sc, dh = ih*sc;
-      var ox = (cw - dw) * 0.5, oy = (ch - dh) * 0.4; /* matches object-position 50% 40% */
+      /* matches the CSS object-position: 50% 40% on the portrait cut,
+         50% 58% on the wide full-screen crop */
+      var yp = (portrait || cw < 760) ? 0.4 : 0.58;
+      var ox = (cw - dw) * 0.5, oy = (ch - dh) * yp;
       spots.forEach(function(b, i){
         var x = ox + data[i][0]/100*dw, y = oy + data[i][1]/100*dh;
         var vis = x > 26 && x < cw-26 && y > 26 && y < ch-26;
