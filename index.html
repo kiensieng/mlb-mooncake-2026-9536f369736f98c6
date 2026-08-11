@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Work+Sans:wght@500;600&family=Great+Vibes&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&text=%E8%8A%B1%E6%9C%88%E6%83%85%E9%95%BF&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="assets/band-hero.webp?v=7" imagesrcset="assets/band-hero-p.webp?v=7 900w, assets/band-hero.webp?v=7 1500w" imagesizes="100vw">
+<link rel="preload" as="image" href="assets/band-hero.webp?v=8" imagesrcset="assets/band-hero-p.webp?v=8 900w, assets/band-hero.webp?v=8 1500w" imagesizes="100vw">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MD1H486BMD"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -132,7 +132,28 @@ nav.jump a{text-decoration:none; white-space:nowrap; font-size:11.5px; font-weig
   border-bottom:1.5px solid transparent; transition:color .2s,border-color .2s;}
 nav.jump a:hover{color:var(--ink);}
 nav.jump a.active{color:var(--rose); border-bottom-color:var(--gold);}
-.progress{height:1px; background:var(--gold); width:0; transition:width .1s linear;}
+.progress{height:1px; background:var(--gold); width:0; transition:width .1s linear;
+  position:relative; overflow:visible;}
+/* a butterfly rides the leading edge of the reading line */
+.progress .pfly{position:absolute; right:-10px; top:50%; width:19px; height:19px;
+  transform:translateY(-50%) rotate(90deg); pointer-events:none;}
+.progress .pfly svg{width:100%; height:100%; display:block; overflow:visible;
+  filter:drop-shadow(0 1px 2px rgba(78,60,55,.35));}
+.progress .pfly svg path{fill:var(--gold); stroke:#FBF6F2; stroke-width:1.6; stroke-linejoin:round;}
+.progress .pfly svg ellipse{fill:#4E3C37;}
+.progress .pfly svg .ant{fill:none; stroke:#4E3C37; stroke-width:1.6; stroke-linecap:round;}
+.progress .pfly .wl, .progress .pfly .wr{transform-box:fill-box; animation:flut 1s ease-in-out infinite;}
+.progress .pfly .wl{transform-origin:100% 50%;}
+.progress .pfly .wr{transform-origin:0% 50%;}
+/* the brochure sits apart from the section links, pinned to the bar's edge */
+nav.jump a.nbro{position:absolute; right:16px; top:50%; transform:translateY(-50%);
+  z-index:3; color:#96762F; border:1px solid var(--gold); padding:7px 13px;
+  background:rgba(243,242,241,.9);}
+nav.jump a.nbro:hover{color:#FBF6F2; background:var(--gold);}
+@media (max-width:759px){
+  nav.jump a.nbro{position:static; transform:none; border:1px solid var(--gold);
+    padding:6px 11px; background:none;}
+}
 /* slide affordances: a fading edge plus an animated chevron so the bar
    obviously carries more than it shows */
 nav.jump{position:sticky;}
@@ -464,6 +485,9 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   letter-spacing:.08em; text-transform:uppercase; padding:5px 10px; border:1px solid var(--hair);
   background:transparent; color:#6B5A54;}
 .tag.gold{border-color:#DDC796; color:#8A6E33;}
+/* the $1 pledge reads as a filled badge, not another quiet chip */
+.tag.charity{background:var(--gold); border-color:var(--gold); color:#33241F;
+  font-weight:700; box-shadow:0 2px 8px rgba(199,166,106,.35);}
 .tag.rose{border-color:#E0CBC6; color:var(--rose);}
 .tag.sage{border-color:#CFD6C4; color:#5F6B4C;}
 .tag.chill{border-color:#C6D4DA; color:#4C6570;}
@@ -498,7 +522,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   text-transform:uppercase; color:var(--gold); margin-bottom:6px;}
 .feat .becomes p{margin:0; font-size:16px; color:#5E4F49;}
 .feat .note{margin:14px 0 0; font-size:13.5px; color:var(--muted); font-style:italic; max-width:52ch;}
-.feat .disc{margin:22px 0 0; max-width:52ch; border:1.5px solid var(--gold);
+.feat .disc{margin:20px 0 4px; max-width:52ch; border:1.5px solid var(--gold);
   background:#FBF6EC; padding:14px 18px;}
 .feat .disc .lbl{display:block; font-size:10px; font-weight:700; letter-spacing:.2em;
   text-transform:uppercase; color:#8A6E33; margin-bottom:5px;}
@@ -559,12 +583,16 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 @media(min-width:980px){ .brow{grid-template-columns:repeat(6,1fr);} }
 .chip{font-family:var(--f); padding:0; cursor:pointer; text-align:left; background:none;
   border:0; color:var(--ink); transition:opacity .16s;}
-.chip img{width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:var(--mushroom);
-  outline:1.5px solid transparent; outline-offset:-1.5px; transition:outline-color .16s;}
-.chip span{display:block; font-size:11.5px; font-weight:600; line-height:1.3; padding:9px 0 0;
+/* the frame is a fixed 4:5 window (padding trick, not aspect-ratio, so every
+   browser crops identically and the rows always line up) */
+.chip .cw{display:block; position:relative; padding-top:125%; overflow:hidden;
+  background:var(--mushroom); outline:1.5px solid transparent; outline-offset:-1.5px;
+  transition:outline-color .16s;}
+.chip .cw img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+.chip span.cn2{display:block; font-size:11.5px; font-weight:600; line-height:1.3; padding:9px 0 0;
   letter-spacing:.01em;}
-.chip:hover img{outline-color:var(--rose);}
-.chip.on img{outline-color:var(--rose); outline-width:2.5px;}
+.chip:hover .cw{outline-color:var(--rose);}
+.chip.on .cw{outline-color:var(--rose); outline-width:2.5px;}
 .chip.on span{color:var(--rose);}
 .bout{display:none; border-top:1px solid var(--hair); padding-top:30px;}
 .bout.on{display:block;}
@@ -749,6 +777,24 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   color:#CDBBB2; line-height:1.65; margin-top:12px;}
 
 /* ---------- booth map ---------- */
+/* ---------- nearest booth finder ---------- */
+.nearest{margin:22px 0 0; max-width:560px;}
+.nearest form{display:flex; gap:10px; flex-wrap:wrap;}
+.nearest input{flex:1 1 200px; min-width:0; font-family:var(--f); font-size:15px;
+  padding:12px 14px; border:1.5px solid var(--hair); background:#fff; color:var(--ink);
+  border-radius:0; -webkit-appearance:none;}
+.nearest input:focus{outline:none; border-color:var(--gold);}
+.near-out{margin-top:14px;}
+.near-note{font-size:13.5px; color:var(--muted); margin:0 0 8px;}
+.near-item{display:grid; grid-template-columns:1fr auto; gap:2px 14px; width:100%;
+  text-align:left; font-family:var(--f); padding:12px 14px; margin:0 0 8px;
+  border:1.5px solid var(--hair); background:#fff; cursor:pointer;
+  transition:border-color .16s;}
+.near-item:hover{border-color:var(--gold);}
+.near-item .ni-n{font-size:14.5px; font-weight:600; color:var(--ink);}
+.near-item .ni-d{font-size:13px; font-weight:600; color:#96762F; text-align:right;}
+.near-item .ni-m{grid-column:1 / -1; font-size:12.5px; color:var(--muted);}
+
 .booth-map{height:min(56svh,440px); margin:0 0 18px; background:var(--mushroom);}
 .booth-map .leaflet-popup-content-wrapper{border-radius:0; box-shadow:0 6px 22px rgba(78,60,55,.2);}
 .booth-map .leaflet-popup-tip{box-shadow:none;}
@@ -812,7 +858,7 @@ footer .fbadges img{height:62px; width:auto;}
   <video class="gv" id="introVid" muted playsinline autoplay loop preload="none" aria-hidden="true"></video>
   <div class="veil" aria-hidden="true"></div>
   <div class="seal">
-    <img class="s-logo" src="assets/mlb-logo-white.png?v=7" alt="Mdm Ling Bakery" width="900" height="304">
+    <img class="s-logo" src="assets/mlb-logo-white.png?v=8" alt="Mdm Ling Bakery" width="900" height="304">
     <span class="s-en cs-en">A Bond in Lasting Bloom</span>
     <span class="s-han cs-cn">花月情长</span>
     <span class="s-season">Mid-Autumn 2026</span>
@@ -842,24 +888,25 @@ footer .fbadges img{height:62px; width:auto;}
     <a href="#mooncakes">Mooncakes</a>
     <a href="#garden">The Painted Garden</a>
     <a href="#where">Where to buy</a>
+    <a class="nbro" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="nav">E&#8209;Brochure</a>
   </div>
   <span class="edge l" aria-hidden="true"></span>
   <span class="edge r" aria-hidden="true"></span>
-  <div class="progress" id="navProgress"></div>
+  <div class="progress" id="navProgress"><span class="pfly" aria-hidden="true"><svg viewBox="0 0 48 48"><g class="wl"><path d="M21.5 22.5 C16 10 4 6 3.5 14.5 C3.2 20 10 24.5 21.5 25.5 Z"/><path d="M21.5 27 C13 27.5 7 33 9.5 38.5 C11.8 43 19 39.5 22 30.5 Z"/></g><g class="wr"><path d="M26.5 22.5 C32 10 44 6 44.5 14.5 C44.8 20 38 24.5 26.5 25.5 Z"/><path d="M26.5 27 C35 27.5 41 33 38.5 38.5 C36.2 43 29 39.5 26 30.5 Z"/></g><ellipse cx="24" cy="26" rx="2.1" ry="8.2"/><path class="ant" d="M23 19 C21.5 14.5 18.5 11.5 15.5 10.5 M25 19 C26.5 14.5 29.5 11.5 32.5 10.5"/></svg></span></div>
 </nav>
 
 <header class="hero">
   <div class="hbrand" id="hbrand">
     <span class="hb-title" aria-hidden="true"><span class="cs-en">A Bond in Lasting Bloom</span><span class="cs-cn">花月情长</span></span>
     <div class="hb-logo">
-      <img src="assets/mlb-logo-color.png?v=7" alt="Mdm Ling Bakery" width="900" height="308" fetchpriority="high">
+      <img src="assets/mlb-logo-color.png?v=8" alt="Mdm Ling Bakery" width="900" height="308" fetchpriority="high">
       <span class="hseason">Mid-Autumn 2026</span>
     </div>
   </div>
   <div class="hfig" id="heroFig">
     <picture>
-      <source media="(max-aspect-ratio: 1/1)" srcset="assets/band-hero-p.webp?v=7">
-      <img class="hbg" id="heroImg" src="assets/band-hero.webp?v=7" alt="The Mdm Ling Bakery Mid-Autumn 2026 collection laid out on a white garden table under a fringed parasol, surrounded by roses" width="1500" height="1500" fetchpriority="high" decoding="async">
+      <source media="(max-aspect-ratio: 1/1)" srcset="assets/band-hero-p.webp?v=8">
+      <img class="hbg" id="heroImg" src="assets/band-hero.webp?v=8" alt="The Mdm Ling Bakery Mid-Autumn 2026 collection laid out on a white garden table under a fringed parasol, surrounded by roses" width="1500" height="1500" fetchpriority="high" decoding="async">
     </picture>
     <div class="hspots" id="hspots" aria-label="Tap a marker to jump to that gift set"></div>
   </div>
@@ -886,15 +933,15 @@ footer .fbadges img{height:62px; width:auto;}
       <p class="m-sub">So we design the <strong>keepsake first</strong> and the season second.</p>
       <div class="m-cards">
         <figure>
-          <img src="assets/painted-garden-tin.webp?v=7" alt="The Painted Garden keepsake tin on the garden table" width="800" height="600" loading="lazy" decoding="async">
+          <img src="assets/painted-garden-tin.webp?v=8" alt="The Painted Garden keepsake tin on the garden table" width="800" height="600" loading="lazy" decoding="async">
           <figcaption><strong>A tin</strong> that holds trinkets for years.</figcaption>
         </figure>
         <figure>
-          <img src="assets/the-dusk.webp?v=7" alt="The Dusk leather gift bag among the flowers" width="800" height="600" loading="lazy" decoding="async">
+          <img src="assets/the-dusk.webp?v=8" alt="The Dusk leather gift bag among the flowers" width="800" height="600" loading="lazy" decoding="async">
           <figcaption><strong>A bag</strong> someone actually wears.</figcaption>
         </figure>
         <figure>
-          <img src="assets/elegance-turntable.webp?v=7" alt="The Elegance Reunion Turntable set for the table" width="800" height="600" loading="lazy" decoding="async">
+          <img src="assets/elegance-turntable.webp?v=8" alt="The Elegance Reunion Turntable set for the table" width="800" height="600" loading="lazy" decoding="async">
           <figcaption><strong>A turntable</strong> that comes back out at every reunion dinner.</figcaption>
         </figure>
       </div>
@@ -922,8 +969,8 @@ footer .fbadges img{height:62px; width:auto;}
 <!-- ================= BAND: the garden table ================= -->
 <section class="band">
   <picture>
-    <source media="(max-aspect-ratio: 4/5)" srcset="assets/band-tea-p.webp?v=7">
-    <img src="assets/band-tea.webp?v=7" alt="Three friends at a white garden table with Mdm Ling Bakery mooncake tins, in front of a flowering rose hedge" width="1700" height="1133" loading="lazy" decoding="async">
+    <source media="(max-aspect-ratio: 4/5)" srcset="assets/band-tea-p.webp?v=8">
+    <img src="assets/band-tea.webp?v=8" alt="Three friends at a white garden table with Mdm Ling Bakery mooncake tins, in front of a flowering rose hedge" width="1700" height="1133" loading="lazy" decoding="async">
   </picture>
   <div class="bt">
     <span class="eyebrow">Part one</span>
@@ -954,45 +1001,48 @@ footer .fbadges img{height:62px; width:auto;}
       <h3>The Painted Garden</h3>
       <p class="cat-blurb">Soft watercolour blooms by Singaporean artist <a href="#garden">Phuay Li Ying</a>, across a silk paper gift box, a heritage tin and a slim duo tin.</p>
     </div>
-    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show The Painted Garden Box"><img src="assets/painted-garden-box.webp?v=7" alt="The Painted Garden Box watercolour floral Mid-Autumn gift box by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Painted Garden Box</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show The Painted Garden"><img src="assets/painted-garden-tin.webp?v=7" alt="The Painted Garden 4 piece watercolour floral keepsake mooncake tin" loading="lazy" decoding="async"><span>The Painted Garden</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show The Painted Garden Duo"><img src="assets/painted-garden-duo.webp?v=7" alt="The Painted Garden 2 piece duo watercolour floral mooncake tin" loading="lazy" decoding="async"><span>The Painted Garden Duo</span></button></div></div>
+    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show The Painted Garden Box"><img src="assets/painted-garden-box.webp?v=8" alt="The Painted Garden Box watercolour floral Mid-Autumn gift box by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Painted Garden Box</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show The Painted Garden"><img src="assets/painted-garden-tin.webp?v=8" alt="The Painted Garden 4 piece watercolour floral keepsake mooncake tin" loading="lazy" decoding="async"><span>The Painted Garden</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show The Painted Garden Duo"><img src="assets/painted-garden-duo.webp?v=8" alt="The Painted Garden 2 piece duo watercolour floral mooncake tin" loading="lazy" decoding="async"><span>The Painted Garden Duo</span></button></div></div>
   </div>
   <div class="cpanels"><div class="cpanel on" data-kid="the-painted-garden-box"><article class="feat" id="k-the-painted-garden-box">
-  <div class="fimg"><img src="assets/painted-garden-box.webp?v=7" alt="The Painted Garden Box watercolour floral Mid-Autumn gift box by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/painted-garden-box.webp?v=8" alt="The Painted Garden Box watercolour floral Mid-Autumn gift box by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan">Order online</span>
     <span class="fmt">Gift Box</span>
     <h3>The Painted Garden Box</h3>
     <p class="fcn"><span class="cnmark han">百花迎月</span> <span class="gloss">bǎi huā yíng yuè &middot; a hundred flowers rising to greet the moon</span></p>
+    
     <div class="desc"><p>The Painted Garden features artwork by <strong>Singaporean artist Phuay Li Ying</strong> and arrives in a beautifully designed box, dressed in soft watercolour blooms printed on <strong>silk paper</strong> for an <strong>elegant, artisanal finish</strong>, the kind of pastel garden that feels like spring held still.</p><p>Every petal is washed in gentle pinks, lilacs and gold, a celebration of nature at its most tender, finished with a quiet glow of <strong>foil</strong>.</p><p><strong>Thoughtfully designed for sustainable keeping and reuse</strong> long after Mid-Autumn, the box finds a second life storing keepsakes, trinkets and the small things worth saving. A Mid-Autumn gift set for <strong>family, friends and clients</strong> that stays on the shelf.</p><p>This Mid-Autumn Festival, let your celebration carry further. With every purchase of The Painted Garden Box, <strong>we'll donate $1 to the Breast Cancer Foundation</strong>, supporting breast cancer awareness, screening and survivor care in Singapore. Each garden you give helps look after someone else's: <strong>care, passed along twice in one gift</strong>.</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A silk-paper box that keeps letters and photographs safe.</p></div>
     
-    <div class="foot"><a class="btn" href="https://www.mdmlingbakery.com/products/the-painted-garden-box-traditional-assorted-mooncakes/" target="_blank" rel="noopener" data-order="the-painted-garden-box" data-name="The Painted Garden Box">Order online</a><a class="tlink" href="https://www.bcf.org.sg" target="_blank" rel="noopener" data-bcf="card">About the Breast Cancer Foundation</a></div>
-    <div class="res-meta meta"><span class="tag">4 pcs</span><span class="tag">Traditional / Assorted</span><span class="tag sage">Halal certified</span><span class="tag rose">Artist edition</span><span class="tag gold">$1 to charity</span></div>
+    <div class="foot"><a class="btn" href="https://www.mdmlingbakery.com/products/the-painted-garden-box-traditional-assorted-mooncakes/" target="_blank" rel="noopener" data-order="the-painted-garden-box" data-name="The Painted Garden Box">Order online</a><a class="tlink" href="https://www.bcf.org.sg" target="_blank" rel="noopener" data-bcf="card">About the Breast Cancer Foundation</a><a class="tlink" href="https://www.instagram.com/theworldofying/" target="_blank" rel="noopener">About World of Ying</a></div>
+    <div class="res-meta meta"><span class="tag">4 pcs</span><span class="tag">Traditional / Assorted</span><span class="tag sage">Halal certified</span><span class="tag rose">Artist edition</span><span class="tag charity">🎗 $1 to charity</span></div>
   </div>
 </article></div><div class="cpanel" data-kid="the-painted-garden"><article class="feat rev" id="k-the-painted-garden">
-  <div class="fimg"><img src="assets/painted-garden-tin.webp?v=7" alt="The Painted Garden 4 piece watercolour floral keepsake mooncake tin" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/painted-garden-tin.webp?v=8" alt="The Painted Garden 4 piece watercolour floral keepsake mooncake tin" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan">Order online</span>
     <span class="fmt">Heritage Tin</span>
     <h3>The Painted Garden</h3>
     <p class="fcn"><span class="cnmark han">百花迎月</span> <span class="gloss">bǎi huā yíng yuè &middot; a hundred flowers rising to greet the moon</span></p>
+    
     <div class="desc"><p>The Painted Garden is a <strong>metal keepsake tin</strong> dressed in soft watercolour blooms by <strong>Singaporean artist Phuay Li Ying</strong>, the kind of pastel garden that feels like spring held still.</p><p>Ying painted the garden as a <strong>quiet portrait of Mdm Ling herself</strong>. The central bloom is her, and the smaller flowers are the people she gathers around her, <strong>wildflowers of many colours and origins rising together to greet the festival moon</strong>.</p><p>Every petal is washed in gentle pinks, lilacs and gold, a celebration of nature at its most tender, finished with a quiet glow of <strong>foil</strong>.</p><p><strong>Sustainably designed to be kept and reused</strong> long after Mid-Autumn, the tin finds a second life holding keepsakes, trinkets and the small things worth saving. A Mid-Autumn gift set for <strong>family, friends and clients</strong> that stays on the shelf.</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A tin for keepsakes, trinkets and the small things worth saving.</p></div>
     
-    <div class="foot"><a class="btn" href="https://www.mdmlingbakery.com/products/the-painted-garden-traditional-assorted-mooncakes/" target="_blank" rel="noopener" data-order="the-painted-garden" data-name="The Painted Garden">Order online</a></div>
+    <div class="foot"><a class="btn" href="https://www.mdmlingbakery.com/products/the-painted-garden-traditional-assorted-mooncakes/" target="_blank" rel="noopener" data-order="the-painted-garden" data-name="The Painted Garden">Order online</a><a class="tlink" href="https://www.instagram.com/theworldofying/" target="_blank" rel="noopener">About World of Ying</a></div>
     <div class="res-meta meta"><span class="tag">4 pcs</span><span class="tag">Traditional / Assorted</span><span class="tag sage">Halal certified</span><span class="tag rose">Artist edition</span></div>
   </div>
 </article></div><div class="cpanel" data-kid="the-painted-garden-duo"><article class="feat" id="k-the-painted-garden-duo">
-  <div class="fimg"><img src="assets/painted-garden-duo.webp?v=7" alt="The Painted Garden 2 piece duo watercolour floral mooncake tin" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/painted-garden-duo.webp?v=8" alt="The Painted Garden 2 piece duo watercolour floral mooncake tin" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan">Order online</span>
     <span class="fmt">Duo Tin</span>
     <h3>The Painted Garden Duo</h3>
     <p class="fcn"><span class="cnmark han">百花迎月</span> <span class="gloss">bǎi huā yíng yuè &middot; a hundred flowers rising to greet the moon</span></p>
+    
     <div class="desc"><p>The Painted Garden in a <strong>slimmer form</strong>, carrying the same soft watercolour blooms by <strong>Singaporean artist Phuay Li Ying</strong> in a size made for <strong>lighter, thoughtful gifting</strong>.</p><p>Look closely and you'll find Ying's story in miniature: the central bloom is <strong>Mdm Ling herself</strong>, ringed by the people she gathers around her.</p><p>Ideal for a <strong>smaller gesture that still feels considered</strong>, it's an easy way to wish someone well this Mid-Autumn.</p><p>Like its larger companion, the tin is made to be <strong>kept and reused</strong> long after the season passes. 🌕</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A slim tin that finds a home on a desk or a dressing table.</p></div>
     
-    <div class="foot"><a class="btn" href="https://www.mdmlingbakery.com/products/the-painted-garden-duo-2pc-traditional-mooncakes/" target="_blank" rel="noopener" data-order="the-painted-garden-duo" data-name="The Painted Garden Duo">Order online</a></div>
+    <div class="foot"><a class="btn" href="https://www.mdmlingbakery.com/products/the-painted-garden-duo-2pc-traditional-mooncakes/" target="_blank" rel="noopener" data-order="the-painted-garden-duo" data-name="The Painted Garden Duo">Order online</a><a class="tlink" href="https://www.instagram.com/theworldofying/" target="_blank" rel="noopener">About World of Ying</a></div>
     <div class="res-meta meta"><span class="tag">2 pcs</span><span class="tag">Traditional</span><span class="tag sage">Halal certified</span><span class="tag rose">Artist edition</span></div>
   </div>
 </article></div></div>
@@ -1004,15 +1054,16 @@ footer .fbadges img{height:62px; width:auto;}
       <h3>A Court of Peonies</h3>
       <p class="cat-blurb">Bold painterly peonies in jewel tones, on a deep navy heritage tin and a soft sage duo tin.</p>
     </div>
-    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 2</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show A Court of Peonies"><img src="assets/court-peonies-tin.webp?v=7" alt="A Court of Peonies 4 piece navy floral keepsake mooncake tin" loading="lazy" decoding="async"><span>A Court of Peonies</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show A Court of Peonies Duo"><img src="assets/court-peonies-duo.webp?v=7" alt="A Court of Peonies 2 piece duo sage floral mooncake tin" loading="lazy" decoding="async"><span>A Court of Peonies Duo</span></button></div></div>
+    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 2</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show A Court of Peonies"><img src="assets/court-peonies-tin.webp?v=8" alt="A Court of Peonies 4 piece navy floral keepsake mooncake tin" loading="lazy" decoding="async"><span>A Court of Peonies</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show A Court of Peonies Duo"><img src="assets/court-peonies-duo.webp?v=8" alt="A Court of Peonies 2 piece duo sage floral mooncake tin" loading="lazy" decoding="async"><span>A Court of Peonies Duo</span></button></div></div>
   </div>
   <div class="cpanels"><div class="cpanel on" data-kid="a-court-of-peonies"><article class="feat" id="k-a-court-of-peonies">
-  <div class="fimg"><img src="assets/court-peonies-tin.webp?v=7" alt="A Court of Peonies 4 piece navy floral keepsake mooncake tin" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/court-peonies-tin.webp?v=8" alt="A Court of Peonies 4 piece navy floral keepsake mooncake tin" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan">Order online</span>
     <span class="fmt">Heritage Tin</span>
     <h3>A Court of Peonies</h3>
     <p class="fcn"><span class="cnmark han">花好月圆</span> <span class="gloss">huā hǎo yuè yuán &middot; flowers in bloom beneath a full moon</span></p>
+    
     <div class="desc"><p>Named for the classic wish of <strong>reunion and togetherness</strong>, A Court of Peonies is a <strong>metal keepsake tin</strong> set against <strong>deep navy</strong>, where bold, painterly peonies bloom in jewel tones of coral, magenta and teal.</p><p>The peony has long stood for <strong>honour, grace and prosperity</strong>, making this a gift that carries good meaning as much as good looks. <strong>Where The Painted Garden whispers, A Court of Peonies sings.</strong> 花好月圆 is the blessing spoken at every reunion table; <strong>give this tin and you're saying it out loud</strong>.</p><p><strong>Sustainably designed to be reused</strong> long after Mid-Autumn, it's a striking gift set for family, friends and <strong>corporate gifting</strong> alike.</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A navy tin that holds tea, biscuits or letters just as well.</p></div>
     
@@ -1020,12 +1071,13 @@ footer .fbadges img{height:62px; width:auto;}
     <div class="res-meta meta"><span class="tag">4 pcs</span><span class="tag">Traditional / Assorted</span><span class="tag sage">Halal certified</span></div>
   </div>
 </article></div><div class="cpanel" data-kid="a-court-of-peonies-duo"><article class="feat rev" id="k-a-court-of-peonies-duo">
-  <div class="fimg"><img src="assets/court-peonies-duo.webp?v=7" alt="A Court of Peonies 2 piece duo sage floral mooncake tin" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/court-peonies-duo.webp?v=8" alt="A Court of Peonies 2 piece duo sage floral mooncake tin" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan">Order online</span>
     <span class="fmt">Duo Tin</span>
     <h3>A Court of Peonies Duo</h3>
     <p class="fcn"><span class="cnmark han">花好月圆</span> <span class="gloss">huā hǎo yuè yuán &middot; flowers in bloom beneath a full moon</span></p>
+    
     <div class="desc"><p>The same bold peonies in a <strong>slimmer keepsake tin</strong>, made for <strong>lighter Mid-Autumn gifting</strong> without losing any of their presence.</p><p>Set against a <strong>soft sage</strong> ground with the collection's signature blooms, it's a smaller gesture that still speaks of <strong>honour and good wishes</strong>.</p><p>Built to be <strong>kept and reused</strong>, it carries the season well beyond the festival.</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A sage tin small enough for a shelf, sturdy enough to keep.</p></div>
     
@@ -1041,15 +1093,16 @@ footer .fbadges img{height:62px; width:auto;}
       <h3>The Dusk and The Dawn</h3>
       <p class="cat-blurb">One old idiom, 花晨月夕, split across two leather bags. Give one, or give both and bookend the day.</p>
     </div>
-    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 2</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show The Dusk"><img src="assets/the-dusk.webp?v=7" alt="The Dusk terracotta leather Mid-Autumn gift bag by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Dusk</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show The Dawn"><img src="assets/the-dawn.webp?v=7" alt="The Dawn cream leather Mid-Autumn gift bag by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Dawn</span></button></div></div>
+    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 2</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show The Dusk"><img src="assets/the-dusk.webp?v=8" alt="The Dusk terracotta leather Mid-Autumn gift bag by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Dusk</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show The Dawn"><img src="assets/the-dawn.webp?v=8" alt="The Dawn cream leather Mid-Autumn gift bag by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Dawn</span></button></div></div>
   </div>
   <div class="cpanels"><div class="cpanel on" data-kid="the-dusk"><article class="feat" id="k-the-dusk">
-  <div class="fimg"><img src="assets/the-dusk.webp?v=7" alt="The Dusk terracotta leather Mid-Autumn gift bag by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/the-dusk.webp?v=8" alt="The Dusk terracotta leather Mid-Autumn gift bag by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan">Order online</span>
     <span class="fmt">Leather Gift Bag</span>
     <h3>The Dusk</h3>
     <p class="fcn"><span class="cnmark han">月夕</span> <span class="gloss">yuè xī &middot; moonlit evening</span></p>
+    
     <div class="desc"><p>Warm as the last hour of daylight, The Dusk is a <strong>terracotta leather bag</strong> with a richer, deeper character than its cream counterpart.</p><p>Its earthy, sunset tone carries a sense of occasion while staying <strong>wearable well beyond the season</strong>, as at home with a weekend coat as with a celebration.</p><p>The Dusk is <strong>月夕</strong>, the moonlit evening from the idiom <strong>花晨月夕</strong>, the other of the day's two loveliest hours. Where The Dawn wears first light, The Dusk wears the last of it, and together the pair <strong>bookend the day the way family bookends a life</strong>.</p><p><strong>More heirloom than packaging</strong>, The Dusk lets your Mid-Autumn gift live on as a bag that's reached for again and again. <strong>The natural other half to The Dawn.</strong></p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A terracotta bag that carries a weekend as easily as a celebration.</p></div>
     
@@ -1057,12 +1110,13 @@ footer .fbadges img{height:62px; width:auto;}
     <div class="res-meta meta"><span class="tag">4 pcs</span><span class="tag">Traditional / Assorted</span><span class="tag sage">Halal certified</span></div>
   </div>
 </article></div><div class="cpanel" data-kid="the-dawn"><article class="feat rev" id="k-the-dawn">
-  <div class="fimg"><img src="assets/the-dawn.webp?v=7" alt="The Dawn cream leather Mid-Autumn gift bag by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/the-dawn.webp?v=8" alt="The Dawn cream leather Mid-Autumn gift bag by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan">Order online</span>
     <span class="fmt">Leather Gift Bag</span>
     <h3>The Dawn</h3>
     <p class="fcn"><span class="cnmark han">花晨</span> <span class="gloss">huā chén &middot; flower morning</span></p>
+    
     <div class="desc"><p>Soft as first light, The Dawn is a <strong>cream leather bag</strong> made to be <strong>carried long after the celebration ends</strong>.</p><p>Its gentle, neutral tone and supple finish move easily from a festive visit to <strong>everyday wear</strong>, a quiet kind of luxury that never asks for attention.</p><p>Its name comes from the old idiom <strong>花晨月夕</strong>, flower mornings and moonlit evenings, the two loveliest hours of any day. We split it across a pair of bags: The Dawn is <strong>花晨</strong>, the morning the flowers open, in cream like first light.</p><p>Designed as a <strong>keepsake rather than a wrapper</strong>, The Dawn turns a Mid-Autumn gift into something kept, used and remembered for years to come. <strong>Pair it with The Dusk</strong>, its warmer companion, for two halves of the same day.</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A cream leather bag carried on ordinary days, long after the season.</p></div>
     
@@ -1078,15 +1132,16 @@ footer .fbadges img{height:62px; width:auto;}
       <h3>The Keepsake Bags</h3>
       <p class="cat-blurb">Bags made to be worn long after the season, each carrying its own four character wish.</p>
     </div>
-    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show Weaving Moments"><img src="assets/weaving-moments.webp?v=7" alt="Weaving Moments woven leather Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Weaving Moments</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show Tote of Bliss (Green)"><img src="assets/tote-green.webp?v=7" alt="Tote of Bliss green leather tote Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Tote of Bliss (Green)</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show Tote of Good Health (Fuchsia)"><img src="assets/tote-fuchsia.webp?v=7" alt="Tote of Good Health fuchsia leather tote Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Tote of Good Health (Fuchsia)</span></button></div></div>
+    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show Weaving Moments"><img src="assets/weaving-moments.webp?v=8" alt="Weaving Moments woven leather Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Weaving Moments</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show Tote of Bliss (Green)"><img src="assets/tote-green.webp?v=8" alt="Tote of Bliss green leather tote Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Tote of Bliss (Green)</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show Tote of Good Health (Fuchsia)"><img src="assets/tote-fuchsia.webp?v=8" alt="Tote of Good Health fuchsia leather tote Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Tote of Good Health (Fuchsia)</span></button></div></div>
   </div>
   <div class="cpanels"><div class="cpanel on" data-kid="weaving-moments"><article class="feat" id="k-weaving-moments">
-  <div class="fimg"><img src="assets/weaving-moments.webp?v=7" alt="Weaving Moments woven leather Mid-Autumn gift bag" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/weaving-moments.webp?v=8" alt="Weaving Moments woven leather Mid-Autumn gift bag" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan booth">At our booths</span>
     <span class="fmt">Woven Bag</span>
     <h3>Weaving Moments</h3>
     <p class="fcn"><span class="cnmark han">丝丝情长</span> <span class="gloss">sī sī qíng cháng &middot; every thread, a lasting bond</span></p>
+    
     <div class="desc"><p>Look closely at the <strong>woven texture</strong>: every strand crosses another, holds it, and is held in return. That's how the bonds we treasure are made too, <strong>moment over moment, year over year</strong>.</p><p>Its name, <strong>丝丝情长</strong>, borrows 情长 straight from the collection itself, because this bag is the collection's idea made touchable: <strong>affection, woven to last</strong>.</p><p><strong>Sustainably designed as a thoughtful keepsake</strong>, this stylish bag is an invitation to cherish meaningful moments and carry them with you.</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A woven bag that goes to market, to work and to dinner.</p></div>
     
@@ -1094,12 +1149,13 @@ footer .fbadges img{height:62px; width:auto;}
     <div class="res-meta meta"><span class="tag">4 pcs</span><span class="tag">Traditional / Assorted</span><span class="tag sage">Halal certified</span></div>
   </div>
 </article></div><div class="cpanel" data-kid="tote-of-bliss"><article class="feat rev" id="k-tote-of-bliss">
-  <div class="fimg"><img src="assets/tote-green.webp?v=7" alt="Tote of Bliss green leather tote Mid-Autumn gift bag" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/tote-green.webp?v=8" alt="Tote of Bliss green leather tote Mid-Autumn gift bag" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan booth">At our booths</span>
     <span class="fmt">Leather Tote</span>
     <h3>Tote of Bliss<span class="var">Green</span></h3>
     <p class="fcn"><span class="cnmark han">花开喜乐</span> <span class="gloss">huā kāi xǐ lè &middot; blooms open, joy follows</span></p>
+    
     <div class="desc"><p>Cool, composed and effortlessly chic, the Tote of Bliss arrives in a <strong>fresh jade green</strong>, finished with a <strong>printed scarf</strong> knotted at the handle.</p><p>Its clean, structured silhouette makes it a <strong>leather tote you'll reach for long after the season</strong>, dressed up or down with ease.</p><p>The name promises that <strong>when flowers open, joy follows</strong>, and that's exactly how this tote gives: first the bag, then the scarf, then the mooncakes, <strong>one happiness unfolding after another</strong>.</p><p><strong>Sustainably designed as a keepsake</strong>, this Mid-Autumn gift set lets a little of the celebration's calm travel with you wherever you go.</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A jade green tote that dresses up or down without trying.</p></div>
     
@@ -1107,12 +1163,13 @@ footer .fbadges img{height:62px; width:auto;}
     <div class="res-meta meta"><span class="tag">4 pcs</span><span class="tag">Traditional / Assorted</span><span class="tag sage">Halal certified</span></div>
   </div>
 </article></div><div class="cpanel" data-kid="tote-of-good-health"><article class="feat" id="k-tote-of-good-health">
-  <div class="fimg"><img src="assets/tote-fuchsia.webp?v=7" alt="Tote of Good Health fuchsia leather tote Mid-Autumn gift bag" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/tote-fuchsia.webp?v=8" alt="Tote of Good Health fuchsia leather tote Mid-Autumn gift bag" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan booth">At our booths</span>
     <span class="fmt">Leather Tote</span>
     <h3>Tote of Good Health<span class="var">Fuchsia</span></h3>
     <p class="fcn"><span class="cnmark han">月满安康</span> <span class="gloss">yuè mǎn ān kāng &middot; a full moon, lasting wellness</span></p>
+    
     <div class="desc"><p>Bold, bright and impossible to ignore, the Tote of Good Health arrives in a <strong>vivid fuchsia</strong>, finished with a <strong>printed scarf</strong> tied at the handle.</p><p>Its structured silhouette and confident colour make it a <strong>leather tote built to be worn long after Mid-Autumn</strong>, a daily reminder of the care behind the gift.</p><p>Of all the things we wish the people we love, <strong>health comes first</strong>, and the name says it in four characters: <strong>月满安康, when the moon is full, may you be well</strong>. For parents, grandparents and the people whose wellbeing you think about daily.</p><p><strong>Sustainably designed as a keepsake</strong>, this gift set turns a simple visit into something that stays, and carries that wish into the year ahead.</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A structured fuchsia tote worn well past the festival.</p></div>
     
@@ -1128,15 +1185,16 @@ footer .fbadges img{height:62px; width:auto;}
       <h3>The Reunion Pieces</h3>
       <p class="cat-blurb">A drawer chest, a serving turntable and a scroll box, the pieces that come back out at every gathering.</p>
     </div>
-    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show Blossom Drawer Chest"><img src="assets/blossom-drawer.webp?v=7" alt="Blossom Drawer Chest pink keepsake box with working drawer" loading="lazy" decoding="async"><span>Blossom Drawer Chest</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show Elegance Reunion Turntable"><img src="assets/elegance-turntable.webp?v=7" alt="Elegance Reunion Turntable, a round floral serving turntable by Mdm Ling Bakery" loading="lazy" decoding="async"><span>Elegance Reunion Turntable</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show Treasure Scroll (Rose Pink)"><img src="assets/treasure-scroll.webp?v=7" alt="Treasure Scroll Rose Pink long gift box by Mdm Ling Bakery" loading="lazy" decoding="async"><span>Treasure Scroll (Rose Pink)</span></button></div></div>
+    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show Blossom Drawer Chest"><img src="assets/blossom-drawer.webp?v=8" alt="Blossom Drawer Chest pink keepsake box with working drawer" loading="lazy" decoding="async"><span>Blossom Drawer Chest</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show Elegance Reunion Turntable"><img src="assets/elegance-turntable.webp?v=8" alt="Elegance Reunion Turntable, a round floral serving turntable by Mdm Ling Bakery" loading="lazy" decoding="async"><span>Elegance Reunion Turntable</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show Treasure Scroll (Rose Pink)"><img src="assets/treasure-scroll.webp?v=8" alt="Treasure Scroll Rose Pink long gift box by Mdm Ling Bakery" loading="lazy" decoding="async"><span>Treasure Scroll (Rose Pink)</span></button></div></div>
   </div>
   <div class="cpanels"><div class="cpanel on" data-kid="blossom-drawer-chest"><article class="feat" id="k-blossom-drawer-chest">
-  <div class="fimg"><img src="assets/blossom-drawer.webp?v=7" alt="Blossom Drawer Chest pink keepsake box with working drawer" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/blossom-drawer.webp?v=8" alt="Blossom Drawer Chest pink keepsake box with working drawer" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan">Order online</span>
     <span class="fmt">Keepsake Chest</span>
     <h3>Blossom Drawer Chest</h3>
     <p class="fcn"><span class="cnmark han">花间藏月</span> <span class="gloss">huā jiān cáng yuè &middot; a moon treasured among the flowers</span></p>
+    
     <div class="desc"><p><strong>More furniture than packaging</strong>, the Blossom Drawer Chest is a keepsake box with a <strong>working drawer</strong>, finished in soft blush pink with an <strong>embossed floral motif</strong>.</p><p>The name tells you how it gives: <strong>花间藏月, a moon hidden among the flowers</strong>. Pull the drawer and there they are, four mooncakes resting inside like a secret, <strong>kept tucked away for the moment you choose to reveal it</strong>.</p><p>Then keep the chest for everything after. The drawer is made for <strong>jewellery, keepsakes and the little treasures</strong> that deserve a home.</p><p>A Mid-Autumn gift set that doubles as a <strong>lasting piece for the dressing table</strong>, thoughtful enough for <strong>someone you'd really like to impress</strong>.</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A drawer for jewellery and the little treasures that deserve a home.</p></div>
     
@@ -1144,25 +1202,27 @@ footer .fbadges img{height:62px; width:auto;}
     <div class="res-meta meta"><span class="tag">4 pcs</span><span class="tag">Traditional / Assorted</span><span class="tag sage">Halal certified</span></div>
   </div>
 </article></div><div class="cpanel" data-kid="elegance-reunion-turntable"><article class="feat rev" id="k-elegance-reunion-turntable">
-  <div class="fimg"><img src="assets/elegance-turntable.webp?v=7" alt="Elegance Reunion Turntable, a round floral serving turntable by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/elegance-turntable.webp?v=8" alt="Elegance Reunion Turntable, a round floral serving turntable by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan booth">At our booths</span>
     <span class="fmt">Serving Turntable</span>
     <h3>Elegance Reunion Turntable</h3>
     <p class="fcn"><span class="cnmark han">花月同席</span> <span class="gloss">huā yuè tóng xí &middot; flowers and moon at the same table</span></p>
-    <div class="desc"><p>A <strong>round serving turntable</strong> printed with a painted garden of peonies, roses and trailing greens, rimmed in gold.</p><p>Set it at the centre of the table and everything comes round to everyone. That's the whole idea: <strong>nobody reaches, nobody misses out</strong>, which is what a reunion dinner is supposed to feel like.</p><p>Its name, <strong>花月同席</strong>, puts the flowers and the moon at the <strong>same table</strong>. 席 is the banquet seat, the place kept for you, and that's the wish this one carries.</p><p>Long after Mid-Autumn it <strong>stays in service</strong>, carrying tea, fruit and whatever the next gathering needs. <strong>The gift that keeps getting used in front of you.</strong></p></div>
+    <div class="disc"><span class="lbl">Please note</span><p>Images are for illustration purposes only. The turntable comes in several designs, so please check with our retail points for the designs currently available. 🌕</p></div>
+    <div class="desc"><p>A <strong>round serving turntable</strong> that turns any dinner into a shared one.</p><p>Set it at the centre of the table and everything comes round to everyone. That's the whole idea: <strong>nobody reaches, nobody misses out</strong>, which is what a reunion dinner is supposed to feel like.</p><p>Its name, <strong>花月同席</strong>, puts the flowers and the moon at the <strong>same table</strong>. 席 is the banquet seat, the place kept for you, and that's the wish this one carries.</p><p>Long after Mid-Autumn it <strong>stays in service</strong>, carrying tea, fruit and whatever the next gathering needs. <strong>The gift that keeps getting used in front of you.</strong></p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A serving turntable that comes back out at every reunion dinner.</p></div>
-    <div class="disc"><span class="lbl">Please note</span><p>Images are for illustration purposes only. The turntable comes in several designs, so please check with our retail points for the designs currently available. 🌕</p></div><p class="note">Available in several designs. Ask at any of our booths for what's in stock.</p>
+    
     <div class="foot"><a class="btn gold" href="https://wa.me/6584680201?text=Hello%21%20I%27d%20like%20to%20ask%20about%20the%20Elegance%20Reunion%20Turntable%20Mid-Autumn%20gift%20set.%20Which%20booths%20have%20it%20in%20stock%3F" target="_blank" rel="noopener" data-booth="elegance-reunion-turntable" data-name="Elegance Reunion Turntable">Check booth stock</a><a class="tlink" href="#where">See booths</a></div>
     <div class="res-meta meta"><span class="tag">4 pcs</span><span class="tag">Traditional / Assorted</span><span class="tag sage">Halal certified</span></div>
   </div>
 </article></div><div class="cpanel" data-kid="treasure-scroll"><article class="feat" id="k-treasure-scroll">
-  <div class="fimg"><img src="assets/treasure-scroll.webp?v=7" alt="Treasure Scroll Rose Pink long gift box by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/treasure-scroll.webp?v=8" alt="Treasure Scroll Rose Pink long gift box by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan booth">At our booths</span>
     <span class="fmt">Scroll Box</span>
     <h3>Treasure Scroll<span class="var">Rose Pink</span></h3>
     <p class="fcn"><span class="cnmark han">花月长卷</span> <span class="gloss">huā yuè cháng juǎn &middot; an unrolling scroll of flowers and moonlight</span></p>
+    
     <div class="desc"><p>Scrolls once carried the things <strong>too precious to fold</strong>: paintings, letters, promises. The Treasure Scroll opens the same way, unrolling to reveal its mooncakes <strong>scene by scene</strong>.</p><p>Adorned in a <strong>luminous rose pink</strong> with <strong>sage green accents</strong>, its name echoes the collection itself: 花月情长 says affection lasts long, and <strong>花月长卷 gives that affection a shape, a long scroll that keeps unrolling</strong>.</p><p>Whether for <strong>family, friends or clients</strong>, it leaves a <strong>lasting impression</strong> long after the treats are enjoyed. <strong>Some gifts are opened. This one is unveiled.</strong> 🌕</p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A long box for prints, papers and things too precious to fold.</p></div>
     
@@ -1181,12 +1241,13 @@ footer .fbadges img{height:62px; width:auto;}
     
   </div>
   <div class="cpanels"><div class="cpanel on" data-kid="orchid-reverie"><article class="feat" id="k-orchid-reverie">
-  <div class="fimg"><img src="assets/orchid-reverie.webp?v=7" alt="Orchid Reverie keepsake tin with snowskin mooncakes cut open to show their truffle centres" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg"><img src="assets/orchid-reverie.webp?v=8" alt="Orchid Reverie keepsake tin with snowskin mooncakes cut open to show their truffle centres" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan">Order online</span>
     <span class="fmt">Snowskin Keepsake Tin</span>
     <h3>Orchid Reverie</h3>
     <p class="fcn"><span class="cnmark han">幽兰伴月</span> <span class="gloss">yōu lán bàn yuè &middot; a quiet orchid keeping the moon company</span></p>
+    
     <div class="desc"><p>Orchid Reverie is a <strong>square metal keepsake tin</strong> painted with orchids in full bloom, in watercolour pinks, corals and gold.</p><p>Inside sit <strong>eight snowskin mooncakes, two of each of our four truffle flavours</strong>, so nobody at the table has to settle for one. Serve them chilled and let everyone find their favourite.</p><p>The orchid earns its place here. Singapore's <strong>national flower</strong> is an orchid, and it's a bloom that opens slowly and <strong>holds its flower for months</strong>, which is exactly what we hope a Mid-Autumn gift does for the people who receive it.</p><p>Its name, <strong>幽兰伴月</strong>, sets that quiet orchid beside the moon and leaves the two to keep each other company. <strong>伴 means to accompany</strong>, and that's the whole point of a gift like this, <strong>company that outlasts the evening</strong>.</p><p>Designed to be <strong>refilled and reused long after the season</strong>, the tin keeps biscuits, tea or letters just as happily as it keeps mooncakes. <strong>Our most asked for snowskin range, in the tin made for it.</strong></p></div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>A tin that keeps biscuits, tea or letters as happily as mooncakes.</p></div>
     <p class="note">Not Halal certified. Vegetarian, with no pork and no lard.</p>
@@ -1212,8 +1273,8 @@ footer .fbadges img{height:62px; width:auto;}
 <!-- ================= BAND: at the table ================= -->
 <section class="band short">
   <picture>
-    <source media="(max-aspect-ratio: 4/5)" srcset="assets/band-mooncake-p.webp?v=7">
-    <img src="assets/band-mooncake.webp?v=7" alt="Two friends sharing mooncakes at a garden table beneath a fringed parasol" width="1800" height="1200" loading="lazy" decoding="async">
+    <source media="(max-aspect-ratio: 4/5)" srcset="assets/band-mooncake-p.webp?v=8">
+    <img src="assets/band-mooncake.webp?v=8" alt="Two friends sharing mooncakes at a garden table beneath a fringed parasol" width="1800" height="1200" loading="lazy" decoding="async">
   </picture>
   <div class="bt">
     <span class="eyebrow">Part two</span>
@@ -1232,10 +1293,10 @@ footer .fbadges img{height:62px; width:auto;}
         <p class="lede">Ten flavours across three ranges: our <strong>traditional baked classics</strong>, our <strong>signature assorted range</strong> with a low sugar Momoyama skin, and our <strong>truffle snowskin range</strong> served chilled. Here they are at one glance. Tap any flavour to read its story.</p>
       </div>
     </div>
-    <div class="fov-group"><a class="fov-h" href="#traditional">Premium Traditional Baked</a><div class="fov"><a href="#f-lotus-with-melon-seeds-and-yolk"><span class="fw"><img src="assets/trad-yolk.webp?v=7" alt="Lotus with Melon Seeds and Yolk" loading="lazy" decoding="async"></span><span class="fname">Lotus with Melon Seeds and Yolk</span></a><a href="#f-lotus-with-melon-seeds"><span class="fw"><img src="assets/trad-no-yolk.webp?v=7" alt="Lotus with Melon Seeds" loading="lazy" decoding="async"></span><span class="fname">Lotus with Melon Seeds</span></a></div></div><div class="fov-group"><a class="fov-h" href="#assorted">Signature Assorted Baked</a><div class="fov"><a href="#f-belgian-double-chocolate"><span class="fw"><img src="assets/momo-choc.webp?v=7" alt="Belgian Double Chocolate" loading="lazy" decoding="async"></span><span class="fname">Belgian Double Chocolate</span></a><a href="#f-black-sesame-peanut-butter"><span class="fw"><img src="assets/momo-sesame.webp?v=7" alt="Black Sesame Peanut Butter" loading="lazy" decoding="async"></span><span class="fname">Black Sesame Peanut Butter</span></a><a href="#f-emerald-pandan-golden-yolk"><span class="fw"><img src="assets/momo-pandan.webp?v=7" alt="Emerald Pandan Golden Yolk" loading="lazy" decoding="async"></span><span class="fname">Emerald Pandan Golden Yolk</span></a><a href="#f-red-dates-longan"><span class="fw"><img src="assets/momo-reddates.webp?v=7" alt="Red Dates Longan" loading="lazy" decoding="async"></span><span class="fname">Red Dates Longan</span></a></div></div><div class="fov-group"><a class="fov-h" href="#snowskin">Premium Truffle Snowskin</a><div class="fov"><a href="#f-truffle-muscat-grape"><span class="fw"><img src="assets/snow-muscat.webp?v=7" alt="Truffle Muscat Grape" loading="lazy" decoding="async"></span><span class="fname">Truffle Muscat Grape</span></a><a href="#f-truffle-passionfruit"><span class="fw"><img src="assets/snow-passionfruit.webp?v=7" alt="Truffle Passionfruit" loading="lazy" decoding="async"></span><span class="fname">Truffle Passionfruit</span></a><a href="#f-truffle-popping-candy"><span class="fw"><img src="assets/snow-popping.webp?v=7" alt="Truffle Popping Candy" loading="lazy" decoding="async"></span><span class="fname">Truffle Popping Candy</span></a><a href="#f-truffle-pistachio-kunafa"><span class="fw"><img src="assets/snow-pistachio.webp?v=7" alt="Truffle Pistachio Kunafa" loading="lazy" decoding="async"></span><span class="fname">Truffle Pistachio Kunafa</span></a></div></div>
+    <div class="fov-group"><a class="fov-h" href="#traditional">Premium Traditional Baked</a><div class="fov"><a href="#f-lotus-with-melon-seeds-and-yolk"><span class="fw"><img src="assets/trad-yolk.webp?v=8" alt="Lotus with Melon Seeds and Yolk" loading="lazy" decoding="async"></span><span class="fname">Lotus with Melon Seeds and Yolk</span></a><a href="#f-lotus-with-melon-seeds"><span class="fw"><img src="assets/trad-no-yolk.webp?v=8" alt="Lotus with Melon Seeds" loading="lazy" decoding="async"></span><span class="fname">Lotus with Melon Seeds</span></a></div></div><div class="fov-group"><a class="fov-h" href="#assorted">Signature Assorted Baked</a><div class="fov"><a href="#f-belgian-double-chocolate"><span class="fw"><img src="assets/momo-choc.webp?v=8" alt="Belgian Double Chocolate" loading="lazy" decoding="async"></span><span class="fname">Belgian Double Chocolate</span></a><a href="#f-black-sesame-peanut-butter"><span class="fw"><img src="assets/momo-sesame.webp?v=8" alt="Black Sesame Peanut Butter" loading="lazy" decoding="async"></span><span class="fname">Black Sesame Peanut Butter</span></a><a href="#f-emerald-pandan-golden-yolk"><span class="fw"><img src="assets/momo-pandan.webp?v=8" alt="Emerald Pandan Golden Yolk" loading="lazy" decoding="async"></span><span class="fname">Emerald Pandan Golden Yolk</span></a><a href="#f-red-dates-longan"><span class="fw"><img src="assets/momo-reddates.webp?v=8" alt="Red Dates Longan" loading="lazy" decoding="async"></span><span class="fname">Red Dates Longan</span></a></div></div><div class="fov-group"><a class="fov-h" href="#snowskin">Premium Truffle Snowskin</a><div class="fov"><a href="#f-truffle-muscat-grape"><span class="fw"><img src="assets/snow-muscat.webp?v=8" alt="Truffle Muscat Grape" loading="lazy" decoding="async"></span><span class="fname">Truffle Muscat Grape</span></a><a href="#f-truffle-passionfruit"><span class="fw"><img src="assets/snow-passionfruit.webp?v=8" alt="Truffle Passionfruit" loading="lazy" decoding="async"></span><span class="fname">Truffle Passionfruit</span></a><a href="#f-truffle-popping-candy"><span class="fw"><img src="assets/snow-popping.webp?v=8" alt="Truffle Popping Candy" loading="lazy" decoding="async"></span><span class="fname">Truffle Popping Candy</span></a><a href="#f-truffle-pistachio-kunafa"><span class="fw"><img src="assets/snow-pistachio.webp?v=8" alt="Truffle Pistachio Kunafa" loading="lazy" decoding="async"></span><span class="fname">Truffle Pistachio Kunafa</span></a></div></div>
     <section class="range" id="traditional"><div class="range-head"><span class="range-num">1</span><h3>Premium Traditional Baked</h3><span class="tag2">The classics, baked golden</span></div><div class="flavours"><div class="flav" id="f-lotus-with-melon-seeds-and-yolk">
-      <button type="button" class="fp" data-lightbox="assets/trad-yolk.webp?v=7" data-lightbox-alt="Traditional white lotus mooncake with salted egg yolk" aria-label="View a larger photo of Lotus with Melon Seeds and Yolk">
-        <img src="assets/trad-yolk.webp?v=7" alt="Traditional white lotus mooncake with salted egg yolk" width="420" height="420" loading="lazy" decoding="async">
+      <button type="button" class="fp" data-lightbox="assets/trad-yolk.webp?v=8" data-lightbox-alt="Traditional white lotus mooncake with salted egg yolk" aria-label="View a larger photo of Lotus with Melon Seeds and Yolk">
+        <img src="assets/trad-yolk.webp?v=8" alt="Traditional white lotus mooncake with salted egg yolk" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>Lotus with Melon Seeds and Yolk</h4>
       <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -1250,8 +1311,8 @@ footer .fbadges img{height:62px; width:auto;}
         </div>
       </details>
     </div><div class="flav" id="f-lotus-with-melon-seeds">
-      <button type="button" class="fp" data-lightbox="assets/trad-no-yolk.webp?v=7" data-lightbox-alt="Traditional white lotus mooncake without yolk" aria-label="View a larger photo of Lotus with Melon Seeds">
-        <img src="assets/trad-no-yolk.webp?v=7" alt="Traditional white lotus mooncake without yolk" width="420" height="420" loading="lazy" decoding="async">
+      <button type="button" class="fp" data-lightbox="assets/trad-no-yolk.webp?v=8" data-lightbox-alt="Traditional white lotus mooncake without yolk" aria-label="View a larger photo of Lotus with Melon Seeds">
+        <img src="assets/trad-no-yolk.webp?v=8" alt="Traditional white lotus mooncake without yolk" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>Lotus with Melon Seeds</h4>
       <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -1266,8 +1327,8 @@ footer .fbadges img{height:62px; width:auto;}
         </div>
       </details>
     </div></div></section><section class="range" id="assorted"><div class="range-head"><span class="range-num">2</span><h3>Signature Assorted Baked</h3><span class="tag2">A flavour for every generation</span></div><p class="range-intro">Our signature assorted range carries the modern side of Mdm Ling Bakery. Each flavour gets its own <strong>low sugar Momoyama skin</strong> and a softer bite, and each was created with a <strong>different generation at the table</strong> in mind. From the littlest ones to the grandparents, everyone finds a mooncake made for them.</p><div class="flavours"><div class="flav" id="f-belgian-double-chocolate">
-      <button type="button" class="fp" data-lightbox="assets/momo-choc.webp?v=7" data-lightbox-alt="Momoyama Belgian double chocolate mooncake" aria-label="View a larger photo of Belgian Double Chocolate">
-        <img src="assets/momo-choc.webp?v=7" alt="Momoyama Belgian double chocolate mooncake" width="420" height="420" loading="lazy" decoding="async">
+      <button type="button" class="fp" data-lightbox="assets/momo-choc.webp?v=8" data-lightbox-alt="Momoyama Belgian double chocolate mooncake" aria-label="View a larger photo of Belgian Double Chocolate">
+        <img src="assets/momo-choc.webp?v=8" alt="Momoyama Belgian double chocolate mooncake" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>Belgian Double Chocolate</h4>
       <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -1282,8 +1343,8 @@ footer .fbadges img{height:62px; width:auto;}
         </div>
       </details>
     </div><div class="flav" id="f-black-sesame-peanut-butter">
-      <button type="button" class="fp" data-lightbox="assets/momo-sesame.webp?v=7" data-lightbox-alt="Momoyama black sesame peanut butter mooncake" aria-label="View a larger photo of Black Sesame Peanut Butter">
-        <img src="assets/momo-sesame.webp?v=7" alt="Momoyama black sesame peanut butter mooncake" width="420" height="420" loading="lazy" decoding="async">
+      <button type="button" class="fp" data-lightbox="assets/momo-sesame.webp?v=8" data-lightbox-alt="Momoyama black sesame peanut butter mooncake" aria-label="View a larger photo of Black Sesame Peanut Butter">
+        <img src="assets/momo-sesame.webp?v=8" alt="Momoyama black sesame peanut butter mooncake" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>Black Sesame Peanut Butter</h4>
       <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -1298,8 +1359,8 @@ footer .fbadges img{height:62px; width:auto;}
         </div>
       </details>
     </div><div class="flav" id="f-emerald-pandan-golden-yolk">
-      <button type="button" class="fp" data-lightbox="assets/momo-pandan.webp?v=7" data-lightbox-alt="Momoyama emerald pandan mooncake with golden yolk" aria-label="View a larger photo of Emerald Pandan Golden Yolk">
-        <img src="assets/momo-pandan.webp?v=7" alt="Momoyama emerald pandan mooncake with golden yolk" width="420" height="420" loading="lazy" decoding="async">
+      <button type="button" class="fp" data-lightbox="assets/momo-pandan.webp?v=8" data-lightbox-alt="Momoyama emerald pandan mooncake with golden yolk" aria-label="View a larger photo of Emerald Pandan Golden Yolk">
+        <img src="assets/momo-pandan.webp?v=8" alt="Momoyama emerald pandan mooncake with golden yolk" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>Emerald Pandan Golden Yolk</h4>
       <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -1314,8 +1375,8 @@ footer .fbadges img{height:62px; width:auto;}
         </div>
       </details>
     </div><div class="flav" id="f-red-dates-longan">
-      <button type="button" class="fp" data-lightbox="assets/momo-reddates.webp?v=7" data-lightbox-alt="Momoyama red dates longan mooncake" aria-label="View a larger photo of Red Dates Longan">
-        <img src="assets/momo-reddates.webp?v=7" alt="Momoyama red dates longan mooncake" width="420" height="420" loading="lazy" decoding="async">
+      <button type="button" class="fp" data-lightbox="assets/momo-reddates.webp?v=8" data-lightbox-alt="Momoyama red dates longan mooncake" aria-label="View a larger photo of Red Dates Longan">
+        <img src="assets/momo-reddates.webp?v=8" alt="Momoyama red dates longan mooncake" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>Red Dates Longan</h4>
       <div class="badges"><span class="tag sage">Halal certified</span><span class="tag sage">Vegetarian</span><span class="tag ">160g</span></div>
@@ -1330,8 +1391,8 @@ footer .fbadges img{height:62px; width:auto;}
         </div>
       </details>
     </div></div></section><section class="range" id="snowskin"><div class="range-head"><span class="range-num">3</span><h3>Premium Truffle Snowskin</h3><span class="tag2">Chilled, with a truffle centre</span></div><p class="range-intro">The playful side of the collection. Each snowskin mooncake hides a <strong>truffle centre</strong> beneath its soft, delicate skin, best enjoyed chilled. Elegant enough for the table, fun enough that the last one never lasts. <strong>This range isn't Halal certified.</strong></p><div class="flavours"><div class="flav" id="f-truffle-muscat-grape">
-      <button type="button" class="fp" data-lightbox="assets/snow-muscat.webp?v=7" data-lightbox-alt="Truffle Muscat Grape snowskin mooncake with white grape truffle centre" aria-label="View a larger photo of Truffle Muscat Grape">
-        <img src="assets/snow-muscat.webp?v=7" alt="Truffle Muscat Grape snowskin mooncake with white grape truffle centre" width="420" height="420" loading="lazy" decoding="async">
+      <button type="button" class="fp" data-lightbox="assets/snow-muscat.webp?v=8" data-lightbox-alt="Truffle Muscat Grape snowskin mooncake with white grape truffle centre" aria-label="View a larger photo of Truffle Muscat Grape">
+        <img src="assets/snow-muscat.webp?v=8" alt="Truffle Muscat Grape snowskin mooncake with white grape truffle centre" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>Truffle Muscat Grape</h4>
       <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
@@ -1346,8 +1407,8 @@ footer .fbadges img{height:62px; width:auto;}
         </div>
       </details>
     </div><div class="flav" id="f-truffle-passionfruit">
-      <button type="button" class="fp" data-lightbox="assets/snow-passionfruit.webp?v=7" data-lightbox-alt="Truffle Passionfruit snowskin mooncake with cream and passionfruit truffle centre" aria-label="View a larger photo of Truffle Passionfruit">
-        <img src="assets/snow-passionfruit.webp?v=7" alt="Truffle Passionfruit snowskin mooncake with cream and passionfruit truffle centre" width="420" height="420" loading="lazy" decoding="async">
+      <button type="button" class="fp" data-lightbox="assets/snow-passionfruit.webp?v=8" data-lightbox-alt="Truffle Passionfruit snowskin mooncake with cream and passionfruit truffle centre" aria-label="View a larger photo of Truffle Passionfruit">
+        <img src="assets/snow-passionfruit.webp?v=8" alt="Truffle Passionfruit snowskin mooncake with cream and passionfruit truffle centre" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>Truffle Passionfruit</h4>
       <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
@@ -1362,8 +1423,8 @@ footer .fbadges img{height:62px; width:auto;}
         </div>
       </details>
     </div><div class="flav" id="f-truffle-popping-candy">
-      <button type="button" class="fp" data-lightbox="assets/snow-popping.webp?v=7" data-lightbox-alt="Truffle Popping Candy snowskin mooncake with dragon fruit paste and popping candy centre" aria-label="View a larger photo of Truffle Popping Candy">
-        <img src="assets/snow-popping.webp?v=7" alt="Truffle Popping Candy snowskin mooncake with dragon fruit paste and popping candy centre" width="420" height="420" loading="lazy" decoding="async">
+      <button type="button" class="fp" data-lightbox="assets/snow-popping.webp?v=8" data-lightbox-alt="Truffle Popping Candy snowskin mooncake with dragon fruit paste and popping candy centre" aria-label="View a larger photo of Truffle Popping Candy">
+        <img src="assets/snow-popping.webp?v=8" alt="Truffle Popping Candy snowskin mooncake with dragon fruit paste and popping candy centre" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>Truffle Popping Candy</h4>
       <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
@@ -1378,8 +1439,8 @@ footer .fbadges img{height:62px; width:auto;}
         </div>
       </details>
     </div><div class="flav" id="f-truffle-pistachio-kunafa">
-      <button type="button" class="fp" data-lightbox="assets/snow-pistachio.webp?v=7" data-lightbox-alt="Truffle Pistachio Kunafa snowskin mooncake with almond filling and pistachio paste centre" aria-label="View a larger photo of Truffle Pistachio Kunafa">
-        <img src="assets/snow-pistachio.webp?v=7" alt="Truffle Pistachio Kunafa snowskin mooncake with almond filling and pistachio paste centre" width="420" height="420" loading="lazy" decoding="async">
+      <button type="button" class="fp" data-lightbox="assets/snow-pistachio.webp?v=8" data-lightbox-alt="Truffle Pistachio Kunafa snowskin mooncake with almond filling and pistachio paste centre" aria-label="View a larger photo of Truffle Pistachio Kunafa">
+        <img src="assets/snow-pistachio.webp?v=8" alt="Truffle Pistachio Kunafa snowskin mooncake with almond filling and pistachio paste centre" width="420" height="420" loading="lazy" decoding="async">
       </button>
       <h4>Truffle Pistachio Kunafa</h4>
       <div class="badges"><span class="tag chill">Chilled</span><span class="tag ">63g</span></div>
@@ -1408,11 +1469,11 @@ footer .fbadges img{height:62px; width:auto;}
   <div class="ainner wrap">
     <span class="collab">A Mdm Ling Bakery collaboration with<br>World of Ying and Breast Cancer Foundation</span>
     <div class="collab-logos">
-      <img class="ying" src="assets/logo-ying.png?v=7" alt="World of Ying" width="592" height="260" loading="lazy" decoding="async">
+      <img class="ying" src="assets/logo-ying.png?v=8" alt="World of Ying" width="592" height="260" loading="lazy" decoding="async">
       <span aria-hidden="true">&times;</span>
-      <img class="mlb" src="assets/mlb-logo-white.png?v=7" alt="Mdm Ling Bakery" width="900" height="304" loading="lazy" decoding="async">
+      <img class="mlb" src="assets/mlb-logo-white.png?v=8" alt="Mdm Ling Bakery" width="900" height="304" loading="lazy" decoding="async">
       <span aria-hidden="true">&times;</span>
-      <img class="bcf" src="assets/logo-bcf.png?v=7" alt="Breast Cancer Foundation" width="359" height="64" loading="lazy" decoding="async">
+      <img class="bcf" src="assets/logo-bcf.png?v=8" alt="Breast Cancer Foundation" width="359" height="64" loading="lazy" decoding="async">
     </div>
     <div class="agrid">
       <div class="acol">
@@ -1420,7 +1481,7 @@ footer .fbadges img{height:62px; width:auto;}
         <h3>The people we love are worth caring for</h3>
         <p>A garden only grows because someone tends it. As you pass this box on, we hope it's also a nudge for the women in your life to look after their breast health.</p>
         <div class="ablurb">
-          <img src="assets/ying-portrait.webp?v=7" alt="Phuay Li Ying, the artist behind The Painted Garden" width="466" height="700" loading="lazy" decoding="async">
+          <img src="assets/ying-portrait.webp?v=8" alt="Phuay Li Ying, the artist behind The Painted Garden" width="466" height="700" loading="lazy" decoding="async">
           <div>
             <span class="apre">Painted for Mdm Ling Bakery by</span>
             <span class="an">Phuay Li Ying</span>
@@ -1436,14 +1497,14 @@ footer .fbadges img{height:62px; width:auto;}
       </div>
       <div class="amedia">
         <figure class="aart">
-          <img src="assets/ying-artwork.webp?v=7" alt="The Painted Garden, the original watercolour artwork by Phuay Li Ying" width="1400" height="1400" loading="lazy" decoding="async">
+          <img src="assets/ying-artwork.webp?v=8" alt="The Painted Garden, the original watercolour artwork by Phuay Li Ying" width="1400" height="1400" loading="lazy" decoding="async">
           <figcaption>The Painted Garden &middot; original artwork by Phuay Li Ying</figcaption>
         </figure>
         <div class="acts amact">
           <a class="btn light" href="#k-the-painted-garden-box">See The Painted Garden Box</a>
         </div>
         <figure class="agroup">
-          <img src="assets/group-collab.webp?v=7" alt="Phuay Li Ying, Jacob Soo and Evelyn Lim at the table with The Painted Garden artwork and box" width="1400" height="1090" loading="lazy" decoding="async">
+          <img src="assets/group-collab.webp?v=8" alt="Phuay Li Ying, Jacob Soo and Evelyn Lim at the table with The Painted Garden artwork and box" width="1400" height="1090" loading="lazy" decoding="async">
           <figcaption class="credit">From left: Phuay Li Ying, founder of World of Ying; Jacob Soo, CEO of Breast Cancer Foundation; and Evelyn Lim, co&#8209;founder of Mdm Ling Bakery.</figcaption>
         </figure>
       </div>
@@ -1465,6 +1526,13 @@ footer .fbadges img{height:62px; width:auto;}
           <a class="btn ghost" href="https://wa.me/6584680201?text=Hello%21%20I%20have%20a%20question%20about%20your%20Mid-Autumn%202026%20mooncakes." target="_blank" rel="noopener" data-booth="general" data-name="General enquiry">Customer experience team &middot; +65 8468 0201</a>
           <a class="tlink" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="1">Download the brochure</a>
         </div>
+        <div class="nearest">
+          <form id="nearForm" novalidate>
+            <input id="nearIn" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="60" placeholder="Your postal code or address" aria-label="Your postal code or address">
+            <button class="btn sm" type="submit">Find my nearest booth</button>
+          </form>
+          <div id="nearOut" class="near-out" hidden></div>
+        </div>
       </div>
     </div>
     <div class="booth-map" id="boothMap" role="img" aria-label="Map of Mdm Ling Bakery Mid-Autumn booths across Singapore"></div>
@@ -1477,15 +1545,16 @@ footer .fbadges img{height:62px; width:auto;}
 
 <footer>
   <div class="wrap">
-    <img class="flogo" src="assets/mlb-logo-white.png?v=7" alt="Mdm Ling Bakery" width="900" height="304" loading="lazy" decoding="async">
+    <img class="flogo" src="assets/mlb-logo-white.png?v=8" alt="Mdm Ling Bakery" width="900" height="304" loading="lazy" decoding="async">
     <span class="fcn"><span class="cs-cn">花月情长</span><span class="cs-en">A Bond in Lasting Bloom</span></span>
     <div class="fnav">
       <a class="btn ghost sm" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" data-order="store-footer" data-name="Online store" style="color:#C9BDB7">Shop online</a>
       <a class="btn ghost sm" href="https://wa.me/6584680201?text=Hello%21%20I%20have%20a%20question%20about%20your%20Mid-Autumn%202026%20mooncakes." target="_blank" rel="noopener" style="color:#C9BDB7">Customer experience team</a>
+      <a class="btn ghost sm" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="footer" style="color:#C9BDB7">E&#8209;Brochure</a>
     </div>
     <div class="fbadges">
-      <img src="assets/badge-mwp.png?v=7" alt="Made With Passion, Singapore" width="700" height="462" loading="lazy" decoding="async">
-      <img src="assets/badge-pos.png?v=7" alt="Product of Singapore" width="619" height="700" loading="lazy" decoding="async">
+      <img src="assets/badge-mwp.png?v=8" alt="Made With Passion, Singapore" width="700" height="462" loading="lazy" decoding="async">
+      <img src="assets/badge-pos.png?v=8" alt="Product of Singapore" width="619" height="700" loading="lazy" decoding="async">
     </div>
     <p class="fl">Ingredients and allergen advice on this page follow the printed product labels. If you're gifting to someone with a food allergy, do check the label on the box as well. Halal certification covers our baked mooncakes; the truffle snowskin range isn't Halal certified. &#127765;</p>
   </div>
@@ -1499,7 +1568,7 @@ footer .fbadges img{height:62px; width:auto;}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 (function(){
-  var K = [{"id":"the-dawn","name":"The Dawn","cn":"花晨","pinyin":"huā chén","gloss":"flower morning","format":"Leather Gift Bag","pcs":"4 pcs","price":92,"img":"the-dawn.webp","alt":"The Dawn cream leather Mid-Autumn gift bag by Mdm Ling Bakery","channel":"online","url":"https://www.mdmlingbakery.com/products/the-dawn-bag-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A cream leather bag carried on ordinary days, long after the season.","why":"it's a bag someone actually wears, not a box they feel guilty throwing out.","note":"","variant":"","bcf":false,"artist":false,"score":{"family":2,"friend":3,"colleagues":2,"clients":2,"traveller":3,"keep":3,"story":2,"favourite":1,"impress":2},"halalSafe":true},{"id":"the-dusk","name":"The Dusk","cn":"月夕","pinyin":"yuè xī","gloss":"moonlit evening","format":"Leather Gift Bag","pcs":"4 pcs","price":92,"img":"the-dusk.webp","alt":"The Dusk terracotta leather Mid-Autumn gift bag by Mdm Ling Bakery","channel":"online","url":"https://www.mdmlingbakery.com/products/the-dusk-bag-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A terracotta bag that carries a weekend as easily as a celebration.","why":"the colour has enough warmth for the occasion and enough restraint for a Tuesday.","note":"","variant":"","bcf":false,"artist":false,"score":{"family":2,"friend":3,"colleagues":2,"clients":2,"traveller":3,"keep":3,"story":2,"favourite":1,"impress":2},"halalSafe":true},{"id":"the-painted-garden","name":"The Painted Garden","cn":"百花迎月","pinyin":"bǎi huā yíng yuè","gloss":"a hundred flowers rising to greet the moon","format":"Heritage Tin","pcs":"4 pcs","price":78,"img":"painted-garden-tin.webp","alt":"The Painted Garden 4 piece watercolour floral keepsake mooncake tin","channel":"online","url":"https://www.mdmlingbakery.com/products/the-painted-garden-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A tin for keepsakes, trinkets and the small things worth saving.","why":"there's a real artist and a real story behind the artwork, which gives you something to say when you hand it over.","note":"","variant":"","bcf":false,"artist":true,"score":{"family":3,"friend":3,"colleagues":3,"clients":3,"traveller":2,"keep":2,"story":3,"favourite":2,"impress":2},"halalSafe":true},{"id":"the-painted-garden-duo","name":"The Painted Garden Duo","cn":"百花迎月","pinyin":"bǎi huā yíng yuè","gloss":"a hundred flowers rising to greet the moon","format":"Duo Tin","pcs":"2 pcs","price":48,"img":"painted-garden-duo.webp","alt":"The Painted Garden 2 piece duo watercolour floral mooncake tin","channel":"online","url":"https://www.mdmlingbakery.com/products/the-painted-garden-duo-2pc-traditional-mooncakes/","sets":[],"duoNote":"Traditional mooncakes, two pieces.","becomes":"A slim tin that finds a home on a desk or a dressing table.","why":"a smaller gesture that still arrives looking considered, which is the hard part.","note":"","variant":"","bcf":false,"artist":true,"score":{"family":1,"friend":3,"colleagues":3,"clients":2,"traveller":2,"keep":2,"story":3,"favourite":1,"impress":1},"halalSafe":true},{"id":"the-painted-garden-box","name":"The Painted Garden Box","cn":"百花迎月","pinyin":"bǎi huā yíng yuè","gloss":"a hundred flowers rising to greet the moon","format":"Gift Box","pcs":"4 pcs","price":88,"img":"painted-garden-box.webp","alt":"The Painted Garden Box watercolour floral Mid-Autumn gift box by Mdm Ling Bakery","channel":"online","url":"https://www.mdmlingbakery.com/products/the-painted-garden-box-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A silk-paper box that keeps letters and photographs safe.","why":"every one bought sends $1 to the Breast Cancer Foundation, so the gesture reaches past the table.","note":"","variant":"","bcf":true,"artist":true,"score":{"family":2,"friend":2,"colleagues":3,"clients":3,"traveller":3,"keep":2,"story":3,"favourite":2,"impress":2},"halalSafe":true},{"id":"a-court-of-peonies","name":"A Court of Peonies","cn":"花好月圆","pinyin":"huā hǎo yuè yuán","gloss":"flowers in bloom beneath a full moon","format":"Heritage Tin","pcs":"4 pcs","price":78,"img":"court-peonies-tin.webp","alt":"A Court of Peonies 4 piece navy floral keepsake mooncake tin","channel":"online","url":"https://www.mdmlingbakery.com/products/a-court-of-peonies-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A navy tin that holds tea, biscuits or letters just as well.","why":"花好月圆 is the blessing spoken at every reunion table, so the name does half the talking for you.","note":"","variant":"","bcf":false,"artist":false,"score":{"family":3,"friend":2,"colleagues":3,"clients":3,"traveller":2,"keep":2,"story":3,"favourite":2,"impress":3},"halalSafe":true},{"id":"a-court-of-peonies-duo","name":"A Court of Peonies Duo","cn":"花好月圆","pinyin":"huā hǎo yuè yuán","gloss":"flowers in bloom beneath a full moon","format":"Duo Tin","pcs":"2 pcs","price":48,"img":"court-peonies-duo.webp","alt":"A Court of Peonies 2 piece duo sage floral mooncake tin","channel":"online","url":"https://www.mdmlingbakery.com/products/court-of-peonies-duo-2pc-traditional-mooncakes/","sets":[],"duoNote":"Traditional mooncakes, two pieces.","becomes":"A sage tin small enough for a shelf, sturdy enough to keep.","why":"it carries the same good wishes as its bigger sister at a size you can give widely.","note":"","variant":"","bcf":false,"artist":false,"score":{"family":1,"friend":3,"colleagues":3,"clients":2,"traveller":2,"keep":2,"story":2,"favourite":1,"impress":1},"halalSafe":true},{"id":"blossom-drawer-chest","name":"Blossom Drawer Chest","cn":"花间藏月","pinyin":"huā jiān cáng yuè","gloss":"a moon treasured among the flowers","format":"Keepsake Chest","pcs":"4 pcs","price":118,"img":"blossom-drawer.webp","alt":"Blossom Drawer Chest pink keepsake box with working drawer","channel":"online","url":"https://www.mdmlingbakery.com/products/blossom-drawer-chest-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A drawer for jewellery and the little treasures that deserve a home.","why":"it's furniture, not packaging, so it stays on the dressing table for years.","note":"","variant":"","bcf":false,"artist":false,"score":{"family":3,"friend":2,"colleagues":2,"clients":3,"traveller":1,"keep":3,"story":2,"favourite":2,"impress":3},"halalSafe":true},{"id":"orchid-reverie","name":"Orchid Reverie","cn":"幽兰伴月","pinyin":"yōu lán bàn yuè","gloss":"a quiet orchid keeping the moon company","format":"Snowskin Keepsake Tin","pcs":"8 pcs","price":88,"img":"orchid-reverie.webp","alt":"Orchid Reverie keepsake tin with snowskin mooncakes cut open to show their truffle centres","channel":"online","url":"https://www.mdmlingbakery.com/products/orchid-reverie-tin-8pcs-snow-skin-mooncakes/","sets":["G"],"duoNote":"","becomes":"A tin that keeps biscuits, tea or letters as happily as mooncakes.","why":"eight pieces, two of each flavour, so nobody at the table has to settle.","note":"Not Halal certified. Vegetarian, with no pork and no lard.","variant":"","bcf":false,"artist":false,"score":{"family":3,"friend":2,"colleagues":2,"clients":1,"traveller":0,"keep":2,"story":2,"favourite":3,"impress":2},"halalSafe":false},{"id":"weaving-moments","name":"Weaving Moments","cn":"丝丝情长","pinyin":"sī sī qíng cháng","gloss":"every thread, a lasting bond","format":"Woven Bag","pcs":"4 pcs","price":92,"img":"weaving-moments.webp","alt":"Weaving Moments woven leather Mid-Autumn gift bag","channel":"booth","url":"","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A woven bag that goes to market, to work and to dinner.","why":"the weave is the message, every strand holding another, which is a rare thing to be able to point at.","note":"","variant":"","bcf":false,"artist":false,"score":{"family":2,"friend":3,"colleagues":2,"clients":2,"traveller":3,"keep":3,"story":3,"favourite":1,"impress":2},"halalSafe":true},{"id":"tote-of-good-health","name":"Tote of Good Health","cn":"月满安康","pinyin":"yuè mǎn ān kāng","gloss":"a full moon, lasting wellness","format":"Leather Tote","pcs":"4 pcs","price":88,"img":"tote-fuchsia.webp","alt":"Tote of Good Health fuchsia leather tote Mid-Autumn gift bag","channel":"booth","url":"","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A structured fuchsia tote worn well past the festival.","why":"of everything we wish the people we love, health comes first, and the name says exactly that.","note":"","variant":"Fuchsia","bcf":false,"artist":false,"score":{"family":3,"friend":2,"colleagues":1,"clients":1,"traveller":2,"keep":3,"story":3,"favourite":1,"impress":2},"halalSafe":true},{"id":"tote-of-bliss","name":"Tote of Bliss","cn":"花开喜乐","pinyin":"huā kāi xǐ lè","gloss":"blooms open, joy follows","format":"Leather Tote","pcs":"4 pcs","price":88,"img":"tote-green.webp","alt":"Tote of Bliss green leather tote Mid-Autumn gift bag","channel":"booth","url":"","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A jade green tote that dresses up or down without trying.","why":"it unfolds in stages, bag then scarf then mooncakes, so the giving lasts longer than the handover.","note":"","variant":"Green","bcf":false,"artist":false,"score":{"family":2,"friend":3,"colleagues":2,"clients":1,"traveller":3,"keep":3,"story":2,"favourite":1,"impress":2},"halalSafe":true},{"id":"treasure-scroll","name":"Treasure Scroll","cn":"花月长卷","pinyin":"huā yuè cháng juǎn","gloss":"an unrolling scroll of flowers and moonlight","format":"Scroll Box","pcs":"4 pcs","price":88,"img":"treasure-scroll.webp","alt":"Treasure Scroll Rose Pink long gift box by Mdm Ling Bakery","channel":"booth","url":"","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A long box for prints, papers and things too precious to fold.","why":"it opens scene by scene rather than all at once, which turns the handover into a moment.","note":"","variant":"Rose Pink","bcf":false,"artist":false,"score":{"family":2,"friend":2,"colleagues":3,"clients":3,"traveller":1,"keep":2,"story":3,"favourite":1,"impress":3},"halalSafe":true},{"id":"elegance-reunion-turntable","name":"Elegance Reunion Turntable","cn":"花月同席","pinyin":"huā yuè tóng xí","gloss":"flowers and moon at the same table","format":"Serving Turntable","pcs":"4 pcs","price":118,"img":"elegance-turntable.webp","alt":"Elegance Reunion Turntable, a round floral serving turntable by Mdm Ling Bakery","channel":"booth","url":"","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A serving turntable that comes back out at every reunion dinner.","why":"it's the one keepsake that earns a place at the table itself, not just on a shelf.","note":"Available in several designs. Ask at any of our booths for what's in stock.","variant":"","bcf":false,"artist":false,"score":{"family":3,"friend":1,"colleagues":1,"clients":2,"traveller":0,"keep":3,"story":2,"favourite":3,"impress":3},"halalSafe":true}];
+  var K = [{"id":"the-dawn","name":"The Dawn","cn":"花晨","pinyin":"huā chén","gloss":"flower morning","format":"Leather Gift Bag","pcs":"4 pcs","price":92,"img":"the-dawn.webp","alt":"The Dawn cream leather Mid-Autumn gift bag by Mdm Ling Bakery","channel":"online","url":"https://www.mdmlingbakery.com/products/the-dawn-bag-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A cream leather bag carried on ordinary days, long after the season.","why":"it's a bag someone actually wears, not a box they feel guilty throwing out.","note":"","disclaimer":"","variant":"","bcf":false,"artist":false,"score":{"family":2,"friend":3,"colleagues":2,"clients":2,"traveller":3,"keep":3,"story":2,"favourite":1,"impress":2},"halalSafe":true},{"id":"the-dusk","name":"The Dusk","cn":"月夕","pinyin":"yuè xī","gloss":"moonlit evening","format":"Leather Gift Bag","pcs":"4 pcs","price":92,"img":"the-dusk.webp","alt":"The Dusk terracotta leather Mid-Autumn gift bag by Mdm Ling Bakery","channel":"online","url":"https://www.mdmlingbakery.com/products/the-dusk-bag-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A terracotta bag that carries a weekend as easily as a celebration.","why":"the colour has enough warmth for the occasion and enough restraint for a Tuesday.","note":"","disclaimer":"","variant":"","bcf":false,"artist":false,"score":{"family":2,"friend":3,"colleagues":2,"clients":2,"traveller":3,"keep":3,"story":2,"favourite":1,"impress":2},"halalSafe":true},{"id":"the-painted-garden","name":"The Painted Garden","cn":"百花迎月","pinyin":"bǎi huā yíng yuè","gloss":"a hundred flowers rising to greet the moon","format":"Heritage Tin","pcs":"4 pcs","price":78,"img":"painted-garden-tin.webp","alt":"The Painted Garden 4 piece watercolour floral keepsake mooncake tin","channel":"online","url":"https://www.mdmlingbakery.com/products/the-painted-garden-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A tin for keepsakes, trinkets and the small things worth saving.","why":"there's a real artist and a real story behind the artwork, which gives you something to say when you hand it over.","note":"","disclaimer":"","variant":"","bcf":false,"artist":true,"score":{"family":3,"friend":3,"colleagues":3,"clients":3,"traveller":2,"keep":2,"story":3,"favourite":2,"impress":2},"halalSafe":true},{"id":"the-painted-garden-duo","name":"The Painted Garden Duo","cn":"百花迎月","pinyin":"bǎi huā yíng yuè","gloss":"a hundred flowers rising to greet the moon","format":"Duo Tin","pcs":"2 pcs","price":48,"img":"painted-garden-duo.webp","alt":"The Painted Garden 2 piece duo watercolour floral mooncake tin","channel":"online","url":"https://www.mdmlingbakery.com/products/the-painted-garden-duo-2pc-traditional-mooncakes/","sets":[],"duoNote":"Traditional mooncakes, two pieces.","becomes":"A slim tin that finds a home on a desk or a dressing table.","why":"a smaller gesture that still arrives looking considered, which is the hard part.","note":"","disclaimer":"","variant":"","bcf":false,"artist":true,"score":{"family":1,"friend":3,"colleagues":3,"clients":2,"traveller":2,"keep":2,"story":3,"favourite":1,"impress":1},"halalSafe":true},{"id":"the-painted-garden-box","name":"The Painted Garden Box","cn":"百花迎月","pinyin":"bǎi huā yíng yuè","gloss":"a hundred flowers rising to greet the moon","format":"Gift Box","pcs":"4 pcs","price":88,"img":"painted-garden-box.webp","alt":"The Painted Garden Box watercolour floral Mid-Autumn gift box by Mdm Ling Bakery","channel":"online","url":"https://www.mdmlingbakery.com/products/the-painted-garden-box-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A silk-paper box that keeps letters and photographs safe.","why":"every one bought sends $1 to the Breast Cancer Foundation, so the gesture reaches past the table.","note":"","disclaimer":"","variant":"","bcf":true,"artist":true,"score":{"family":2,"friend":2,"colleagues":3,"clients":3,"traveller":3,"keep":2,"story":3,"favourite":2,"impress":2},"halalSafe":true},{"id":"a-court-of-peonies","name":"A Court of Peonies","cn":"花好月圆","pinyin":"huā hǎo yuè yuán","gloss":"flowers in bloom beneath a full moon","format":"Heritage Tin","pcs":"4 pcs","price":78,"img":"court-peonies-tin.webp","alt":"A Court of Peonies 4 piece navy floral keepsake mooncake tin","channel":"online","url":"https://www.mdmlingbakery.com/products/a-court-of-peonies-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A navy tin that holds tea, biscuits or letters just as well.","why":"花好月圆 is the blessing spoken at every reunion table, so the name does half the talking for you.","note":"","disclaimer":"","variant":"","bcf":false,"artist":false,"score":{"family":3,"friend":2,"colleagues":3,"clients":3,"traveller":2,"keep":2,"story":3,"favourite":2,"impress":3},"halalSafe":true},{"id":"a-court-of-peonies-duo","name":"A Court of Peonies Duo","cn":"花好月圆","pinyin":"huā hǎo yuè yuán","gloss":"flowers in bloom beneath a full moon","format":"Duo Tin","pcs":"2 pcs","price":48,"img":"court-peonies-duo.webp","alt":"A Court of Peonies 2 piece duo sage floral mooncake tin","channel":"online","url":"https://www.mdmlingbakery.com/products/court-of-peonies-duo-2pc-traditional-mooncakes/","sets":[],"duoNote":"Traditional mooncakes, two pieces.","becomes":"A sage tin small enough for a shelf, sturdy enough to keep.","why":"it carries the same good wishes as its bigger sister at a size you can give widely.","note":"","disclaimer":"","variant":"","bcf":false,"artist":false,"score":{"family":1,"friend":3,"colleagues":3,"clients":2,"traveller":2,"keep":2,"story":2,"favourite":1,"impress":1},"halalSafe":true},{"id":"blossom-drawer-chest","name":"Blossom Drawer Chest","cn":"花间藏月","pinyin":"huā jiān cáng yuè","gloss":"a moon treasured among the flowers","format":"Keepsake Chest","pcs":"4 pcs","price":118,"img":"blossom-drawer.webp","alt":"Blossom Drawer Chest pink keepsake box with working drawer","channel":"online","url":"https://www.mdmlingbakery.com/products/blossom-drawer-chest-traditional-assorted-mooncakes/","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A drawer for jewellery and the little treasures that deserve a home.","why":"it's furniture, not packaging, so it stays on the dressing table for years.","note":"","disclaimer":"","variant":"","bcf":false,"artist":false,"score":{"family":3,"friend":2,"colleagues":2,"clients":3,"traveller":1,"keep":3,"story":2,"favourite":2,"impress":3},"halalSafe":true},{"id":"orchid-reverie","name":"Orchid Reverie","cn":"幽兰伴月","pinyin":"yōu lán bàn yuè","gloss":"a quiet orchid keeping the moon company","format":"Snowskin Keepsake Tin","pcs":"8 pcs","price":88,"img":"orchid-reverie.webp","alt":"Orchid Reverie keepsake tin with snowskin mooncakes cut open to show their truffle centres","channel":"online","url":"https://www.mdmlingbakery.com/products/orchid-reverie-tin-8pcs-snow-skin-mooncakes/","sets":["G"],"duoNote":"","becomes":"A tin that keeps biscuits, tea or letters as happily as mooncakes.","why":"eight pieces, two of each flavour, so nobody at the table has to settle.","note":"Not Halal certified. Vegetarian, with no pork and no lard.","disclaimer":"","variant":"","bcf":false,"artist":false,"score":{"family":3,"friend":2,"colleagues":2,"clients":1,"traveller":0,"keep":2,"story":2,"favourite":3,"impress":2},"halalSafe":false},{"id":"weaving-moments","name":"Weaving Moments","cn":"丝丝情长","pinyin":"sī sī qíng cháng","gloss":"every thread, a lasting bond","format":"Woven Bag","pcs":"4 pcs","price":92,"img":"weaving-moments.webp","alt":"Weaving Moments woven leather Mid-Autumn gift bag","channel":"booth","url":"","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A woven bag that goes to market, to work and to dinner.","why":"the weave is the message, every strand holding another, which is a rare thing to be able to point at.","note":"","disclaimer":"","variant":"","bcf":false,"artist":false,"score":{"family":2,"friend":3,"colleagues":2,"clients":2,"traveller":3,"keep":3,"story":3,"favourite":1,"impress":2},"halalSafe":true},{"id":"tote-of-good-health","name":"Tote of Good Health","cn":"月满安康","pinyin":"yuè mǎn ān kāng","gloss":"a full moon, lasting wellness","format":"Leather Tote","pcs":"4 pcs","price":88,"img":"tote-fuchsia.webp","alt":"Tote of Good Health fuchsia leather tote Mid-Autumn gift bag","channel":"booth","url":"","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A structured fuchsia tote worn well past the festival.","why":"of everything we wish the people we love, health comes first, and the name says exactly that.","note":"","disclaimer":"","variant":"Fuchsia","bcf":false,"artist":false,"score":{"family":3,"friend":2,"colleagues":1,"clients":1,"traveller":2,"keep":3,"story":3,"favourite":1,"impress":2},"halalSafe":true},{"id":"tote-of-bliss","name":"Tote of Bliss","cn":"花开喜乐","pinyin":"huā kāi xǐ lè","gloss":"blooms open, joy follows","format":"Leather Tote","pcs":"4 pcs","price":88,"img":"tote-green.webp","alt":"Tote of Bliss green leather tote Mid-Autumn gift bag","channel":"booth","url":"","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A jade green tote that dresses up or down without trying.","why":"it unfolds in stages, bag then scarf then mooncakes, so the giving lasts longer than the handover.","note":"","disclaimer":"","variant":"Green","bcf":false,"artist":false,"score":{"family":2,"friend":3,"colleagues":2,"clients":1,"traveller":3,"keep":3,"story":2,"favourite":1,"impress":2},"halalSafe":true},{"id":"treasure-scroll","name":"Treasure Scroll","cn":"花月长卷","pinyin":"huā yuè cháng juǎn","gloss":"an unrolling scroll of flowers and moonlight","format":"Scroll Box","pcs":"4 pcs","price":88,"img":"treasure-scroll.webp","alt":"Treasure Scroll Rose Pink long gift box by Mdm Ling Bakery","channel":"booth","url":"","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A long box for prints, papers and things too precious to fold.","why":"it opens scene by scene rather than all at once, which turns the handover into a moment.","note":"","disclaimer":"","variant":"Rose Pink","bcf":false,"artist":false,"score":{"family":2,"friend":2,"colleagues":3,"clients":3,"traveller":1,"keep":2,"story":3,"favourite":1,"impress":3},"halalSafe":true},{"id":"elegance-reunion-turntable","name":"Elegance Reunion Turntable","cn":"花月同席","pinyin":"huā yuè tóng xí","gloss":"flowers and moon at the same table","format":"Serving Turntable","pcs":"4 pcs","price":118,"img":"elegance-turntable.webp","alt":"Elegance Reunion Turntable, a round floral serving turntable by Mdm Ling Bakery","channel":"booth","url":"","sets":["A","B","C","D","E","F"],"duoNote":"","becomes":"A serving turntable that comes back out at every reunion dinner.","why":"it's the one keepsake that earns a place at the table itself, not just on a shelf.","note":"","disclaimer":"Images are for illustration purposes only. The turntable comes in several designs, so please check with our retail points for the designs currently available. 🌕","variant":"","bcf":false,"artist":false,"score":{"family":3,"friend":1,"colleagues":1,"clients":2,"traveller":0,"keep":3,"story":2,"favourite":3,"impress":3},"halalSafe":true}];
   var S = [{"id":"A","group":"Traditional","halal":true,"flavours":["4 × Lotus with Melon Seeds and Yolk"]},{"id":"B","group":"Traditional","halal":true,"flavours":["4 × Lotus with Melon Seeds"]},{"id":"C","group":"Traditional","halal":true,"flavours":["2 × Lotus with Melon Seeds and Yolk","2 × Lotus with Melon Seeds"]},{"id":"D","group":"Signature","halal":true,"flavours":["1 × Black Sesame Peanut Butter","1 × Red Dates Longan","1 × Belgian Double Chocolate","1 × Emerald Pandan Golden Yolk"]},{"id":"E","group":"Signature & Traditional","halal":true,"flavours":["1 × Lotus with Melon Seeds and Yolk","1 × Lotus with Melon Seeds","1 × Black Sesame Peanut Butter","1 × Red Dates Longan"]},{"id":"F","group":"Signature & Traditional","halal":true,"flavours":["1 × Lotus with Melon Seeds and Yolk","1 × Lotus with Melon Seeds","1 × Belgian Double Chocolate","1 × Emerald Pandan Golden Yolk"]},{"id":"G","group":"Snowskin Truffle","halal":false,"flavours":["2 × Truffle Popping Candy","2 × Truffle Pistachio Kunafa","2 × Truffle Muscat Grape","2 × Truffle Passionfruit"]}];
   var B = [{"id":"jewel-changi-airport","name":"Jewel Changi Airport","level":"#01-231, L1, Lobby H","flag":true,"lat":1.3602243,"lng":103.9896749,"dates":"Open daily","maps":"https://www.google.com/maps/search/?api=1&query=1.3602243,103.9896749"},{"id":"cimb-plaza","name":"CIMB Plaza","level":"L1","flag":false,"lat":1.2842625,"lng":103.8522209,"dates":"7 Sep – 25 Sep · weekdays only","maps":"https://www.google.com/maps/search/?api=1&query=1.2842625,103.8522209"},{"id":"compass-one","name":"Compass One","level":"L2","flag":false,"lat":1.3920337,"lng":103.8949526,"dates":"31 Aug – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.3920337,103.8949526"},{"id":"junction-8","name":"Junction 8","level":"L2","flag":false,"lat":1.3505893,"lng":103.8487447,"dates":"14 Sep – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.3505893,103.8487447"},{"id":"jurong-point","name":"Jurong Point","level":"L1","flag":false,"lat":1.3394964,"lng":103.705254,"dates":"7 Sep – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.3394964,103.705254"},{"id":"lot-one","name":"Lot One","level":"L1","flag":false,"lat":1.3850739,"lng":103.7450166,"dates":"8 Sep – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.3850739,103.7450166"},{"id":"nex","name":"NEX","level":"L1","flag":false,"lat":1.3504943,"lng":103.8722727,"dates":"4 Sep – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.3504943,103.8722727"},{"id":"raffles-xchange","name":"Raffles Xchange","level":"B1","flag":false,"lat":1.2937426,"lng":103.8538363,"dates":"7 Sep – 25 Sep · weekdays only","maps":"https://www.google.com/maps/search/?api=1&query=1.2937426,103.8538363"},{"id":"takashimaya-square","name":"Takashimaya Square","level":"B2","flag":false,"lat":1.3025211,"lng":103.8353202,"dates":"20 Aug – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.3025211,103.8353202"},{"id":"tampines-mall","name":"Tampines Mall","level":"L1","flag":false,"lat":1.3525218,"lng":103.9447221,"dates":"16 Sep – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.3525218,103.9447221"},{"id":"tangs-at-tang-plaza","name":"TANGS at Tang Plaza","level":"B1-25","flag":false,"lat":1.3047546,"lng":103.8330692,"dates":"20 Aug – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.3047546,103.8330692"},{"id":"the-clementi-mall","name":"The Clementi Mall","level":"L3","flag":false,"lat":1.3149814,"lng":103.7644695,"dates":"7 Sep – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.3149814,103.7644695"},{"id":"velocity-novena-square","name":"Velocity @ Novena Square","level":"L1","flag":false,"lat":1.3197981,"lng":103.8440434,"dates":"11 Sep – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.3197981,103.8440434"},{"id":"vivocity","name":"VivoCity","level":"L1","flag":false,"lat":1.2643707,"lng":103.8229537,"dates":"25 Aug – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.2643707,103.8229537"},{"id":"westgate","name":"Westgate","level":"L2","flag":false,"lat":1.334194,"lng":103.7428671,"dates":"7 Sep – 25 Sep","maps":"https://www.google.com/maps/search/?api=1&query=1.334194,103.7428671"}];
   var CATS = [{"id":"painted-garden","name":"The Painted Garden","items":["the-painted-garden-box","the-painted-garden","the-painted-garden-duo"]},{"id":"court-of-peonies","name":"A Court of Peonies","items":["a-court-of-peonies","a-court-of-peonies-duo"]},{"id":"dusk-and-dawn","name":"The Dusk and The Dawn","items":["the-dusk","the-dawn"]},{"id":"keepsake-bags","name":"The Keepsake Bags","items":["weaving-moments","tote-of-bliss","tote-of-good-health"]},{"id":"reunion-pieces","name":"The Reunion Pieces","items":["blossom-drawer-chest","elegance-reunion-turntable","treasure-scroll"]},{"id":"snowskin-edition","name":"Snowskin Edition","items":["orchid-reverie"]}];
@@ -1508,7 +1577,7 @@ footer .fbadges img{height:62px; width:auto;}
   var RECIP = {"family": "family", "friend": "a friend", "colleagues": "colleagues", "clients": "clients", "traveller": "someone heading home"};
   var WA_CUSTOMER = "6584680201";
   var SITE = "https://kiensieng.github.io/mlb-mooncake-2026-9536f369736f98c6/";
-  var AV = "7";
+  var AV = "8";
   var BCF = "https://www.bcf.org.sg";
 
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1842,7 +1911,7 @@ footer .fbadges img{height:62px; width:auto;}
       var k = kOf(id); if (!k) return;
       popFor = id;
       pop.innerHTML =
-        '<img src="assets/' + k.img + '?v=7" alt="">' +
+        '<img src="assets/' + k.img + '?v=8" alt="">' +
         '<button type="button" class="hp-x" aria-label="Close">&times;</button>' +
         '<div class="hp-b">' +
           '<span class="hp-n">' + esc(k.name) + '</span>' +
@@ -2000,6 +2069,60 @@ footer .fbadges img{height:62px; width:auto;}
     vis();
   })();
 
+  /* ---------------- nearest booth finder ----------------
+     A postal code (or any address text) goes to OneMap, Singapore's national
+     geocoder, and the three closest booths come back with their dates. */
+  (function(){
+    var form = byId('nearForm'), inp = byId('nearIn'), out = byId('nearOut');
+    if (!form || !inp || !out) return;
+    function distKm(a1, o1, a2, o2){
+      var rad = Math.PI / 180, R = 6371;
+      var dLa = (a2 - a1) * rad, dLo = (o2 - o1) * rad;
+      var s = Math.sin(dLa/2) * Math.sin(dLa/2) +
+              Math.cos(a1 * rad) * Math.cos(a2 * rad) * Math.sin(dLo/2) * Math.sin(dLo/2);
+      return 2 * R * Math.asin(Math.sqrt(s));
+    }
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var q = (inp.value || '').replace(/^\s+|\s+$/g, '');
+      if (!q){ inp.focus(); return; }
+      out.hidden = false;
+      out.innerHTML = '<p class="near-note">Finding booths near ' + esc(q) + '\u2026</p>';
+      ga('booth_search', {});
+      fetch('https://www.onemap.gov.sg/api/common/elastic/search?searchVal=' +
+            encodeURIComponent(q) + '&returnGeom=Y&getAddrDetails=N&pageNum=1')
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var r0 = d && d.results && d.results[0];
+          if (!r0 || !r0.LATITUDE){
+            out.innerHTML = '<p class="near-note">We couldn\u2019t place that address. ' +
+              'Try just the 6 digit postal code.</p>';
+            return;
+          }
+          var la = parseFloat(r0.LATITUDE), lo = parseFloat(r0.LONGITUDE);
+          var ranked = B.map(function(b){ return { b: b, d: distKm(la, lo, b.lat, b.lng) }; })
+            .sort(function(x, y){ return x.d - y.d; }).slice(0, 3);
+          out.innerHTML = '<p class="near-note">Closest to you \u00B7 tap one to see it on the map</p>' +
+            ranked.map(function(r){
+              return '<button type="button" class="near-item" data-near="' + r.b.id + '">' +
+                '<span class="ni-n">' + esc(r.b.name) + '</span>' +
+                '<span class="ni-d">' + (r.d < 1 ? Math.round(r.d * 1000) + ' m' : r.d.toFixed(1) + ' km') + '</span>' +
+                '<span class="ni-m">' + esc(r.b.level) + ' \u00B7 ' + esc(r.b.dates) + '</span>' +
+                '</button>';
+            }).join('');
+        })
+        .catch(function(){
+          out.innerHTML = '<p class="near-note">The lookup didn\u2019t respond. Please try again in a moment.</p>';
+        });
+    });
+    out.addEventListener('click', function(e){
+      var it = e.target.closest && e.target.closest('.near-item');
+      if (!it) return;
+      var booth = document.querySelector('.booth[data-loc="' + it.dataset.near + '"]');
+      if (booth) booth.click();
+    });
+  })();
+
   /* ---------------- outbound click tracking ---------------- */
   document.addEventListener('click', function(e){
     var a = e.target.closest && e.target.closest('a');
@@ -2087,7 +2210,7 @@ footer .fbadges img{height:62px; width:auto;}
     var meta = ['<span class="tag">' + esc(k.format) + ' &middot; ' + esc(k.pcs) + '</span>'];
     if (k.sets.indexOf('G') >= 0) meta.push('<span class="tag chill">Snowskin &middot; chilled</span>');
     else meta.push('<span class="tag sage">Halal certified</span>');
-    if (k.bcf) meta.push('<span class="tag gold">$1 to charity</span>');
+    if (k.bcf) meta.push('<span class="tag charity">\uD83C\uDF97 $1 to charity</span>');
     if (k.channel === 'booth') meta.push('<span class="tag">At our booths</span>');
 
     var setLine = s
@@ -2159,8 +2282,8 @@ footer .fbadges img{height:62px; width:auto;}
       if (!k) return;
       var c = document.createElement('button');
       c.type = 'button'; c.className = 'chip';
-      c.innerHTML = '<img src="' + asset(k.img) + '" alt="' + esc(k.alt) + '" loading="lazy" decoding="async">' +
-        '<span>' + esc(k.name) + (k.variant ? ' (' + esc(k.variant) + ')' : '') + '</span>';
+      c.innerHTML = '<span class="cw"><img src="' + asset(k.img) + '" alt="' + esc(k.alt) + '" loading="lazy" decoding="async"></span>' +
+        '<span class="cn2">' + esc(k.name) + (k.variant ? ' (' + esc(k.variant) + ')' : '') + '</span>';
       c.addEventListener('click', function(){
         [].slice.call(bpick.querySelectorAll('.chip')).forEach(function(x){ x.classList.remove('on'); });
         c.classList.add('on');
@@ -2225,7 +2348,8 @@ footer .fbadges img{height:62px; width:auto;}
       '<div class="setlist">' + rows + '</div>' +
       '<div class="callout"><strong>Prefer your own mix?</strong> You can customise your preferred ' +
       'flavours at any of our retail points across Singapore. <a href="#where">See where to find us</a></div>' +
-      (k.note ? '<p class="res-note">' + esc(k.note) + '</p>' : '');
+      (k.note ? '<p class="res-note">' + esc(k.note) + '</p>' : '') +
+      (k.disclaimer ? '<p class="res-note">' + esc(k.disclaimer) + '</p>' : '');
     bout.classList.add('on');
   }
 

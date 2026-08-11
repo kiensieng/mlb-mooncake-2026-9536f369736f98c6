@@ -317,10 +317,9 @@ KEEPSAKES = [
         "channel": "booth", "sets": BAKED_SETS,
         "becomes": "A serving turntable that comes back out at every reunion dinner.",
         "why": "it's the one keepsake that earns a place at the table itself, not just on a shelf.",
-        "note": "Available in several designs. Ask at any of our booths for what's in stock.",
         "disclaimer": "Images are for illustration purposes only. The turntable comes in several designs, so please check with our retail points for the designs currently available. \U0001F315",
         "body": [
-            "A <strong>round serving turntable</strong> printed with a painted garden of peonies, roses and trailing greens, rimmed in gold.",
+            "A <strong>round serving turntable</strong> that turns any dinner into a shared one.",
             "Set it at the centre of the table and everything comes round to everyone. That's the whole idea: <strong>nobody reaches, nobody misses out</strong>, which is what a reunion dinner is supposed to feel like.",
             "Its name, <strong>花月同席</strong>, puts the flowers and the moon at the <strong>same table</strong>. 席 is the banquet seat, the place kept for you, and that's the wish this one carries.",
             "Long after Mid-Autumn it <strong>stays in service</strong>, carrying tea, fruit and whatever the next gathering needs. <strong>The gift that keeps getting used in front of you.</strong>",

@@ -39,7 +39,7 @@ from data import (KEEPSAKES, SETS, BOOTHS, CATEGORIES, RECIPIENTS, PRIORITIES,
                   TABLES, BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSET_V = 7  # bump when an asset is replaced under the same filename
+ASSET_V = 8  # bump when an asset is replaced under the same filename
 
 # Breast Cancer Foundation, Singapore. Verified 6 Aug 2026.
 BCF_URL = "https://www.bcf.org.sg"
@@ -156,7 +156,28 @@ nav.jump a{text-decoration:none; white-space:nowrap; font-size:11.5px; font-weig
   border-bottom:1.5px solid transparent; transition:color .2s,border-color .2s;}
 nav.jump a:hover{color:var(--ink);}
 nav.jump a.active{color:var(--rose); border-bottom-color:var(--gold);}
-.progress{height:1px; background:var(--gold); width:0; transition:width .1s linear;}
+.progress{height:1px; background:var(--gold); width:0; transition:width .1s linear;
+  position:relative; overflow:visible;}
+/* a butterfly rides the leading edge of the reading line */
+.progress .pfly{position:absolute; right:-10px; top:50%; width:19px; height:19px;
+  transform:translateY(-50%) rotate(90deg); pointer-events:none;}
+.progress .pfly svg{width:100%; height:100%; display:block; overflow:visible;
+  filter:drop-shadow(0 1px 2px rgba(78,60,55,.35));}
+.progress .pfly svg path{fill:var(--gold); stroke:#FBF6F2; stroke-width:1.6; stroke-linejoin:round;}
+.progress .pfly svg ellipse{fill:#4E3C37;}
+.progress .pfly svg .ant{fill:none; stroke:#4E3C37; stroke-width:1.6; stroke-linecap:round;}
+.progress .pfly .wl, .progress .pfly .wr{transform-box:fill-box; animation:flut 1s ease-in-out infinite;}
+.progress .pfly .wl{transform-origin:100% 50%;}
+.progress .pfly .wr{transform-origin:0% 50%;}
+/* the brochure sits apart from the section links, pinned to the bar's edge */
+nav.jump a.nbro{position:absolute; right:16px; top:50%; transform:translateY(-50%);
+  z-index:3; color:#96762F; border:1px solid var(--gold); padding:7px 13px;
+  background:rgba(243,242,241,.9);}
+nav.jump a.nbro:hover{color:#FBF6F2; background:var(--gold);}
+@media (max-width:759px){
+  nav.jump a.nbro{position:static; transform:none; border:1px solid var(--gold);
+    padding:6px 11px; background:none;}
+}
 /* slide affordances: a fading edge plus an animated chevron so the bar
    obviously carries more than it shows */
 nav.jump{position:sticky;}
@@ -488,6 +509,9 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   letter-spacing:.08em; text-transform:uppercase; padding:5px 10px; border:1px solid var(--hair);
   background:transparent; color:#6B5A54;}
 .tag.gold{border-color:#DDC796; color:#8A6E33;}
+/* the $1 pledge reads as a filled badge, not another quiet chip */
+.tag.charity{background:var(--gold); border-color:var(--gold); color:#33241F;
+  font-weight:700; box-shadow:0 2px 8px rgba(199,166,106,.35);}
 .tag.rose{border-color:#E0CBC6; color:var(--rose);}
 .tag.sage{border-color:#CFD6C4; color:#5F6B4C;}
 .tag.chill{border-color:#C6D4DA; color:#4C6570;}
@@ -522,7 +546,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   text-transform:uppercase; color:var(--gold); margin-bottom:6px;}
 .feat .becomes p{margin:0; font-size:16px; color:#5E4F49;}
 .feat .note{margin:14px 0 0; font-size:13.5px; color:var(--muted); font-style:italic; max-width:52ch;}
-.feat .disc{margin:22px 0 0; max-width:52ch; border:1.5px solid var(--gold);
+.feat .disc{margin:20px 0 4px; max-width:52ch; border:1.5px solid var(--gold);
   background:#FBF6EC; padding:14px 18px;}
 .feat .disc .lbl{display:block; font-size:10px; font-weight:700; letter-spacing:.2em;
   text-transform:uppercase; color:#8A6E33; margin-bottom:5px;}
@@ -583,12 +607,16 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 @media(min-width:980px){ .brow{grid-template-columns:repeat(6,1fr);} }
 .chip{font-family:var(--f); padding:0; cursor:pointer; text-align:left; background:none;
   border:0; color:var(--ink); transition:opacity .16s;}
-.chip img{width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:var(--mushroom);
-  outline:1.5px solid transparent; outline-offset:-1.5px; transition:outline-color .16s;}
-.chip span{display:block; font-size:11.5px; font-weight:600; line-height:1.3; padding:9px 0 0;
+/* the frame is a fixed 4:5 window (padding trick, not aspect-ratio, so every
+   browser crops identically and the rows always line up) */
+.chip .cw{display:block; position:relative; padding-top:125%; overflow:hidden;
+  background:var(--mushroom); outline:1.5px solid transparent; outline-offset:-1.5px;
+  transition:outline-color .16s;}
+.chip .cw img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+.chip span.cn2{display:block; font-size:11.5px; font-weight:600; line-height:1.3; padding:9px 0 0;
   letter-spacing:.01em;}
-.chip:hover img{outline-color:var(--rose);}
-.chip.on img{outline-color:var(--rose); outline-width:2.5px;}
+.chip:hover .cw{outline-color:var(--rose);}
+.chip.on .cw{outline-color:var(--rose); outline-width:2.5px;}
 .chip.on span{color:var(--rose);}
 .bout{display:none; border-top:1px solid var(--hair); padding-top:30px;}
 .bout.on{display:block;}
@@ -773,6 +801,24 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   color:#CDBBB2; line-height:1.65; margin-top:12px;}
 
 /* ---------- booth map ---------- */
+/* ---------- nearest booth finder ---------- */
+.nearest{margin:22px 0 0; max-width:560px;}
+.nearest form{display:flex; gap:10px; flex-wrap:wrap;}
+.nearest input{flex:1 1 200px; min-width:0; font-family:var(--f); font-size:15px;
+  padding:12px 14px; border:1.5px solid var(--hair); background:#fff; color:var(--ink);
+  border-radius:0; -webkit-appearance:none;}
+.nearest input:focus{outline:none; border-color:var(--gold);}
+.near-out{margin-top:14px;}
+.near-note{font-size:13.5px; color:var(--muted); margin:0 0 8px;}
+.near-item{display:grid; grid-template-columns:1fr auto; gap:2px 14px; width:100%;
+  text-align:left; font-family:var(--f); padding:12px 14px; margin:0 0 8px;
+  border:1.5px solid var(--hair); background:#fff; cursor:pointer;
+  transition:border-color .16s;}
+.near-item:hover{border-color:var(--gold);}
+.near-item .ni-n{font-size:14.5px; font-weight:600; color:var(--ink);}
+.near-item .ni-d{font-size:13px; font-weight:600; color:#96762F; text-align:right;}
+.near-item .ni-m{grid-column:1 / -1; font-size:12.5px; color:var(--muted);}
+
 .booth-map{height:min(56svh,440px); margin:0 0 18px; background:var(--mushroom);}
 .booth-map .leaflet-popup-content-wrapper{border-radius:0; box-shadow:0 6px 22px rgba(78,60,55,.2);}
 .booth-map .leaflet-popup-tip{box-shadow:none;}
@@ -992,7 +1038,7 @@ def tags_for(k):
     if k.get("artist"):
         tags.append('<span class="tag rose">Artist edition</span>')
     if k.get("bcf"):
-        tags.append('<span class="tag gold">$1 to charity</span>')
+        tags.append('<span class="tag charity">\U0001F397 $1 to charity</span>')
     return "".join(tags)
 
 
@@ -1025,8 +1071,11 @@ def feature(kid, reverse=False):
                 % k["disclaimer"])
     extra = ""
     if k.get("bcf"):
-        extra = ('<a class="tlink" href="%s" target="_blank" rel="noopener" '
-                 'data-bcf="card">About the Breast Cancer Foundation</a>' % BCF_URL)
+        extra += ('<a class="tlink" href="%s" target="_blank" rel="noopener" '
+                  'data-bcf="card">About the Breast Cancer Foundation</a>' % BCF_URL)
+    if k.get("artist"):
+        extra += ('<a class="tlink" href="%s" target="_blank" rel="noopener">'
+                  'About World of Ying</a>' % ARTIST_IG)
     return """<article class="feat%s" id="k-%s">
   <div class="fimg"><img src="%s" alt="%s" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
@@ -1034,16 +1083,17 @@ def feature(kid, reverse=False):
     <span class="fmt">%s</span>
     <h3>%s%s</h3>
     <p class="fcn"><span class="cnmark han">%s</span> <span class="gloss">%s &middot; %s</span></p>
+    %s
     <div class="desc">%s</div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>%s</p></div>
-    %s%s
+    %s
     <div class="foot">%s%s</div>
     <div class="res-meta meta">%s</div>
   </div>
 </article>""" % (" rev" if reverse else "", k["id"], v(k["img"]), k["alt"],
                  "" if k["channel"] == "online" else " booth", chan_label(k),
                  k["format"], k["name"], var, k["cn"], k["pinyin"], k["gloss"],
-                 body, k["becomes"], disc, note, cta_for(k, small=False), extra, tags_for(k))
+                 disc, body, k["becomes"], note, cta_for(k, small=False), extra, tags_for(k))
 
 
 def category_block(cat):
@@ -1149,6 +1199,7 @@ def js_data():
             "channel": k["channel"], "url": k.get("url", ""),
             "sets": k["sets"], "duoNote": k.get("duo_note", ""),
             "becomes": k["becomes"], "why": k["why"], "note": k.get("note", ""),
+            "disclaimer": k.get("disclaimer", ""),
             "variant": k.get("variant", ""), "bcf": bool(k.get("bcf")),
             "artist": bool(k.get("artist")), "score": k["score"],
             "halalSafe": "G" not in k["sets"],
@@ -1662,6 +1713,60 @@ JS = """
     vis();
   })();
 
+  /* ---------------- nearest booth finder ----------------
+     A postal code (or any address text) goes to OneMap, Singapore's national
+     geocoder, and the three closest booths come back with their dates. */
+  (function(){
+    var form = byId('nearForm'), inp = byId('nearIn'), out = byId('nearOut');
+    if (!form || !inp || !out) return;
+    function distKm(a1, o1, a2, o2){
+      var rad = Math.PI / 180, R = 6371;
+      var dLa = (a2 - a1) * rad, dLo = (o2 - o1) * rad;
+      var s = Math.sin(dLa/2) * Math.sin(dLa/2) +
+              Math.cos(a1 * rad) * Math.cos(a2 * rad) * Math.sin(dLo/2) * Math.sin(dLo/2);
+      return 2 * R * Math.asin(Math.sqrt(s));
+    }
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var q = (inp.value || '').replace(/^\\s+|\\s+$/g, '');
+      if (!q){ inp.focus(); return; }
+      out.hidden = false;
+      out.innerHTML = '<p class="near-note">Finding booths near ' + esc(q) + '\\u2026</p>';
+      ga('booth_search', {});
+      fetch('https://www.onemap.gov.sg/api/common/elastic/search?searchVal=' +
+            encodeURIComponent(q) + '&returnGeom=Y&getAddrDetails=N&pageNum=1')
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var r0 = d && d.results && d.results[0];
+          if (!r0 || !r0.LATITUDE){
+            out.innerHTML = '<p class="near-note">We couldn\\u2019t place that address. ' +
+              'Try just the 6 digit postal code.</p>';
+            return;
+          }
+          var la = parseFloat(r0.LATITUDE), lo = parseFloat(r0.LONGITUDE);
+          var ranked = B.map(function(b){ return { b: b, d: distKm(la, lo, b.lat, b.lng) }; })
+            .sort(function(x, y){ return x.d - y.d; }).slice(0, 3);
+          out.innerHTML = '<p class="near-note">Closest to you \\u00B7 tap one to see it on the map</p>' +
+            ranked.map(function(r){
+              return '<button type="button" class="near-item" data-near="' + r.b.id + '">' +
+                '<span class="ni-n">' + esc(r.b.name) + '</span>' +
+                '<span class="ni-d">' + (r.d < 1 ? Math.round(r.d * 1000) + ' m' : r.d.toFixed(1) + ' km') + '</span>' +
+                '<span class="ni-m">' + esc(r.b.level) + ' \\u00B7 ' + esc(r.b.dates) + '</span>' +
+                '</button>';
+            }).join('');
+        })
+        .catch(function(){
+          out.innerHTML = '<p class="near-note">The lookup didn\\u2019t respond. Please try again in a moment.</p>';
+        });
+    });
+    out.addEventListener('click', function(e){
+      var it = e.target.closest && e.target.closest('.near-item');
+      if (!it) return;
+      var booth = document.querySelector('.booth[data-loc="' + it.dataset.near + '"]');
+      if (booth) booth.click();
+    });
+  })();
+
   /* ---------------- outbound click tracking ---------------- */
   document.addEventListener('click', function(e){
     var a = e.target.closest && e.target.closest('a');
@@ -1749,7 +1854,7 @@ JS = """
     var meta = ['<span class="tag">' + esc(k.format) + ' &middot; ' + esc(k.pcs) + '</span>'];
     if (k.sets.indexOf('G') >= 0) meta.push('<span class="tag chill">Snowskin &middot; chilled</span>');
     else meta.push('<span class="tag sage">Halal certified</span>');
-    if (k.bcf) meta.push('<span class="tag gold">$1 to charity</span>');
+    if (k.bcf) meta.push('<span class="tag charity">\\uD83C\\uDF97 $1 to charity</span>');
     if (k.channel === 'booth') meta.push('<span class="tag">At our booths</span>');
 
     var setLine = s
@@ -1821,8 +1926,8 @@ JS = """
       if (!k) return;
       var c = document.createElement('button');
       c.type = 'button'; c.className = 'chip';
-      c.innerHTML = '<img src="' + asset(k.img) + '" alt="' + esc(k.alt) + '" loading="lazy" decoding="async">' +
-        '<span>' + esc(k.name) + (k.variant ? ' (' + esc(k.variant) + ')' : '') + '</span>';
+      c.innerHTML = '<span class="cw"><img src="' + asset(k.img) + '" alt="' + esc(k.alt) + '" loading="lazy" decoding="async"></span>' +
+        '<span class="cn2">' + esc(k.name) + (k.variant ? ' (' + esc(k.variant) + ')' : '') + '</span>';
       c.addEventListener('click', function(){
         [].slice.call(bpick.querySelectorAll('.chip')).forEach(function(x){ x.classList.remove('on'); });
         c.classList.add('on');
@@ -1887,7 +1992,8 @@ JS = """
       '<div class="setlist">' + rows + '</div>' +
       '<div class="callout"><strong>Prefer your own mix?</strong> You can customise your preferred ' +
       'flavours at any of our retail points across Singapore. <a href="#where">See where to find us</a></div>' +
-      (k.note ? '<p class="res-note">' + esc(k.note) + '</p>' : '');
+      (k.note ? '<p class="res-note">' + esc(k.note) + '</p>' : '') +
+      (k.disclaimer ? '<p class="res-note">' + esc(k.disclaimer) + '</p>' : '');
     bout.classList.add('on');
   }
 
@@ -2128,10 +2234,11 @@ TEMPLATE = """<!DOCTYPE html>
     <a href="#mooncakes">Mooncakes</a>
     <a href="#garden">The Painted Garden</a>
     <a href="#where">Where to buy</a>
+    <a class="nbro" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="nav">E&#8209;Brochure</a>
   </div>
   <span class="edge l" aria-hidden="true"></span>
   <span class="edge r" aria-hidden="true"></span>
-  <div class="progress" id="navProgress"></div>
+  <div class="progress" id="navProgress"><span class="pfly" aria-hidden="true"><svg viewBox="0 0 48 48"><g class="wl"><path d="M21.5 22.5 C16 10 4 6 3.5 14.5 C3.2 20 10 24.5 21.5 25.5 Z"/><path d="M21.5 27 C13 27.5 7 33 9.5 38.5 C11.8 43 19 39.5 22 30.5 Z"/></g><g class="wr"><path d="M26.5 22.5 C32 10 44 6 44.5 14.5 C44.8 20 38 24.5 26.5 25.5 Z"/><path d="M26.5 27 C35 27.5 41 33 38.5 38.5 C36.2 43 29 39.5 26 30.5 Z"/></g><ellipse cx="24" cy="26" rx="2.1" ry="8.2"/><path class="ant" d="M23 19 C21.5 14.5 18.5 11.5 15.5 10.5 M25 19 C26.5 14.5 29.5 11.5 32.5 10.5"/></svg></span></div>
 </nav>
 
 <header class="hero">
@@ -2343,6 +2450,13 @@ TEMPLATE = """<!DOCTYPE html>
           <a class="btn ghost" href="{{WA_CUST}}" target="_blank" rel="noopener" data-booth="general" data-name="General enquiry">Customer experience team &middot; {{TEL_CUST}}</a>
           <a class="tlink" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="1">Download the brochure</a>
         </div>
+        <div class="nearest">
+          <form id="nearForm" novalidate>
+            <input id="nearIn" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="60" placeholder="Your postal code or address" aria-label="Your postal code or address">
+            <button class="btn sm" type="submit">Find my nearest booth</button>
+          </form>
+          <div id="nearOut" class="near-out" hidden></div>
+        </div>
       </div>
     </div>
     <div class="booth-map" id="boothMap" role="img" aria-label="Map of Mdm Ling Bakery Mid-Autumn booths across Singapore"></div>
@@ -2360,6 +2474,7 @@ TEMPLATE = """<!DOCTYPE html>
     <div class="fnav">
       <a class="btn ghost sm" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" data-order="store-footer" data-name="Online store" style="color:#C9BDB7">Shop online</a>
       <a class="btn ghost sm" href="{{WA_CUST}}" target="_blank" rel="noopener" style="color:#C9BDB7">Customer experience team</a>
+      <a class="btn ghost sm" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="footer" style="color:#C9BDB7">E&#8209;Brochure</a>
     </div>
     <div class="fbadges">
       <img src="assets/badge-mwp.png?v={{AV}}" alt="Made With Passion, Singapore" width="700" height="462" loading="lazy" decoding="async">
