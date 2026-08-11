@@ -239,14 +239,31 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 /* markers are gilded butterflies that hover over the products, wings beating */
 .hspot{position:absolute; width:52px; height:52px; margin:-26px 0 0 -26px; padding:0;
   border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent;
-  animation:flyin 1.1s cubic-bezier(.25,.7,.3,1) var(--fd,0s) both,
-    bob 3.6s ease-in-out calc(var(--fd,0s) + 1.4s) infinite;}
-/* each butterfly flies in from its own direction and settles on its product */
+  animation:flyin 3.4s ease-in-out var(--fd,0s) both,
+    bob 3.6s ease-in-out calc(var(--fd,0s) + 3.5s) infinite;}
+/* each butterfly drifts in on a curved, wandering path: out wide, rising,
+   then a slow spiral down onto its product */
 @keyframes flyin{
-  0%{opacity:0; transform:translate(var(--fx,-160px),var(--fy,160px)) rotate(-28deg) scale(.7);}
-  55%{opacity:1;}
+  0%{opacity:0; transform:translate(var(--fx,-220px), var(--fy,220px)) scale(.72);}
+  10%{opacity:1;}
+  42%{transform:translate(calc(var(--fx,-220px) * .42), calc(var(--fy,220px) * .3 - 52px)) scale(.88);}
+  68%{transform:translate(calc(var(--fx,-220px) * .15), calc(var(--fy,220px) * .05 - 34px)) scale(.96);}
+  86%{transform:translate(calc(var(--fx,-220px) * .04), -12px);}
   100%{opacity:1; transform:none;}
 }
+/* in the air the body banks left and right like a real flight line, and
+   settles level as it lands */
+.hspot svg{animation:bank 3.4s ease-in-out var(--fd,0s) both;}
+@keyframes bank{
+  0%{transform:rotate(-34deg);}
+  20%{transform:rotate(16deg);}
+  40%{transform:rotate(-26deg);}
+  60%{transform:rotate(12deg);}
+  80%{transform:rotate(-16deg);}
+  100%{transform:rotate(-8deg);}
+}
+/* wings beat quickly in flight, then ease to a rest-beat on landing */
+.hspot.landed .wl, .hspot.landed .wr{animation-duration:1.9s;}
 /* the moment the hero leaves the screen, every wing rests */
 .hspots.offstage .hspot, .hspots.offstage .hspot .wl, .hspots.offstage .hspot .wr{
   animation-play-state:paused;}
@@ -264,7 +281,9 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .hspot svg path{fill:var(--gold); stroke:#FBF6F2; stroke-width:1.6; stroke-linejoin:round;}
 .hspot svg ellipse{fill:#4E3C37; stroke:#FBF6F2; stroke-width:1;}
 .hspot svg .ant{fill:none; stroke:#FBF6F2; stroke-width:1.4; stroke-linecap:round;}
-.hspot .wl, .hspot .wr{transform-box:fill-box; animation:flut 1.9s ease-in-out infinite;}
+.hspot .wl, .hspot .wr{transform-box:fill-box; animation:flut .6s ease-in-out infinite;}
+/* once landed the banking animation comes off the body so hover works again */
+.hspot.landed svg{animation:none;}
 .hspot .wl{transform-origin:100% 50%;}
 .hspot .wr{transform-origin:0% 50%;}
 @keyframes flut{0%,100%{transform:scaleX(1);} 50%{transform:scaleX(.74);}}
@@ -296,7 +315,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .htip svg ellipse{fill:#2A1F1B; stroke:#FBF6F2; stroke-width:1;}
 .htip svg .ant{fill:none; stroke:#FBF6F2; stroke-width:1.4; stroke-linecap:round;}
 @media(prefers-reduced-motion:reduce){
-  .hspot, .hspot .wl, .hspot .wr{animation:none;}
+  .hspot, .hspot svg, .hspot .wl, .hspot .wr{animation:none !important;}
 }
 .hspot .hlabel{position:absolute; left:50%; bottom:calc(100% + 8px); transform:translateX(-50%);
   background:rgba(42,31,27,.92); color:#FBF6F2; font-size:11.5px; font-weight:600;
@@ -1531,12 +1550,15 @@ JS = """
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'hspot';
       /* flight start point: spread around the compass so the flock arrives
-         from every direction, staggered a beat apart */
+         from every direction, each a beat behind the one before */
       var ang = (i * 137.5) % 360 * Math.PI / 180;
-      var dist = 240 + (i % 3) * 130;
+      var dist = 300 + (i % 3) * 140;
       b.style.setProperty('--fx', Math.round(Math.cos(ang) * dist) + 'px');
-      b.style.setProperty('--fy', Math.round(Math.sin(ang) * dist * 0.7 - 60) + 'px');
-      b.style.setProperty('--fd', (0.2 + i * 0.12).toFixed(2) + 's');
+      b.style.setProperty('--fy', Math.round(Math.sin(ang) * dist * 0.7 - 70) + 'px');
+      b.style.setProperty('--fd', (0.25 + i * 0.2).toFixed(2) + 's');
+      b.addEventListener('animationend', function(e){
+        if (e.animationName === 'flyin') b.classList.add('landed');
+      });
       b.setAttribute('aria-label', 'See ' + nameOf(s[2]));
       b.innerHTML = BFLY + '<span class="hlabel">' + esc(nameOf(s[2])) + '</span>';
       b.addEventListener('click', function(){
