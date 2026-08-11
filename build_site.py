@@ -39,7 +39,7 @@ from data import (KEEPSAKES, SETS, BOOTHS, CATEGORIES, RECIPIENTS, PRIORITIES,
                   TABLES, BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSET_V = 6  # bump when an asset is replaced under the same filename
+ASSET_V = 7  # bump when an asset is replaced under the same filename
 
 # Breast Cancer Foundation, Singapore. Verified 6 Aug 2026.
 BCF_URL = "https://www.bcf.org.sg"
@@ -239,7 +239,24 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 /* markers are gilded butterflies that hover over the products, wings beating */
 .hspot{position:absolute; width:52px; height:52px; margin:-26px 0 0 -26px; padding:0;
   border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent;
-  animation:bob 3.6s ease-in-out infinite;}
+  animation:flyin 1.1s cubic-bezier(.25,.7,.3,1) var(--fd,0s) both,
+    bob 3.6s ease-in-out calc(var(--fd,0s) + 1.4s) infinite;}
+/* each butterfly flies in from its own direction and settles on its product */
+@keyframes flyin{
+  0%{opacity:0; transform:translate(var(--fx,-160px),var(--fy,160px)) rotate(-28deg) scale(.7);}
+  55%{opacity:1;}
+  100%{opacity:1; transform:none;}
+}
+/* the moment the hero leaves the screen, every wing rests */
+.hspots.offstage .hspot, .hspots.offstage .hspot .wl, .hspots.offstage .hspot .wr{
+  animation-play-state:paused;}
+@media(max-width:600px){
+  .hspot{width:34px; height:34px; margin:-17px 0 0 -17px;}
+  .hpop{width:min(230px,68vw);}
+  .hpop img{height:96px;}
+  .hpop .hp-x{width:34px; height:34px; font-size:19px;}
+  .htip{font-size:12px; padding:9px 14px;}
+}
 .hspot svg{width:100%; height:100%; display:block; overflow:visible;
   transform:rotate(-8deg);
   filter:drop-shadow(0 4px 9px rgba(30,22,19,.6)); transition:transform .18s;}
@@ -674,6 +691,14 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .collab-logos img.ying{height:46px;}
 .collab-logos img.mlb{height:34px;}
 .collab-logos span{color:#C7A66A; font-size:13px; opacity:.8;}
+/* phones: the marks stack, house brand first */
+@media(max-width:600px){
+  .collab-logos{flex-direction:column; gap:22px;}
+  .collab-logos span{display:none;}
+  .collab-logos img.mlb{order:1;}
+  .collab-logos img.ying{order:2;}
+  .collab-logos img.bcf{order:3;}
+}
 .agrid{display:grid; gap:clamp(30px,4.5vw,64px); align-items:start;}
 @media(min-width:900px){ .agrid{grid-template-columns:1fr 1.05fr;} }
 /* the artwork is the hero of this section: one large, uncropped plate */
@@ -731,6 +756,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .booth-map .leaflet-popup-content{margin:14px 16px; font-family:var(--f);}
 .bpop .bn{font-size:15px; font-weight:600; margin:0 0 2px; color:var(--ink);}
 .bpop .bl{font-size:12.5px; color:var(--muted); margin:0;}
+.bpop .bd{font-size:12px; font-weight:600; color:#96762F; margin:3px 0 0;}
 .bpop .bf{display:inline-block; margin-top:6px; font-size:10px; font-weight:700;
   letter-spacing:.14em; text-transform:uppercase; color:#96762F;}
 .bpop a{display:inline-block; margin-top:9px; font-size:12.5px; font-weight:600; color:var(--rose);}
@@ -748,6 +774,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .booth.on{background:#EFE9E2; box-shadow:inset 2px 0 0 var(--rose); padding-left:12px;}
 .booth .bn{font-size:14.5px; font-weight:600; margin:0; color:var(--ink);}
 .booth .bl{font-size:12.5px; color:var(--muted); margin:2px 0 0;}
+.booth .bd{font-size:12px; font-weight:600; color:#96762F; margin:4px 0 0;}
 .booth .bf{display:inline-block; margin-top:5px; font-size:9.5px; font-weight:700;
   letter-spacing:.14em; text-transform:uppercase; color:#96762F;}
 
@@ -769,6 +796,9 @@ footer .flogo{width:min(48vw,200px); height:auto; display:block;}
 footer .fcn{display:block; margin:20px 0 30px; line-height:1.2;}
 footer .fcn .cs-cn{font-size:30px; color:var(--gold);}
 footer .fcn .cs-en{font-size:27px; color:#EBD9AE; margin-left:12px;}
+@media(max-width:600px){
+  footer .fcn .cs-en{display:block; margin:8px 0 0;}
+}
 footer .fl{max-width:66ch; margin:30px 0 0; color:#A3948E; font-size:12.5px; line-height:1.6;}
 footer a{color:var(--gold);}
 footer .fnav{display:flex; flex-wrap:wrap; gap:12px; margin:0 0 26px;}
@@ -1070,18 +1100,20 @@ def flavour_overview():
 
 def booths_html():
     out = []
-    for name, level, flag, lat, lng in BOOTHS:
+    for name, level, flag, lat, lng, dates in BOOTHS:
         f = '<span class="bf">Flagship store</span>' if flag else ""
         out.append('<button type="button" class="booth" data-loc="%s">'
-                   '<p class="bn">%s</p><p class="bl">%s</p>%s</button>'
-                   % (slugify(name), name, level, f))
+                   '<p class="bn">%s</p><p class="bl">%s</p>'
+                   '<p class="bd">%s</p>%s</button>'
+                   % (slugify(name), name, level, dates, f))
     return '<div class="booths">%s</div>' % "".join(out)
 
 
 def booths_json():
     return [{"id": slugify(n), "name": n, "level": lv, "flag": fg, "lat": la, "lng": lo,
+             "dates": dt,
              "maps": "https://www.google.com/maps/search/?api=1&query=%s,%s" % (la, lo)}
-            for n, lv, fg, la, lo in BOOTHS]
+            for n, lv, fg, la, lo, dt in BOOTHS]
 
 
 def js_data():
@@ -1221,7 +1253,11 @@ JS = """
       im.src = asset('petal' + i + '.png');
       imgs.push(im);
     }
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    /* 1.5x is indistinguishable for soft defocused petals and halves the
+       pixels pushed per frame on a 3x phone screen */
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    var coarse = window.matchMedia('(pointer: coarse)').matches;
+    var tick = 0;
     var W = 0, H = 0, petals = [], raf = null;
 
     function count(){
@@ -1255,8 +1291,10 @@ JS = """
     var last = 0;
     function frame(t){
       raf = window.requestAnimationFrame(frame);
+      /* phones draw every other frame: 30fps is plenty for drifting petals */
+      if (coarse && (tick++ & 1)) return;
       if (!last) last = t;
-      var dt = Math.min((t-last)/1000, 0.05); last = t;
+      var dt = Math.min((t-last)/1000, 0.07); last = t;
       ctx.clearRect(0,0,W,H);
       if (loaded === 0) return;
       for (var i=0;i<petals.length;i++){
@@ -1492,7 +1530,13 @@ JS = """
     var spots = LAND.map(function(s, i){
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'hspot';
-      b.style.animationDelay = ((i * 0.45) % 2.7).toFixed(2) + 's';
+      /* flight start point: spread around the compass so the flock arrives
+         from every direction, staggered a beat apart */
+      var ang = (i * 137.5) % 360 * Math.PI / 180;
+      var dist = 240 + (i % 3) * 130;
+      b.style.setProperty('--fx', Math.round(Math.cos(ang) * dist) + 'px');
+      b.style.setProperty('--fy', Math.round(Math.sin(ang) * dist * 0.7 - 60) + 'px');
+      b.style.setProperty('--fd', (0.2 + i * 0.12).toFixed(2) + 's');
       b.setAttribute('aria-label', 'See ' + nameOf(s[2]));
       b.innerHTML = BFLY + '<span class="hlabel">' + esc(nameOf(s[2])) + '</span>';
       b.addEventListener('click', function(){
@@ -1527,6 +1571,14 @@ JS = """
     }
     if (img.complete) place(); else img.addEventListener('load', place);
     window.addEventListener('resize', place, {passive:true});
+    /* rest the wings while the hero is off screen: 12 looping animations are
+       cheap on screen and pure waste off it */
+    if ('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(en){
+        layer.classList.toggle('offstage', !en[0].isIntersecting);
+      }, {rootMargin: '100px'});
+      io.observe(fig);
+    }
   })();
 
   /* ---------------- back to previous section / top ----------------
@@ -1872,6 +1924,7 @@ JS = """
       var m = L.marker([b.lat, b.lng], { icon: pinIcon(b.flag) }).addTo(map);
       m.bindPopup(
         '<div class="bpop"><p class="bn">' + esc(b.name) + '</p><p class="bl">' + esc(b.level) + '</p>' +
+        (b.dates ? '<p class="bd">' + esc(b.dates) + '</p>' : '') +
         (b.flag ? '<span class="bf">Flagship store</span>' : '') +
         '<br><a href="' + b.maps + '" target="_blank" rel="noopener">View on Google Maps &#8599;</a></div>',
         { autoPan: false }
@@ -2211,7 +2264,7 @@ TEMPLATE = """<!DOCTYPE html>
       <span aria-hidden="true">&times;</span>
       <img class="mlb" src="assets/mlb-logo-white.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="304" loading="lazy" decoding="async">
       <span aria-hidden="true">&times;</span>
-      <img src="assets/logo-bcf.png?v={{AV}}" alt="Breast Cancer Foundation" width="359" height="64" loading="lazy" decoding="async">
+      <img class="bcf" src="assets/logo-bcf.png?v={{AV}}" alt="Breast Cancer Foundation" width="359" height="64" loading="lazy" decoding="async">
     </div>
     <div class="agrid">
       <div class="acol">

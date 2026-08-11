@@ -408,19 +408,21 @@ BUDGETS = [
 # Coordinates geocoded via OpenStreetMap Nominatim, 5 Aug 2026.
 # --------------------------------------------------------------------------
 BOOTHS = [
-    ("Jewel Changi Airport",     "#01-231, L1, Lobby H", True,  1.3602243, 103.9896749),
-    ("CIMB Plaza",               "L1",          False, 1.2842625, 103.8522209),
-    ("Compass One",              "L2",          False, 1.3920337, 103.8949526),
-    ("Junction 8",               "L2",          False, 1.3505893, 103.8487447),
-    ("Jurong Point",             "L1",          False, 1.3394964, 103.7052540),
-    ("Lot One",                  "L1",          False, 1.3850739, 103.7450166),
-    ("NEX",                      "L1",          False, 1.3504943, 103.8722727),
-    ("Raffles Xchange",          "B1",          False, 1.2937426, 103.8538363),
-    ("Takashimaya Square",       "B2",          False, 1.3025211, 103.8353202),
-    ("Tampines Mall",            "L1",          False, 1.3525218, 103.9447221),
-    ("TANGS at Tang Plaza",      "B1-25",       False, 1.3047546, 103.8330692),
-    ("The Clementi Mall",        "L3",          False, 1.3149814, 103.7644695),
-    ("Velocity @ Novena Square", "L1",          False, 1.3197981, 103.8440434),
-    ("VivoCity",                 "L1",          False, 1.2643707, 103.8229537),
-    ("Westgate",                 "L2",          False, 1.3341940, 103.7428671),
+    # (name, level, flagship, lat, lng, dates)
+    # dates from mdmlingbakery.com/2026-mooncake-fairs-at-takashimaya-and-more/
+    ("Jewel Changi Airport",     "#01-231, L1, Lobby H", True,  1.3602243, 103.9896749, "Open daily"),
+    ("CIMB Plaza",               "L1",          False, 1.2842625, 103.8522209, "7 Sep – 25 Sep · weekdays only"),
+    ("Compass One",              "L2",          False, 1.3920337, 103.8949526, "31 Aug – 25 Sep"),
+    ("Junction 8",               "L2",          False, 1.3505893, 103.8487447, "14 Sep – 25 Sep"),
+    ("Jurong Point",             "L1",          False, 1.3394964, 103.7052540, "7 Sep – 25 Sep"),
+    ("Lot One",                  "L1",          False, 1.3850739, 103.7450166, "8 Sep – 25 Sep"),
+    ("NEX",                      "L1",          False, 1.3504943, 103.8722727, "4 Sep – 25 Sep"),
+    ("Raffles Xchange",          "B1",          False, 1.2937426, 103.8538363, "7 Sep – 25 Sep · weekdays only"),
+    ("Takashimaya Square",       "B2",          False, 1.3025211, 103.8353202, "20 Aug – 25 Sep"),
+    ("Tampines Mall",            "L1",          False, 1.3525218, 103.9447221, "16 Sep – 25 Sep"),
+    ("TANGS at Tang Plaza",      "B1-25",       False, 1.3047546, 103.8330692, "20 Aug – 25 Sep"),
+    ("The Clementi Mall",        "L3",          False, 1.3149814, 103.7644695, "7 Sep – 25 Sep"),
+    ("Velocity @ Novena Square", "L1",          False, 1.3197981, 103.8440434, "11 Sep – 25 Sep"),
+    ("VivoCity",                 "L1",          False, 1.2643707, 103.8229537, "25 Aug – 25 Sep"),
+    ("Westgate",                 "L2",          False, 1.3341940, 103.7428671, "7 Sep – 25 Sep"),
 ]
