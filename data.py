@@ -129,7 +129,7 @@ KEEPSAKES = [
             "The Painted Garden in a <strong>slimmer form</strong>, carrying the same soft watercolour blooms by <strong>Singaporean artist Phuay Li Ying</strong> in a size made for <strong>lighter, thoughtful gifting</strong>.",
             "Look closely and you'll find Ying's story in miniature: the central bloom is <strong>Mdm Ling herself</strong>, ringed by the people she gathers around her.",
             "Ideal for a <strong>smaller gesture that still feels considered</strong>, it's an easy way to wish someone well this Mid-Autumn.",
-            "Like its larger companion, the tin is made to be <strong>kept and reused</strong> long after the season passes.",
+            "Like its larger companion, the tin is made to be <strong>kept and reused</strong> long after the season passes. \U0001F315",
         ],
         "score": {"family": 1, "friend": 3, "colleagues": 3, "clients": 2, "traveller": 2,
                   "keep": 2, "story": 3, "favourite": 1, "impress": 1},
@@ -303,7 +303,7 @@ KEEPSAKES = [
         "body": [
             "Scrolls once carried the things <strong>too precious to fold</strong>: paintings, letters, promises. The Treasure Scroll opens the same way, unrolling to reveal its mooncakes <strong>scene by scene</strong>.",
             "Adorned in a <strong>luminous rose pink</strong> with <strong>sage green accents</strong>, its name echoes the collection itself: 花月情长 says affection lasts long, and <strong>花月长卷 gives that affection a shape, a long scroll that keeps unrolling</strong>.",
-            "Whether for <strong>family, friends or clients</strong>, it leaves a <strong>lasting impression</strong> long after the treats are enjoyed. <strong>Some gifts are opened. This one is unveiled.</strong>",
+            "Whether for <strong>family, friends or clients</strong>, it leaves a <strong>lasting impression</strong> long after the treats are enjoyed. <strong>Some gifts are opened. This one is unveiled.</strong> \U0001F315",
         ],
         "score": {"family": 2, "friend": 2, "colleagues": 3, "clients": 3, "traveller": 1,
                   "keep": 2, "story": 3, "favourite": 1, "impress": 3},
@@ -318,6 +318,7 @@ KEEPSAKES = [
         "becomes": "A serving turntable that comes back out at every reunion dinner.",
         "why": "it's the one keepsake that earns a place at the table itself, not just on a shelf.",
         "note": "Available in several designs. Ask at any of our booths for what's in stock.",
+        "disclaimer": "Images are for illustration purposes only. The turntable comes in several designs, so please check with our retail points for the designs currently available. \U0001F315",
         "body": [
             "A <strong>round serving turntable</strong> printed with a painted garden of peonies, roses and trailing greens, rimmed in gold.",
             "Set it at the centre of the table and everything comes round to everyone. That's the whole idea: <strong>nobody reaches, nobody misses out</strong>, which is what a reunion dinner is supposed to feel like.",
@@ -327,6 +328,38 @@ KEEPSAKES = [
         "score": {"family": 3, "friend": 1, "colleagues": 1, "clients": 2, "traveller": 0,
                   "keep": 3, "story": 2, "favourite": 3, "impress": 3},
     },
+]
+
+# --------------------------------------------------------------------------
+# CATEGORIES — the keepsakes are browsed as six families. Each category
+# renders as a thumbnail overview plus one product on stage at a time,
+# switched by tapping a thumbnail or the prev/next arrows.
+# --------------------------------------------------------------------------
+CATEGORIES = [
+    {"id": "painted-garden", "name": "The Painted Garden",
+     "sub": "Artist edition",
+     "blurb": "Soft watercolour blooms by Singaporean artist Phuay Li Ying, across a silk paper gift box, a heritage tin and a slim duo tin.",
+     "items": ["the-painted-garden-box", "the-painted-garden", "the-painted-garden-duo"]},
+    {"id": "court-of-peonies", "name": "A Court of Peonies",
+     "sub": "Heritage tins",
+     "blurb": "Bold painterly peonies in jewel tones, on a deep navy heritage tin and a soft sage duo tin.",
+     "items": ["a-court-of-peonies", "a-court-of-peonies-duo"]},
+    {"id": "dusk-and-dawn", "name": "The Dusk and The Dawn",
+     "sub": "A pair of leather bags",
+     "blurb": "One old idiom, 花晨月夕, split across two leather bags. Give one, or give both and bookend the day.",
+     "items": ["the-dusk", "the-dawn"]},
+    {"id": "keepsake-bags", "name": "The Keepsake Bags",
+     "sub": "Woven and leather totes",
+     "blurb": "Bags made to be worn long after the season, each carrying its own four character wish.",
+     "items": ["weaving-moments", "tote-of-bliss", "tote-of-good-health"]},
+    {"id": "reunion-pieces", "name": "The Reunion Pieces",
+     "sub": "For the table and the dressing table",
+     "blurb": "A drawer chest, a serving turntable and a scroll box, the pieces that come back out at every gathering.",
+     "items": ["blossom-drawer-chest", "elegance-reunion-turntable", "treasure-scroll"]},
+    {"id": "snowskin-edition", "name": "Snowskin Edition",
+     "sub": "Chilled, with truffle centres",
+     "blurb": "One keepsake tin, eight snowskin mooncakes, our four truffle flavours twice over.",
+     "items": ["orchid-reverie"]},
 ]
 
 # --------------------------------------------------------------------------
@@ -375,7 +408,7 @@ BUDGETS = [
 # Coordinates geocoded via OpenStreetMap Nominatim, 5 Aug 2026.
 # --------------------------------------------------------------------------
 BOOTHS = [
-    ("Jewel Changi Airport",     "L1, Lobby H", True,  1.3602243, 103.9896749),
+    ("Jewel Changi Airport",     "#01-231, L1, Lobby H", True,  1.3602243, 103.9896749),
     ("CIMB Plaza",               "L1",          False, 1.2842625, 103.8522209),
     ("Compass One",              "L2",          False, 1.3920337, 103.8949526),
     ("Junction 8",               "L2",          False, 1.3505893, 103.8487447),

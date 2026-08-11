@@ -35,11 +35,11 @@ liability at this size.
 import json
 import os
 import re
-from data import (KEEPSAKES, SETS, BOOTHS, RECIPIENTS, PRIORITIES, TABLES,
-                  BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
+from data import (KEEPSAKES, SETS, BOOTHS, CATEGORIES, RECIPIENTS, PRIORITIES,
+                  TABLES, BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSET_V = 4  # bump when an asset is replaced under the same filename
+ASSET_V = 5  # bump when an asset is replaced under the same filename
 
 # Breast Cancer Foundation, Singapore. Verified 6 Aug 2026.
 BCF_URL = "https://www.bcf.org.sg"
@@ -93,50 +93,42 @@ h1,h2,h3,h4{font-variation-settings:"opsz" 32; text-wrap:balance;}
   letter-spacing:.16em;}
 .gloss{font-size:13.5px; font-style:italic; color:var(--muted);}
 
+/* decorative script pairing: Great Vibes for the English title, Ma Shan Zheng
+   (brush hand) for 花月情长. Both stay legible at the sizes used. */
+.cs-en{font-family:'Great Vibes','Inter',cursive; font-weight:400; letter-spacing:.01em;}
+.cs-cn{font-family:'Ma Shan Zheng','Inter',cursive; font-weight:400; letter-spacing:.1em;}
+
 /* ---------- into the garden (intro) ---------- */
 .intro{position:fixed; inset:0; z-index:220; display:none; cursor:pointer; overflow:hidden;
   background:#2A211E; -webkit-tap-highlight-color:transparent;}
 .intro.show{display:block;}
-/* The solid ground is only a fallback while the clip loads. It has to drop the
-   moment the hedge parts, or the gap between the halves shows the backdrop
-   instead of the page underneath. */
-.intro.open{background:transparent;}
+/* Opening the gate now dives INTO the hedge: the filmed foliage scales up past
+   the lens and fades, so the page appears as if you stepped through the bushes. */
+.intro.open{background:transparent; pointer-events:none;}
 .intro:focus{outline:none;}
 .intro .gv{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-  z-index:1; transition:opacity 260ms linear;}
-.intro.open .gv{opacity:0;}
-/* the hedge, in two halves, feathered at the inner edge so leaves interleave */
-.intro .leaf{position:absolute; top:-4%; bottom:-4%; width:53%; z-index:2; opacity:0;
-  background-image:var(--hedge); background-size:cover; will-change:transform;
-  transition:opacity 120ms linear,
-             transform 1150ms cubic-bezier(.5,.02,.18,1) 130ms;}
-.intro .leaf.l{left:0;  background-position:left center;
-  -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 46px), transparent 100%);
-          mask-image:linear-gradient(to right, #000 calc(100% - 46px), transparent 100%);}
-.intro .leaf.r{right:0; background-position:right center;
-  -webkit-mask-image:linear-gradient(to left,  #000 calc(100% - 46px), transparent 100%);
-          mask-image:linear-gradient(to left,  #000 calc(100% - 46px), transparent 100%);}
-.intro.open .leaf{opacity:1;}
-.intro.open .leaf.l{transform:translateX(-104%) rotate(-2.2deg) scale(1.07);}
-.intro.open .leaf.r{transform:translateX(104%)  rotate(2.2deg)  scale(1.07);}
+  z-index:1; transform-origin:50% 46%; will-change:transform,opacity;
+  transition:transform 1350ms cubic-bezier(.6,.02,.35,1), opacity 620ms ease 700ms;}
+.intro.open .gv{transform:scale(3.4); opacity:0;}
 /* a soft vignette so the seal always reads over the foliage */
 .intro .veil{position:absolute; inset:0; z-index:3; pointer-events:none;
   background:radial-gradient(ellipse 70% 55% at 50% 48%, rgba(30,23,20,.62) 0%,
              rgba(30,23,20,.30) 55%, rgba(30,23,20,.44) 100%);
-  transition:opacity 300ms ease;}
+  transition:opacity 500ms ease;}
 .intro.open .veil{opacity:0;}
 .intro .seal{position:absolute; left:50%; top:50%; z-index:4; text-align:center;
-  transform:translate(-50%,-50%); color:#F6ECD8; width:min(88vw,540px);
-  transition:opacity 380ms ease, transform 900ms cubic-bezier(.5,0,.2,1);}
-.intro.open .seal{opacity:0; transform:translate(-50%,-54%) scale(1.14);}
-.intro .seal .s-brand{display:block; font-size:10.5px; font-weight:600; letter-spacing:.34em;
-  text-transform:uppercase; color:#EBD9AE;}
-.intro .seal .s-han{display:block; margin:22px 0 0; font-size:clamp(42px,12vw,74px);
-  font-weight:500; letter-spacing:.2em; line-height:1.05; color:#FBF3E2;
-  text-shadow:0 2px 26px rgba(24,18,15,.7);}
-.intro .seal .s-en{display:block; margin:16px 0 0; font-size:clamp(12px,2.6vw,14px);
-  font-weight:500; letter-spacing:.26em; text-transform:uppercase; color:#E4D6CE;}
-.intro .seal .s-rule{display:block; width:54px; height:1px; margin:26px auto 0;
+  transform:translate(-50%,-50%); color:#F6ECD8; width:min(88vw,560px);
+  transition:opacity 420ms ease, transform 1000ms cubic-bezier(.5,0,.2,1);}
+.intro.open .seal{opacity:0; transform:translate(-50%,-50%) scale(1.6);}
+.intro .seal .s-logo{display:block; width:min(46vw,190px); height:auto; margin:0 auto;
+  filter:drop-shadow(0 2px 14px rgba(24,18,15,.55));}
+.intro .seal .s-en{display:block; margin:26px 0 0; font-size:clamp(38px,9.5vw,60px);
+  line-height:1.12; color:#FBF3E2; text-shadow:0 2px 22px rgba(24,18,15,.65);}
+.intro .seal .s-han{display:block; margin:10px 0 0; font-size:clamp(34px,9vw,56px);
+  line-height:1.1; color:#F4E3C2; text-shadow:0 2px 26px rgba(24,18,15,.7);}
+.intro .seal .s-season{display:block; margin:20px 0 0; font-size:clamp(11px,2.4vw,13px);
+  font-weight:600; letter-spacing:.3em; text-transform:uppercase; color:#E4D6CE;}
+.intro .seal .s-rule{display:block; width:54px; height:1px; margin:24px auto 0;
   background:linear-gradient(90deg,transparent,#D9BF86,transparent);}
 .intro .prompt{position:absolute; left:0; right:0; bottom:max(7vh,58px); z-index:4;
   text-align:center; color:#E6D9D2; font-size:11.5px; font-weight:600; letter-spacing:.28em;
@@ -154,7 +146,8 @@ nav.jump{position:sticky; top:0; z-index:60; background:rgba(243,242,241,.93);
   backdrop-filter:saturate(150%) blur(14px); border-bottom:1px solid var(--hair);}
 nav.jump .in{max-width:var(--maxw); margin:0 auto; padding:0 clamp(20px,5vw,48px);
   display:flex; gap:clamp(18px,2.4vw,30px); overflow-x:auto; scrollbar-width:none;
-  height:var(--navh); align-items:center;}
+  height:var(--navh); align-items:center; -webkit-overflow-scrolling:touch;
+  touch-action:pan-x; overscroll-behavior-x:contain;}
 nav.jump .in::-webkit-scrollbar{display:none;}
 nav.jump a{text-decoration:none; white-space:nowrap; font-size:11.5px; font-weight:600;
   letter-spacing:.16em; text-transform:uppercase; color:var(--muted); padding:5px 0;
@@ -162,17 +155,38 @@ nav.jump a{text-decoration:none; white-space:nowrap; font-size:11.5px; font-weig
 nav.jump a:hover{color:var(--ink);}
 nav.jump a.active{color:var(--rose); border-bottom-color:var(--gold);}
 .progress{height:1px; background:var(--gold); width:0; transition:width .1s linear;}
+/* slide affordances: a fading edge plus an animated chevron so the bar
+   obviously carries more than it shows */
+nav.jump{position:sticky;}
+nav.jump .edge{position:absolute; top:0; bottom:0; width:44px; pointer-events:none;
+  z-index:2; transition:opacity .25s;}
+nav.jump .edge.r{right:0;
+  background:linear-gradient(to left, rgba(243,242,241,.96) 25%, rgba(243,242,241,0));}
+nav.jump .edge.l{left:0; opacity:0;
+  background:linear-gradient(to right, rgba(243,242,241,.96) 25%, rgba(243,242,241,0));}
+nav.jump .edge.r::after{content:"\\203A"; position:absolute; right:9px; top:50%;
+  transform:translateY(-54%); font-size:22px; line-height:1; color:var(--rose);
+  animation:nudge 1.6s ease-in-out infinite;}
+nav.jump.at-end .edge.r{opacity:0;}
+nav.jump.scrolled .edge.l{opacity:1;}
+@keyframes nudge{0%,100%{transform:translate(0,-54%);} 50%{transform:translate(4px,-54%);}}
 
-/* phones: the bar lives at the bottom, where the thumb is */
+/* phones: the bar lives at the bottom, where the thumb is — taller, louder,
+   and it slides sideways (pan-x is explicit so the page scroll never eats it) */
 @media (max-width:759px){
-  nav.jump{position:fixed; top:auto; bottom:0; border-bottom:0;
-    border-top:1px solid var(--hair); padding-bottom:env(safe-area-inset-bottom);
-    box-shadow:0 -6px 22px rgba(78,60,55,.09);}
-  nav.jump .in{height:54px;}
-  nav.jump a{padding:4px 0; border-bottom:0; border-top:1.5px solid transparent;}
+  /* left/right pin the fixed bar to the viewport; without them it
+     shrink-wraps its links, grows wider than the screen, and the row
+     inside never overflows, which is why it could not slide */
+  nav.jump{position:fixed; top:auto; bottom:0; left:0; right:0; width:auto;
+    border-bottom:0; border-top:1px solid var(--hair);
+    padding-bottom:env(safe-area-inset-bottom);
+    box-shadow:0 -8px 26px rgba(78,60,55,.16);}
+  nav.jump .in{height:66px; gap:24px;}
+  nav.jump a{padding:8px 0; border-bottom:0; border-top:2px solid transparent;
+    font-size:12.5px;}
   nav.jump a.active{border-top-color:var(--gold);}
   nav.jump .progress{order:-1;}
-  body{padding-bottom:calc(54px + env(safe-area-inset-bottom));}
+  body{padding-bottom:calc(66px + env(safe-area-inset-bottom));}
   html{scroll-padding-top:18px;}
 }
 
@@ -185,27 +199,51 @@ nav.jump a.active{color:var(--rose); border-bottom-color:var(--gold);}
    undimmed and the title block sits beneath it on cocoa, overlapping the
    frame slightly the way an opening spread does. */
 header.hero{background:var(--cocoa);}
-header.hero .hfig{position:relative; height:min(58svh,600px); overflow:hidden;
+/* the brand strip: centred logo at the very top of the page, season below it */
+.hbrand{background:var(--cloud); text-align:center; padding:clamp(26px,4vw,44px) 20px clamp(22px,3.4vw,36px);}
+.hbrand img{display:inline-block; width:min(58vw,240px); height:auto;}
+.hbrand .hseason{display:block; margin:14px 0 0; font-size:11.5px; font-weight:600;
+  letter-spacing:.32em; text-transform:uppercase; color:var(--gold);}
+header.hero .hfig{position:relative; height:min(62svh,640px); overflow:hidden;
   background:var(--mushroom);}
 header.hero .hfig picture{position:absolute; inset:0;}
 header.hero .hbg{width:100%; height:100%; object-fit:cover; object-position:50% 40%;}
 header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:none;
   background:linear-gradient(to top, rgba(42,31,27,.55) 0%, rgba(42,31,27,.10) 22%,
              rgba(42,31,27,0) 44%);}
+/* hotspots: pulsing markers over the products in the hero photograph.
+   Positioned by JS with object-fit cover maths, so they stay pinned to the
+   products whatever the crop. */
+.hspots{position:absolute; inset:0; z-index:3;}
+.hspot{position:absolute; width:34px; height:34px; margin:-17px 0 0 -17px; padding:0;
+  border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent;}
+.hspot i{position:absolute; inset:6px; border-radius:50%; background:rgba(251,246,242,.94);
+  border:1.5px solid var(--gold); box-shadow:0 2px 10px rgba(30,22,19,.4);}
+.hspot i::after{content:"+"; position:absolute; inset:0; display:flex; align-items:center;
+  justify-content:center; color:var(--cocoa); font-size:15px; font-weight:600; line-height:1;}
+.hspot::before{content:""; position:absolute; inset:0; border-radius:50%;
+  border:1.5px solid rgba(251,246,242,.85); animation:spot 2.2s ease-out infinite;}
+@keyframes spot{0%{transform:scale(.55); opacity:.9;} 70%{transform:scale(1.25); opacity:0;}
+  100%{transform:scale(1.25); opacity:0;}}
+.hspot .hlabel{position:absolute; left:50%; bottom:calc(100% + 8px); transform:translateX(-50%);
+  background:rgba(42,31,27,.92); color:#FBF6F2; font-size:11.5px; font-weight:600;
+  letter-spacing:.04em; padding:7px 12px; white-space:nowrap; pointer-events:none;
+  opacity:0; transition:opacity .18s;}
+.hspot:hover .hlabel, .hspot:focus-visible .hlabel{opacity:1;}
+.hspot.edge-l .hlabel{left:0; transform:none;}
+.hspot.edge-r .hlabel{left:auto; right:0; transform:none;}
 .hero .hcap{position:relative; z-index:2; color:#FBF6F2;
   padding:clamp(30px,4.6vw,58px) 0 clamp(44px,6vw,80px);}
 .hero .hcap .wrap{display:grid; gap:clamp(18px,3vw,54px); align-items:end;}
 @media(min-width:960px){ .hero .hcap .wrap{grid-template-columns:1.35fr 1fr;} }
 .hero .eyebrow{color:#EFDCB4;}
 .hero h1{font-weight:600; letter-spacing:-.032em; line-height:.99;
-  font-size:clamp(40px,7.2vw,82px); margin:16px 0 0; max-width:15ch;}
-.hero .hcn{margin:20px 0 0; font-size:clamp(18px,3vw,26px); font-weight:500; color:#F4E3C2;}
-.hero .hcn .en{letter-spacing:.02em; font-size:.8em; color:#E4D2C4;}
+  font-size:clamp(40px,7.2vw,82px); margin:0; max-width:15ch;}
+.hero .hcn{margin:24px 0 0; line-height:1.15;}
+.hero .hcn .cs-en{display:block; font-size:clamp(30px,5.4vw,46px); color:#F4E3C2;}
+.hero .hcn .cs-cn{display:block; margin-top:6px; font-size:clamp(26px,4.6vw,38px); color:#E9D3B7;}
 .hero p.lede{max-width:44ch; margin:0; font-size:clamp(15.5px,2vw,17.5px); color:#DCCEC8;}
 .hero .acts{display:flex; flex-wrap:wrap; gap:12px; margin-top:clamp(22px,3vw,30px);}
-/* the fringed-parasol frame gets a hairline caption, like a plate in a book */
-.hero .hcred{margin:20px 0 0; padding-top:14px; border-top:1px solid rgba(199,166,106,.4);
-  font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#A3948E;}
 
 /* ---------- buttons ---------- */
 .btn{display:inline-flex; align-items:center; gap:9px; font-family:var(--f); font-size:13.5px;
@@ -352,77 +390,56 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   text-transform:uppercase; color:var(--gold); margin-bottom:6px;}
 .feat .becomes p{margin:0; font-size:16px; color:#5E4F49;}
 .feat .note{margin:14px 0 0; font-size:13.5px; color:var(--muted); font-style:italic; max-width:52ch;}
+.feat .disc{margin:22px 0 0; max-width:52ch; border:1.5px solid var(--gold);
+  background:#FBF6EC; padding:14px 18px;}
+.feat .disc .lbl{display:block; font-size:10px; font-weight:700; letter-spacing:.2em;
+  text-transform:uppercase; color:#8A6E33; margin-bottom:5px;}
+.feat .disc p{margin:0; font-size:14.5px; color:#5E4F49;}
 .feat .foot{display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:26px 0 0;}
 .feat .meta{margin-top:18px;}
 
-/* ---------- keepsakes: the paired band (Dawn + Dusk) ---------- */
-/* Full-bleed geometry is declared here rather than leaning on the .bleed
-   utility: this rule's own margin shorthand would reset .bleed's margin-left
-   (same specificity, declared later), which shunted the whole band right by
-   the wrap's gutter. */
-.pairband{position:relative; width:100vw;
-  margin:clamp(56px,8vw,108px) 0 0 calc(50% - 50vw); padding:clamp(44px,7vw,96px) 0;
-  overflow:hidden; background:var(--cocoa);}
-.pairband > img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-  z-index:0; opacity:.34;}
-.pairband::after{content:""; position:absolute; inset:0; z-index:1;
-  background:linear-gradient(rgba(44,33,29,.62), rgba(44,33,29,.82));}
-.pairband .pinner{position:relative; z-index:2;}
-.pairband .phead{text-align:center; margin-bottom:clamp(30px,4.5vw,52px); color:#F6ECE4;}
-.pairband .phead .eyebrow{color:#EFDCB4;}
-.pairband .phead h3{font-size:clamp(27px,4.6vw,48px); font-weight:600; letter-spacing:-.028em;
-  margin:12px 0 0; color:#FBF6F2;}
-.pairband .phead p{margin:14px auto 0; max-width:44ch; color:#DFD1CB; font-size:16.5px;}
-.duo{display:grid; gap:clamp(20px,3vw,40px);}
-@media(min-width:700px){ .duo{grid-template-columns:1fr 1fr;} }
-.duo .half{color:#F1E7E2;}
-.duo .half .hi{background:rgba(251,246,242,.07); aspect-ratio:4/5; overflow:hidden;}
-.duo .half .hi img{width:100%; height:100%; object-fit:cover;}
-.duo .half h4{font-size:clamp(22px,3.2vw,30px); font-weight:600; letter-spacing:-.024em; margin:20px 0 0;}
-.duo .half .dcn{margin:8px 0 0; font-size:17px; color:#EFDCB4; letter-spacing:.13em; font-weight:500;}
-.duo .half .dgloss{margin:3px 0 0; font-size:13px; font-style:italic; color:#C4B4AD;}
-.duo .half p.db{margin:16px 0 0; font-size:15.5px; color:#DED0CA;}
-.duo .half .foot{display:flex; flex-wrap:wrap; gap:10px; margin:20px 0 0;}
-
-/* ---------- keepsakes: the staggered grid ---------- */
-.rest{display:grid; gap:clamp(38px,5.5vw,72px) clamp(24px,3.5vw,52px);
-  margin:clamp(50px,7vw,96px) 0 0;}
-@media(min-width:680px){ .rest{grid-template-columns:1fr 1fr;} }
-@media(min-width:680px){ .rest > .item:nth-child(even){margin-top:clamp(28px,5vw,74px);} }
-.item .ri{position:relative; background:var(--mushroom); aspect-ratio:4/5; overflow:hidden;}
-.item .ri img{width:100%; height:100%; object-fit:cover; transition:transform 900ms cubic-bezier(.2,.6,.2,1);}
-.item:hover .ri img{transform:scale(1.03);}
-.item .chan{display:block; font-size:10px; font-weight:700; letter-spacing:.2em;
-  text-transform:uppercase; color:var(--brass); margin:18px 0 0;}
-.item .chan.booth{color:#96762F;}
-.item h4{font-size:clamp(21px,2.7vw,27px); font-weight:600; letter-spacing:-.024em;
-  margin:8px 0 0; line-height:1.14;}
-.item h4 .var{font-weight:400; font-size:.58em; color:var(--muted);}
-.item .icn{margin:8px 0 0; font-size:16px; color:var(--rose); letter-spacing:.13em; font-weight:500;}
-.item .igloss{margin:2px 0 0; font-size:12.5px; font-style:italic; color:var(--muted);}
-.item .ibec{margin:16px 0 0; padding:14px 0 0; border-top:1px solid var(--hair-soft);
-  font-size:15px; color:#5E4F49;}
-.item .ibec .lbl{display:block; font-size:9.5px; font-weight:700; letter-spacing:.2em;
-  text-transform:uppercase; color:var(--gold); margin-bottom:5px;}
-.item .ibec p{margin:0;}
-.item .note{margin:12px 0 0; font-size:13px; color:var(--muted); font-style:italic;}
-.item .foot{display:flex; flex-wrap:wrap; align-items:center; gap:11px; margin:18px 0 0;}
-.item .meta{margin-top:14px;}
-details.more{margin:14px 0 0;}
-details.more summary{cursor:pointer; font-size:13px; font-weight:600; color:var(--rose);
-  list-style:none; padding:2px 0;}
-details.more summary::-webkit-details-marker{display:none;}
-details.more summary::after{content:" +";}
-details.more[open] summary::after{content:" \\2212";}
-details.more .desc{margin:12px 0 0; font-size:15px; color:#5E4F49;}
-details.more .desc p{margin:0 0 11px;}
-details.more .desc p:last-child{margin-bottom:0;}
-details.more .desc strong{color:var(--plum); font-weight:600;}
+/* ---------- keepsakes: category carousels ----------
+   Each family opens with a row of small thumbnails (the overview), then one
+   product on stage. Tap a thumbnail, or the arrows, to switch products. */
+.cat{margin:clamp(64px,9vw,120px) 0 0; scroll-margin-top:calc(var(--navh) + 14px);}
+.cat-rule{height:1.5px; background:linear-gradient(90deg,var(--gold),transparent); border:0; margin:0 0 26px;}
+.cat-head h3{font-size:clamp(26px,4.4vw,44px); font-weight:600; letter-spacing:-.028em;
+  line-height:1.04; margin:10px 0 0;}
+.cat-head .cat-blurb{margin:12px 0 0; font-size:16px; color:#6B5A54; max-width:58ch;}
+.cat-top{display:flex; flex-wrap:wrap; align-items:flex-end; gap:16px 28px; justify-content:space-between;}
+.cat-arrows{display:flex; align-items:center; gap:8px; margin:18px 0 0;}
+.cat-arrows .cnt{font-family:var(--fn); font-size:13px; font-weight:600; color:var(--muted);
+  min-width:44px; text-align:center; letter-spacing:.06em;}
+.cnav{width:44px; height:44px; border:1.5px solid var(--cocoa); background:none; cursor:pointer;
+  color:var(--cocoa); font-size:18px; line-height:1; display:flex; align-items:center;
+  justify-content:center; transition:background .16s,color .16s;}
+.cnav:hover{background:var(--cocoa); color:var(--cloud);}
+.cat-thumbs{display:flex; gap:clamp(10px,1.6vw,16px); margin:24px 0 0; overflow-x:auto;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
+.cat-thumbs::-webkit-scrollbar{display:none;}
+.cthumb{flex:0 0 auto; width:clamp(86px,12vw,120px); font-family:var(--f); padding:0;
+  cursor:pointer; text-align:left; background:none; border:0; color:var(--ink);}
+.cthumb img{width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
+  background:var(--mushroom); outline:1.5px solid var(--hair); outline-offset:-1.5px;
+  transition:outline-color .16s;}
+.cthumb span{display:block; font-size:11px; font-weight:600; line-height:1.3; padding:8px 0 0;}
+.cthumb:hover img{outline-color:var(--rose);}
+.cthumb.on img{outline:2.5px solid var(--rose); outline-offset:-2.5px;}
+.cthumb.on span{color:var(--rose);}
+.cpanels{margin:6px 0 0;}
+.cpanel{display:none;}
+.cpanel.on{display:block; animation:fadein .4s ease;}
+@keyframes fadein{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
 
 /* ---------- builder ---------- */
-.bpick{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(10px,1.6vw,18px); margin:0 0 34px;}
-@media(min-width:620px){ .bpick{grid-template-columns:repeat(5,1fr);} }
-@media(min-width:980px){ .bpick{grid-template-columns:repeat(7,1fr);} }
+.bpick{margin:0 0 34px;}
+.bgroup{display:block; font-size:11px; font-weight:700; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--brass); margin:28px 0 12px;
+  padding-top:18px; border-top:1px solid var(--hair);}
+.bpick .bgroup:first-child{margin-top:0; padding-top:0; border-top:0;}
+.brow{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(10px,1.6vw,18px);}
+@media(min-width:620px){ .brow{grid-template-columns:repeat(5,1fr);} }
+@media(min-width:980px){ .brow{grid-template-columns:repeat(6,1fr);} }
 .chip{font-family:var(--f); padding:0; cursor:pointer; text-align:left; background:none;
   border:0; color:var(--ink); transition:opacity .16s;}
 .chip img{width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:var(--mushroom);
@@ -457,8 +474,29 @@ details.more .desc strong{color:var(--plum); font-weight:600;}
 .settable .g{font-size:13.5px; color:var(--muted);}
 .settable ul{margin:0; padding:0; list-style:none; font-size:15px; color:#5E4F49;}
 
+/* ---------- flavour overview (one glance, tap to jump) ---------- */
+.fov{display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(14px,2.4vw,24px);
+  margin:clamp(30px,4.5vw,50px) 0 0;}
+@media(min-width:560px){ .fov{grid-template-columns:repeat(3,1fr);} }
+@media(min-width:900px){ .fov{grid-template-columns:repeat(5,1fr);} }
+.fov a{display:block; text-decoration:none; color:var(--ink);}
+.fov img{width:100%; aspect-ratio:1/1; object-fit:cover; background:var(--mushroom);
+  outline:1.5px solid var(--hair); outline-offset:-1.5px; transition:outline-color .16s;}
+.fov a:hover img{outline-color:var(--rose);}
+.fov .fname{display:block; font-size:12.5px; font-weight:600; line-height:1.3; margin:9px 0 0;}
+.fov .fcat{display:block; font-size:10px; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--brass); margin:4px 0 0;}
+.fov a:hover .fname{color:var(--rose);}
+
+/* ---------- callouts (the lines that must not be missed) ---------- */
+.callout{border:1.5px solid var(--gold); background:#FBF6EC; padding:18px 22px;
+  margin:26px 0 0; max-width:70ch; font-size:15.5px; color:#4E3C37;}
+.callout strong{color:var(--plum);}
+.callout a{color:var(--rose); font-weight:600;}
+
 /* ---------- flavours ---------- */
-.range{margin:clamp(46px,7vw,86px) 0 0;}
+.range{margin:clamp(46px,7vw,86px) 0 0; scroll-margin-top:calc(var(--navh) + 14px);}
+.flav{scroll-margin-top:calc(var(--navh) + 20px);}
 .range-head{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap;
   border-bottom:1.5px solid var(--gold); padding-bottom:14px;}
 .range-num{font-family:var(--fn); font-size:clamp(30px,5vw,46px); font-weight:600;
@@ -512,25 +550,52 @@ details.more .desc strong{color:var(--plum); font-weight:600;}
 /* ---------- the artist / BCF feature ---------- */
 .artist{position:relative; overflow:hidden; background:var(--cocoa);
   margin:clamp(74px,11vw,140px) 0 0;}
-.artist > picture{position:absolute; inset:0; z-index:0;}
-.artist > picture img{width:100%; height:100%; object-fit:cover;}
-.artist::after{content:""; position:absolute; inset:0; z-index:1;
-  background:linear-gradient(105deg, rgba(40,30,26,.93) 0%, rgba(40,30,26,.80) 46%,
-             rgba(40,30,26,.34) 78%, rgba(40,30,26,.18) 100%);}
-@media(max-width:899px){ .artist::after{background:linear-gradient(rgba(40,30,26,.62) 0%, rgba(40,30,26,.93) 46%);} }
-.artist .ainner{position:relative; z-index:2; padding:clamp(48px,8vw,110px) 0;}
+.artist .ainner{position:relative; z-index:2; padding:clamp(48px,8vw,100px) 0;}
+.artist .collab{display:block; text-align:center; color:#E4D6CE; font-size:11.5px;
+  font-weight:600; letter-spacing:.24em; text-transform:uppercase; line-height:1.9;
+  margin:0 auto clamp(34px,5vw,54px); max-width:34ch; position:relative; padding-bottom:20px;}
+.artist .collab::after{content:""; position:absolute; left:50%; bottom:0; width:54px; height:1px;
+  transform:translateX(-50%); background:linear-gradient(90deg,transparent,#D9BF86,transparent);}
+.agrid{display:grid; gap:clamp(30px,4.5vw,64px); align-items:start;}
+@media(min-width:900px){ .agrid{grid-template-columns:1.1fr 1fr;} }
+.amedia{display:grid; gap:clamp(16px,2.4vw,24px);}
+@media(min-width:520px){ .amedia{grid-template-columns:1fr 1fr; align-items:start;} }
+.amedia figure{margin:0;}
+.amedia img{width:100%; height:auto; display:block; background:var(--mushroom);}
+.amedia .aart img{aspect-ratio:1/1; object-fit:cover;}
+.amedia .aphoto img{aspect-ratio:4/5; object-fit:cover; object-position:50% 0;}
+.amedia figcaption{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:#BBA89F; margin-top:10px; line-height:1.6;}
+@media(max-width:899px){ .agrid .amedia{order:-1;} }
 .artist .acol{max-width:56ch; color:#EFE4DE;}
-@media(min-width:900px){ .artist .acol{max-width:46ch;} }
 .artist .eyebrow{color:#EFDCB4;}
 .artist h3{font-size:clamp(28px,4.8vw,52px); font-weight:600; letter-spacing:-.03em;
   line-height:1.02; margin:14px 0 0; color:#FBF6F2;}
 .artist p{margin:18px 0 0; font-size:16.5px; color:#E0D3CD;}
 .artist p strong{color:#fff; font-weight:600;}
 .artist .acts{display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:30px 0 0;}
-.artist .bcfnote{margin-top:26px; padding-top:20px; border-top:1px solid rgba(199,166,106,.42);}
-.artist .bcfnote .amt{font-family:var(--fn); font-size:34px; font-weight:600; color:var(--gold);
-  line-height:1; letter-spacing:-.03em;}
-.artist .bcfnote p{margin:8px 0 0; font-size:15.5px;}
+.artist .bcfnote{margin-top:30px; padding-top:24px; border-top:1px solid rgba(199,166,106,.42);}
+/* the dollar that carries further: scripted, gilded, flanked by fine rules */
+.artist .amt{display:flex; align-items:center; gap:18px; color:var(--gold);}
+.artist .amt .d{font-family:'Great Vibes',cursive; font-size:clamp(52px,8vw,72px);
+  line-height:.9; text-shadow:0 2px 18px rgba(199,166,106,.35);}
+.artist .amt::before, .artist .amt::after{content:""; height:1px; flex:1; max-width:88px;
+  background:linear-gradient(90deg,transparent,#D9BF86);}
+.artist .amt::after{background:linear-gradient(90deg,#D9BF86,transparent);}
+.artist .amt .dsub{font-size:10.5px; font-weight:700; letter-spacing:.26em;
+  text-transform:uppercase; color:#EBD9AE;}
+.artist .bcfnote p{margin:14px 0 0; font-size:15.5px;}
+/* the two organisation buttons, each opening its boilerplate */
+.orgs{display:grid; gap:12px; margin:30px 0 0;}
+@media(min-width:640px){ .orgs{grid-template-columns:1fr 1fr; align-items:start;} }
+details.org summary{list-style:none; cursor:pointer;}
+details.org summary::-webkit-details-marker{display:none;}
+details.org summary .btn{width:100%; justify-content:space-between; color:#FBF6F2;}
+details.org summary .btn::after{content:"+"; font-size:17px; color:var(--gold);}
+details.org[open] summary .btn::after{content:"\\2212";}
+details.org .org-body{border:1.5px solid rgba(199,166,106,.42); border-top:0;
+  padding:18px 20px 20px; background:rgba(251,246,242,.05);}
+details.org .org-body p{margin:0 0 16px; font-size:14.5px; color:#E0D3CD;}
 
 /* ---------- booth map ---------- */
 .booth-map{height:min(56svh,440px); margin:0 0 18px; background:var(--mushroom);}
@@ -546,8 +611,8 @@ details.more .desc strong{color:var(--plum); font-weight:600;}
 .map-tools{display:flex; justify-content:flex-end; margin:-6px 0 20px;}
 
 /* ---------- booths ---------- */
-.booths{display:grid; border-top:1px solid var(--hair);}
-@media(min-width:560px){ .booths{grid-template-columns:1fr 1fr;} }
+.booths{display:grid; border-top:1px solid var(--hair); grid-template-columns:1fr 1fr;
+  column-gap:14px;}
 @media(min-width:920px){ .booths{grid-template-columns:repeat(3,1fr);} }
 .booth{background:none; padding:14px 12px 14px 2px; border:0; border-bottom:1px solid var(--hair);
   width:100%; text-align:left; font-family:var(--f); cursor:pointer; display:block;
@@ -573,22 +638,37 @@ details.more .desc strong{color:var(--plum); font-weight:600;}
 /* ---------- footer ---------- */
 footer{margin-top:clamp(74px,11vw,140px); background:var(--cocoa); color:#C9BDB7;
   padding:clamp(46px,7vw,80px) 0 clamp(40px,6vw,60px); font-size:14px;}
-footer .fb{font-size:21px; font-weight:600; color:#fff; letter-spacing:-.022em;}
-footer .fcn{display:block; color:var(--gold); font-size:19px; letter-spacing:.15em; margin:10px 0 26px;}
-footer .fl{max-width:66ch; margin:26px 0 0; color:#A3948E; font-size:12.5px; line-height:1.6;}
+footer .flogo{width:min(48vw,200px); height:auto; display:block;}
+footer .fcn{display:block; margin:20px 0 30px; line-height:1.2;}
+footer .fcn .cs-cn{font-size:30px; color:var(--gold);}
+footer .fcn .cs-en{font-size:27px; color:#EBD9AE; margin-left:12px;}
+footer .fl{max-width:66ch; margin:30px 0 0; color:#A3948E; font-size:12.5px; line-height:1.6;}
 footer a{color:var(--gold);}
 footer .fnav{display:flex; flex-wrap:wrap; gap:12px; margin:0 0 26px;}
+footer .fbadges{display:flex; gap:14px; align-items:center; margin:30px 0 0;}
+footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12px;}
 """
 
 
 # --------------------------------------------------------------------------
 # Static flavour content (prose stays hand written)
 # --------------------------------------------------------------------------
+def slugify(name):
+    return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", name.lower())).strip("-")
+
+
+# Every flav() call registers itself here, in page order, so the one-glance
+# flavour overview can never disagree with the cards below it.
+FLAV_INDEX = []
+
+
 def flav(img, alt, name, badges, story, ing, algs, trace):
     b = "".join('<span class="tag %s">%s</span>' % (c, t) for c, t in badges)
     a = "".join('<span class="alg">%s</span>' % x for x in algs)
     src = v(img)
-    return """<div class="flav">
+    slug = "f-" + slugify(name)
+    FLAV_INDEX.append({"img": img, "name": name, "slug": slug})
+    return """<div class="flav" id="%s">
       <button type="button" class="fp" data-lightbox="%s" data-lightbox-alt="%s" aria-label="View a larger photo of %s">
         <img src="%s" alt="%s" width="420" height="525" loading="lazy" decoding="async">
       </button>
@@ -604,7 +684,7 @@ def flav(img, alt, name, badges, story, ing, algs, trace):
           <p class="trace">%s</p>
         </div>
       </details>
-    </div>""" % (src, alt, name, src, alt, name, b, story, ing, a, trace)
+    </div>""" % (slug, src, alt, name, src, alt, name, b, story, ing, a, trace)
 
 
 HALAL = ("sage", "Halal certified")
@@ -619,7 +699,7 @@ RANGES = [
                  "Lotus with Melon Seeds and Yolk",
                  [HALAL, VEG, ("", "160g")],
                  "Smooth <strong>white lotus paste</strong> studded with melon seeds and wrapped around a <strong>golden salted egg yolk</strong>, baked the <strong>time honoured Cantonese way</strong>. <strong>The one everyone reaches for first.</strong>",
-                 "White lotus paste, wheat flour, salted egg yolk, golden syrup, blended cooking oil (palm, peanut, sesame), melon seed, egg, milk.",
+                 "White lotus paste, wheat flour, salted egg yolk \U0001F315, golden syrup, blended cooking oil (palm, peanut, sesame), melon seed, egg, milk.",
                  ["Gluten (wheat)", "Egg", "Milk", "Sesame", "Peanuts"],
                  "May contain traces of soy."),
             flav("trad-no-yolk.webp", "Traditional white lotus mooncake without yolk",
@@ -654,7 +734,7 @@ RANGES = [
                  "Emerald Pandan Golden Yolk",
                  [HALAL, VEG, ("", "160g")],
                  "Created for <strong>every generation</strong>. The sweet <strong>pandan fragrance</strong> everyone knows from kaya, carried in a modern Momoyama skin, with the <strong>golden yolk from the traditional mooncake</strong> at its centre. The <strong>best of both worlds</strong> in one bite.",
-                 "Pandan paste, Maruchi dough, custard salted egg yolk paste, melon seed, blended cooking oil (palm, peanut, sesame), purple sweet potato powder.",
+                 "Pandan paste, Maruchi dough, custard salted egg yolk paste \U0001F315, melon seed, blended cooking oil (palm, peanut, sesame), purple sweet potato powder.",
                  ["Gluten (wheat)", "Milk", "Egg", "Sesame", "Peanuts", "Soy"],
                  "May contain traces of nuts."),
             flav("momo-reddates.webp", "Momoyama red dates longan mooncake",
@@ -723,7 +803,11 @@ def tags_for(k):
     tags = ['<span class="tag">%s</span>' % k["pcs"]]
     if "G" in k["sets"]:
         tags.append('<span class="tag chill">Snowskin &middot; chilled</span>')
+    elif k["sets"]:
+        tags.append('<span class="tag">Traditional / Assorted</span>')
+        tags.append('<span class="tag sage">Halal certified</span>')
     else:
+        tags.append('<span class="tag">Traditional</span>')
         tags.append('<span class="tag sage">Halal certified</span>')
     if k.get("artist"):
         tags.append('<span class="tag rose">Artist edition</span>')
@@ -755,6 +839,10 @@ def feature(kid, reverse=False):
     var = '<span class="var">%s</span>' % k["variant"] if k.get("variant") else ""
     body = "".join("<p>%s</p>" % p for p in k["body"])
     note = '<p class="note">%s</p>' % k["note"] if k.get("note") else ""
+    disc = ""
+    if k.get("disclaimer"):
+        disc = ('<div class="disc"><span class="lbl">Please note</span><p>%s</p></div>'
+                % k["disclaimer"])
     extra = ""
     if k.get("bcf"):
         extra = ('<a class="tlink" href="%s" target="_blank" rel="noopener" '
@@ -768,111 +856,81 @@ def feature(kid, reverse=False):
     <p class="fcn"><span class="cnmark han">%s</span> <span class="gloss">%s &middot; %s</span></p>
     <div class="desc">%s</div>
     <div class="becomes"><span class="lbl">After Mid-Autumn it becomes</span><p>%s</p></div>
-    %s
+    %s%s
     <div class="foot">%s%s</div>
     <div class="res-meta meta">%s</div>
   </div>
 </article>""" % (" rev" if reverse else "", k["id"], v(k["img"]), k["alt"],
                  "" if k["channel"] == "online" else " booth", chan_label(k),
                  k["format"], k["name"], var, k["cn"], k["pinyin"], k["gloss"],
-                 body, k["becomes"], note, cta_for(k, small=False), extra, tags_for(k))
+                 body, k["becomes"], disc, note, cta_for(k, small=False), extra, tags_for(k))
 
 
-def pair_band(id_a, id_b):
-    """The Dawn and The Dusk: two halves of one day, so they share a band."""
-    halves = ""
-    for kid in (id_a, id_b):
-        k = by_id(kid)
-        halves += """<div class="half">
-      <div class="hi"><img src="%s" alt="%s" width="900" height="1125" loading="lazy" decoding="async"></div>
-      <h4>%s</h4>
-      <p class="dcn han">%s</p>
-      <p class="dgloss">%s &middot; %s</p>
-      <p class="db">%s</p>
-      <div class="foot">%s</div>
-    </div>""" % (v(k["img"]), k["alt"], k["name"], k["cn"], k["pinyin"], k["gloss"],
-                 k["becomes"], cta_for(k))
-    return """<section class="pairband bleed" id="k-%s">
-  <img src="%s" alt="" width="1700" height="1133" loading="lazy" decoding="async" aria-hidden="true">
-  <div class="pinner wrap">
-    <div class="phead">
-      <span class="eyebrow">A pair &middot; 花晨月夕</span>
-      <h3>Flower mornings and moonlit evenings</h3>
-      <p>The old idiom names the two loveliest hours of any day. We split it across a pair of leather bags, one for each. Give one, or give both and bookend the day.</p>
+def category_block(cat):
+    """One keepsake family: thumbnail overview on top, one product on stage."""
+    items = cat["items"]
+    panels = ""
+    for i, kid in enumerate(items):
+        panels += '<div class="cpanel%s" data-kid="%s">%s</div>' % (
+            " on" if i == 0 else "", kid, feature(kid, reverse=bool(i % 2)))
+    thumbs = ""
+    if len(items) > 1:
+        for i, kid in enumerate(items):
+            k = by_id(kid)
+            label = k["name"] + (" (%s)" % k["variant"] if k.get("variant") else "")
+            thumbs += ('<button type="button" class="cthumb%s" data-idx="%d" '
+                       'aria-label="Show %s"><img src="%s" alt="%s" loading="lazy" '
+                       'decoding="async"><span>%s</span></button>'
+                       % (" on" if i == 0 else "", i, label, v(k["img"]), k["alt"], label))
+        thumbs = '<div class="cat-thumbs">%s</div>' % thumbs
+    arrows = ""
+    if len(items) > 1:
+        arrows = ('<div class="cat-arrows">'
+                  '<button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button>'
+                  '<span class="cnt">1 / %d</span>'
+                  '<button type="button" class="cnav next" aria-label="Next piece">&#8594;</button>'
+                  '</div>' % len(items))
+    return """<section class="cat" id="cat-%s" data-cat="%s">
+  <hr class="cat-rule">
+  <div class="cat-top">
+    <div class="cat-head">
+      <span class="eyebrow">%s</span>
+      <h3>%s</h3>
+      <p class="cat-blurb">%s</p>
     </div>
-    <div class="duo">%s</div>
+    %s
   </div>
-</section>""" % (id_a, v("band-dawn-dusk.webp"), halves)
-
-
-def grid_item(kid):
-    k = by_id(kid)
-    var = ' <span class="var">(%s)</span>' % k["variant"] if k.get("variant") else ""
-    body = "".join("<p>%s</p>" % p for p in k["body"])
-    note = '<p class="note">%s</p>' % k["note"] if k.get("note") else ""
-    return """<article class="item" id="k-%s">
-  <div class="ri"><img src="%s" alt="%s" width="900" height="1125" loading="lazy" decoding="async"></div>
-  <span class="chan%s">%s &middot; %s</span>
-  <h4>%s%s</h4>
-  <p class="icn han">%s</p>
-  <p class="igloss">%s &middot; %s</p>
-  <div class="ibec"><span class="lbl">After Mid-Autumn it becomes</span><p>%s</p></div>
-  <details class="more"><summary>The full story</summary><div class="desc">%s</div>%s</details>
-  <div class="foot">%s</div>
-  <div class="res-meta meta">%s</div>
-</article>""" % (k["id"], v(k["img"]), k["alt"],
-                 "" if k["channel"] == "online" else " booth",
-                 chan_label(k), k["format"],
-                 k["name"], var, k["cn"], k["pinyin"], k["gloss"],
-                 k["becomes"], body, note, cta_for(k), tags_for(k))
-
-
-# Editorial running order. Deliberately not a uniform loop: the pieces with the
-# most to say get the room, and The Dawn/The Dusk share a band because the
-# idiom behind them is a pair.
-FEATURES_TOP = ["the-painted-garden", "the-painted-garden-box"]
-FEATURES_MID = ["a-court-of-peonies"]
-FEATURES_END = ["blossom-drawer-chest"]
-GRID = ["the-painted-garden-duo", "a-court-of-peonies-duo", "orchid-reverie",
-        "weaving-moments", "tote-of-good-health", "tote-of-bliss",
-        "treasure-scroll", "elegance-reunion-turntable"]
+  %s
+  <div class="cpanels">%s</div>
+</section>""" % (cat["id"], cat["id"], cat["sub"], cat["name"], cat["blurb"],
+                 arrows, thumbs, panels)
 
 
 def keepsakes_html():
-    out = []
-    for i, kid in enumerate(FEATURES_TOP):
-        out.append(feature(kid, reverse=bool(i % 2)))
-    out.append(pair_band("the-dawn", "the-dusk"))
-    for i, kid in enumerate(FEATURES_MID):
-        out.append(feature(kid, reverse=False))
-    for i, kid in enumerate(FEATURES_END):
-        out.append(feature(kid, reverse=True))
-    out.append('<div class="rest">%s</div>' % "".join(grid_item(k) for k in GRID))
-    return "".join(out)
+    return "".join(category_block(c) for c in CATEGORIES)
 
 
 def check_layout_covers_data():
-    laid = set(FEATURES_TOP + FEATURES_MID + FEATURES_END + GRID + ["the-dawn", "the-dusk"])
+    laid = set(kid for c in CATEGORIES for kid in c["items"])
     have = {k["id"] for k in KEEPSAKES}
     missing, extra = have - laid, laid - have
     if missing or extra:
-        raise SystemExit("Keepsake layout out of sync with data.py.\n"
+        raise SystemExit("Keepsake categories out of sync with data.py.\n"
                          "  not laid out: %s\n  unknown ids: %s" % (sorted(missing), sorted(extra)))
 
 
-def sets_table():
-    rows = ['<div class="r hdr"><div>Set</div><div>Range</div><div>What\'s inside</div></div>']
-    for s in SETS:
-        fl = "".join("<li>%s</li>" % f for f in s["flavours"])
-        halal = " &middot; Halal certified, vegetarian" if s["halal"] else " &middot; not Halal certified"
-        rows.append('<div class="r"><div class="sid">%s</div>'
-                    '<div class="g">%s%s</div><ul>%s</ul></div>'
-                    % (s["id"], s["group"], halal, fl))
-    return '<div class="settable">%s</div>' % "".join(rows)
-
-
-def slugify(name):
-    return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", name.lower())).strip("-")
+def flavour_overview():
+    """The one-glance flavour map: every flavour, its range, tap to jump."""
+    cats = (["Traditional"] * 2 + ["Signature Assorted"] * 4 + ["Truffle Snowskin"] * 4)
+    if len(FLAV_INDEX) != len(cats):
+        raise SystemExit("Flavour overview out of sync: %d cards, %d labels"
+                         % (len(FLAV_INDEX), len(cats)))
+    out = []
+    for f, c in zip(FLAV_INDEX, cats):
+        out.append('<a href="#%s"><img src="%s" alt="%s" loading="lazy" decoding="async">'
+                   '<span class="fname">%s</span><span class="fcat">%s</span></a>'
+                   % (f["slug"], v(f["img"]), f["name"], f["name"], c))
+    return '<div class="fov">%s</div>' % "".join(out)
 
 
 def booths_html():
@@ -916,6 +974,7 @@ JS = """
   var K = {{KEEPSAKES}};
   var S = {{SETS}};
   var B = {{BOOTHS}};
+  var CATS = {{CATS}};
   var TABLE_SET = {{TABLESET}};
   var BUDGET = {{BUDGET}};
   var RECIP = {{RECIP}};
@@ -953,12 +1012,11 @@ JS = """
     }
     intro.classList.add('show');
 
-    /* Point the parting halves at whichever poster matches this viewport, and
-       start the matching clip. Phones get the portrait cut so we are not
-       upscaling a 16:9 frame across a tall screen. */
+    /* Start whichever clip matches this viewport. Phones get the portrait cut
+       so we are not upscaling a 16:9 frame across a tall screen. Opening the
+       gate scales the foliage up past the lens: a dive into the bushes. */
     var portrait = window.matchMedia('(max-aspect-ratio: 1/1)').matches;
     var poster = portrait ? 'intro-garden-p.jpg' : 'intro-garden.jpg';
-    intro.style.setProperty('--hedge', 'url("' + asset(poster) + '")');
     var vid = byId('introVid');
     if (vid){
       var src = portrait ? 'intro-garden-p.mp4' : 'intro-garden.mp4';
@@ -982,7 +1040,7 @@ JS = """
       window.setTimeout(function(){
         if (vid){ try { vid.pause(); vid.removeAttribute('src'); vid.load(); } catch(e){} }
         if (intro.parentNode) intro.parentNode.removeChild(intro);
-      }, 1400);
+      }, 1600);
     }
 
     intro.addEventListener('click', open);
@@ -1082,6 +1140,8 @@ JS = """
   var links = [].slice.call(document.querySelectorAll('.jump a[href^="#"]'));
   var secs  = links.map(function(a){ return byId(a.getAttribute('href').slice(1)); });
   var bar = byId('navProgress');
+  var navEl = document.querySelector('nav.jump');
+  var navIn = navEl ? navEl.querySelector('.in') : null;
   function onScroll(){
     var h = document.documentElement.scrollHeight - window.innerHeight;
     if (bar) bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
@@ -1089,11 +1149,149 @@ JS = """
     for (var i=0;i<secs.length;i++){
       if (secs[i] && secs[i].getBoundingClientRect().top <= 120) idx = i;
     }
-    links.forEach(function(a,i){ a.classList.toggle('active', i===idx); });
+    links.forEach(function(a,i){
+      var on = i===idx;
+      if (on && !a.classList.contains('active') && navIn){
+        /* keep the active section's tab in view as you read down the page */
+        var r = a.getBoundingClientRect(), n = navIn.getBoundingClientRect();
+        if (r.left < n.left + 10 || r.right > n.right - 10){
+          navIn.scrollTo({left: a.offsetLeft - 24, behavior:'smooth'});
+        }
+      }
+      a.classList.toggle('active', on);
+    });
   }
   window.addEventListener('scroll', onScroll, {passive:true});
   window.addEventListener('resize', onScroll, {passive:true});
   onScroll();
+  /* edge fades: show only where there is more bar to slide to */
+  if (navIn && navEl){
+    var navEdges = function(){
+      var max = navIn.scrollWidth - navIn.clientWidth;
+      navEl.classList.toggle('at-end', navIn.scrollLeft >= max - 4);
+      navEl.classList.toggle('scrolled', navIn.scrollLeft > 4);
+    };
+    navIn.addEventListener('scroll', navEdges, {passive:true});
+    window.addEventListener('resize', navEdges, {passive:true});
+    navEdges();
+  }
+
+  /* ---------------- keepsake category carousels ---------------- */
+  var catState = {};
+  [].slice.call(document.querySelectorAll('.cat')).forEach(function(sec){
+    var panels = [].slice.call(sec.querySelectorAll('.cpanel'));
+    if (!panels.length) return;
+    var thumbs = [].slice.call(sec.querySelectorAll('.cthumb'));
+    var cnt = sec.querySelector('.cat-arrows .cnt');
+    var st = {sec:sec, panels:panels, thumbs:thumbs, cnt:cnt, idx:0};
+    catState[sec.dataset.cat] = st;
+    function go(n){
+      st.idx = (n + panels.length) % panels.length;
+      panels.forEach(function(p,i){ p.classList.toggle('on', i===st.idx); });
+      thumbs.forEach(function(t,i){ t.classList.toggle('on', i===st.idx); });
+      if (cnt) cnt.textContent = (st.idx+1) + ' / ' + panels.length;
+      ga('keepsake_switch', {category: sec.dataset.cat, item_id: panels[st.idx].dataset.kid});
+    }
+    st.go = go;
+    thumbs.forEach(function(t){
+      t.addEventListener('click', function(){ go(parseInt(t.dataset.idx, 10)); });
+    });
+    var prev = sec.querySelector('.cnav.prev'), next = sec.querySelector('.cnav.next');
+    if (prev) prev.addEventListener('click', function(){ go(st.idx - 1); });
+    if (next) next.addEventListener('click', function(){ go(st.idx + 1); });
+  });
+
+  /* Any link to #k-<id> (hero hotspots, gift matcher, builder, artist feature)
+     first flips the right category to that product, then scrolls to it. */
+  function revealKeepsake(id, scroll){
+    for (var c in catState){
+      var st = catState[c];
+      for (var i=0;i<st.panels.length;i++){
+        if (st.panels[i].dataset.kid === id){
+          st.go(i);
+          if (scroll !== false){
+            st.sec.scrollIntoView({behavior: reduced ? 'auto' : 'smooth', block:'start'});
+          }
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href^="#k-"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(3);
+    if (revealKeepsake(id)) e.preventDefault();
+  });
+  if (window.location.hash && window.location.hash.indexOf('#k-') === 0){
+    revealKeepsake(window.location.hash.slice(3));
+  }
+
+  /* ---------------- hero hotspots ----------------
+     Markers pinned to the products inside the hero photograph. The photo is
+     object-fit:cover, so each marker's percentage position (in image space)
+     is mapped through the same cover maths on every resize. */
+  (function(){
+    var fig = byId('heroFig'), layer = byId('hspots'), img = byId('heroImg');
+    if (!fig || !layer || !img) return;
+    /* [x%, y%, keepsake id] measured on the master frames */
+    var LAND = [
+      [46, 41, 'the-painted-garden-box'],
+      [29, 50, 'blossom-drawer-chest'],
+      [51, 52, 'tote-of-good-health'],
+      [52.5, 60, 'a-court-of-peonies'],
+      [58, 64, 'the-painted-garden'],
+      [70, 60, 'elegance-reunion-turntable'],
+      [43, 69, 'the-dusk'],
+      [68, 68, 'weaving-moments']
+    ];
+    var PORT = [
+      [49, 44, 'the-painted-garden-box'],
+      [21, 52, 'blossom-drawer-chest'],
+      [55, 54, 'tote-of-good-health'],
+      [52, 62, 'a-court-of-peonies'],
+      [60, 66, 'the-painted-garden'],
+      [72, 60, 'elegance-reunion-turntable'],
+      [40, 72, 'the-dusk'],
+      [74, 68, 'weaving-moments']
+    ];
+    function nameOf(id){
+      for (var i=0;i<K.length;i++){ if (K[i].id===id) return K[i].name; }
+      return '';
+    }
+    var spots = LAND.map(function(s){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'hspot';
+      b.setAttribute('aria-label', 'See ' + nameOf(s[2]));
+      b.innerHTML = '<i></i><span class="hlabel">' + esc(nameOf(s[2])) + '</span>';
+      b.addEventListener('click', function(){
+        ga('hotspot_click', {item_id: s[2]});
+        if (!revealKeepsake(s[2])) window.location.hash = '#k-' + s[2];
+      });
+      layer.appendChild(b);
+      return b;
+    });
+    function place(){
+      var cw = fig.clientWidth, ch = fig.clientHeight;
+      var portrait = (img.currentSrc || img.src).indexOf('-p.webp') >= 0;
+      var iw = portrait ? 900 : 1500, ih = portrait ? 1200 : 1500;
+      var data = portrait ? PORT : LAND;
+      var sc = Math.max(cw/iw, ch/ih);
+      var dw = iw*sc, dh = ih*sc;
+      var ox = (cw - dw) * 0.5, oy = (ch - dh) * 0.4; /* matches object-position 50% 40% */
+      spots.forEach(function(b, i){
+        var x = ox + data[i][0]/100*dw, y = oy + data[i][1]/100*dh;
+        var vis = x > 26 && x < cw-26 && y > 26 && y < ch-26;
+        b.style.display = vis ? '' : 'none';
+        b.style.left = x + 'px'; b.style.top = y + 'px';
+        b.classList.toggle('edge-l', x < 90);
+        b.classList.toggle('edge-r', x > cw-90);
+      });
+    }
+    if (img.complete) place(); else img.addEventListener('load', place);
+    window.addEventListener('resize', place, {passive:true});
+  })();
 
   /* ---------------- outbound click tracking ---------------- */
   document.addEventListener('click', function(e){
@@ -1241,18 +1439,35 @@ JS = """
 
   /* ---------------- build your gift ---------------- */
   var bpick = byId('bPick'), bout = byId('bOut');
-  K.forEach(function(k){
-    var c = document.createElement('button');
-    c.type = 'button'; c.className = 'chip';
-    c.innerHTML = '<img src="' + asset(k.img) + '" alt="' + esc(k.alt) + '" loading="lazy" decoding="async">' +
-      '<span>' + esc(k.name) + (k.variant ? ' (' + esc(k.variant) + ')' : '') + '</span>';
-    c.addEventListener('click', function(){
-      [].slice.call(bpick.children).forEach(function(x){ x.classList.remove('on'); });
-      c.classList.add('on');
-      buildOut(k);
-      ga('builder_select', {item_id:k.id, item_name:k.name});
+  function kById(id){ for (var i=0;i<K.length;i++){ if (K[i].id===id) return K[i]; } return null; }
+  CATS.forEach(function(cat){
+    var head = document.createElement('span');
+    head.className = 'bgroup';
+    head.textContent = cat.name;
+    bpick.appendChild(head);
+    var row = document.createElement('div');
+    row.className = 'brow';
+    cat.items.forEach(function(id){
+      var k = kById(id);
+      if (!k) return;
+      var c = document.createElement('button');
+      c.type = 'button'; c.className = 'chip';
+      c.innerHTML = '<img src="' + asset(k.img) + '" alt="' + esc(k.alt) + '" loading="lazy" decoding="async">' +
+        '<span>' + esc(k.name) + (k.variant ? ' (' + esc(k.variant) + ')' : '') + '</span>';
+      c.addEventListener('click', function(){
+        [].slice.call(bpick.querySelectorAll('.chip')).forEach(function(x){ x.classList.remove('on'); });
+        c.classList.add('on');
+        buildOut(k);
+        /* bring the result into view: on a phone the output sits below the
+           fold, so a tap otherwise looks like it did nothing */
+        window.setTimeout(function(){
+          bout.scrollIntoView({behavior: reduced ? 'auto' : 'smooth', block:'start'});
+        }, 60);
+        ga('builder_select', {item_id:k.id, item_name:k.name});
+      });
+      row.appendChild(c);
     });
-    bpick.appendChild(c);
+    bpick.appendChild(row);
   });
 
   function buildOut(k){
@@ -1295,8 +1510,14 @@ JS = """
             '<a class="tlink" href="#k-' + k.id + '">Read its story</a></div>' +
         '</div>' +
       '</div>' +
+      (k.sets.length ?
+        '<div class="callout" style="margin:0 0 22px">\\uD83C\\uDF15 <strong>No need to overthink it.</strong> ' +
+        'We\\u2019ve curated the most popular mooncake set combinations below, so you can order online in one go, ' +
+        'pick your preferred delivery date, and let us do the carrying.</div>' : '') +
       '<p class="igloss" style="margin:0 0 14px">Choose one mooncake set to go inside</p>' +
       '<div class="setlist">' + rows + '</div>' +
+      '<div class="callout"><strong>Prefer your own mix?</strong> You can customise your preferred ' +
+      'flavours at any of our retail points across Singapore. <a href="#where">See where to find us</a></div>' +
       (k.note ? '<p class="res-note">' + esc(k.note) + '</p>' : '');
     bout.classList.add('on');
   }
@@ -1402,6 +1623,8 @@ def build():
         JS,
         KEEPSAKES=json.dumps(js_data(), ensure_ascii=False, separators=(",", ":")),
         SETS=json.dumps(SETS, ensure_ascii=False, separators=(",", ":")),
+        CATS=json.dumps([{"id": c["id"], "name": c["name"], "items": c["items"]}
+                         for c in CATEGORIES], ensure_ascii=False, separators=(",", ":")),
         BOOTHS=json.dumps(booths_json(), ensure_ascii=False, separators=(",", ":")),
         TABLESET=json.dumps({t[0]: t[2] for t in TABLES}, ensure_ascii=False),
         BUDGET=json.dumps({b[0]: {"min": b[2], "max": b[3]} for b in BUDGETS}, ensure_ascii=False),
@@ -1438,7 +1661,7 @@ def build():
         TEMPLATE,
         CSS=CSS, JS=js, QS=qs,
         KEEPSAKES=keepsakes_html(),
-        SETS_TABLE=sets_table(),
+        FLAV_OVERVIEW=flavour_overview(),
         RANGES=ranges,
         BOOTHS=booths_html(),
         GA=GA_ID, SITE=SITE_URL, AV=ASSET_V,
@@ -1465,12 +1688,12 @@ TEMPLATE = """<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mdm Ling Bakery · Mid-Autumn 2026</title>
-<meta name="description" content="Mdm Ling Bakery Mid-Autumn 2026. Fourteen keepsake gift sets and three mooncake ranges, with a gift matcher to help you choose. 花月情长, A Bond in Lasting Bloom. Halal certified, made in Singapore.">
+<meta name="description" content="Mdm Ling Bakery Mid-Autumn 2026. Keepsake gift sets and three mooncake ranges, with a gift matcher to help you choose. 花月情长, A Bond in Lasting Bloom. Halal certified, made in Singapore.">
 <link rel="canonical" href="{{SITE}}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mdm Ling Bakery">
 <meta property="og:title" content="Mdm Ling Bakery · Mid-Autumn 2026">
-<meta property="og:description" content="Fourteen keepsake gift sets built to outlive the season. 花月情长 · A Bond in Lasting Bloom.">
+<meta property="og:description" content="Keepsake gift sets built to outlive the season. 花月情长 · A Bond in Lasting Bloom.">
 <meta property="og:url" content="{{SITE}}">
 <meta property="og:image" content="{{SITE}}assets/og-midautumn-2026-v2.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -1479,13 +1702,14 @@ TEMPLATE = """<!DOCTYPE html>
 <meta property="og:image:alt" content="Mdm Ling Bakery Mid-Autumn 2026 keepsake gift set collection">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mdm Ling Bakery · Mid-Autumn 2026">
-<meta name="twitter:description" content="Fourteen keepsake gift sets built to outlive the season. 花月情长 · A Bond in Lasting Bloom.">
+<meta name="twitter:description" content="Keepsake gift sets built to outlive the season. 花月情长 · A Bond in Lasting Bloom.">
 <meta name="twitter:image" content="{{SITE}}assets/og-midautumn-2026-v2.jpg">
 <meta name="theme-color" content="#4E3C37">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23A97F78'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23F0E2C4' font-family='sans-serif'%3E花%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Work+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Work+Sans:wght@500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&text=%E8%8A%B1%E6%9C%88%E6%83%85%E9%95%BF&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/band-hero.webp?v={{AV}}" imagesrcset="assets/band-hero-p.webp?v={{AV}} 900w, assets/band-hero.webp?v={{AV}} 1500w" imagesizes="100vw">
 <script async src="https://www.googletagmanager.com/gtag/js?id={{GA}}"></script>
 <script>
@@ -1502,16 +1726,15 @@ TEMPLATE = """<!DOCTYPE html>
 <!-- Into the garden. Hidden by default so a no-JS visitor never meets a locked door. -->
 <div class="intro" id="intro" role="button" tabindex="0" aria-label="Enter the Mid-Autumn 2026 collection">
   <video class="gv" id="introVid" muted playsinline autoplay loop preload="none" aria-hidden="true"></video>
-  <div class="leaf l" aria-hidden="true"></div>
-  <div class="leaf r" aria-hidden="true"></div>
   <div class="veil" aria-hidden="true"></div>
   <div class="seal">
-    <span class="s-brand">Mdm Ling Bakery</span>
-    <span class="s-han han">花月情长</span>
-    <span class="s-en">Mid-Autumn 2026</span>
+    <img class="s-logo" src="assets/mlb-logo-white.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="304">
+    <span class="s-en cs-en">A Bond in Lasting Bloom</span>
+    <span class="s-han cs-cn">花月情长</span>
+    <span class="s-season">Mid-Autumn 2026</span>
     <span class="s-rule"></span>
   </div>
-  <div class="prompt"><span id="introVerb">Tap</span> to enter the garden<i></i></div>
+  <div class="prompt"><span id="introVerb">Tap</span> to enter the garden &#127765;<i></i></div>
 </div>
 
 <canvas id="petals" aria-hidden="true"></canvas>
@@ -1521,35 +1744,38 @@ TEMPLATE = """<!DOCTYPE html>
     <a href="#concierge">Gift matcher</a>
     <a href="#keepsakes">Keepsakes</a>
     <a href="#builder">Build your gift</a>
-    <a href="#sets">Mooncake sets</a>
     <a href="#mooncakes">Mooncakes</a>
     <a href="#garden">The Painted Garden</a>
     <a href="#where">Where to buy</a>
   </div>
+  <span class="edge l" aria-hidden="true"></span>
+  <span class="edge r" aria-hidden="true"></span>
   <div class="progress" id="navProgress"></div>
 </nav>
 
 <header class="hero">
-  <div class="hfig">
+  <div class="hbrand">
+    <img src="assets/mlb-logo-cocoa.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="304" fetchpriority="high">
+    <span class="hseason">Mid-Autumn 2026</span>
+  </div>
+  <div class="hfig" id="heroFig">
     <picture>
       <source media="(max-aspect-ratio: 1/1)" srcset="assets/band-hero-p.webp?v={{AV}}">
-      <img class="hbg" src="assets/band-hero.webp?v={{AV}}" alt="The Mdm Ling Bakery Mid-Autumn 2026 collection laid out on a white garden table under a fringed parasol, surrounded by roses" width="1500" height="1500" fetchpriority="high" decoding="async">
+      <img class="hbg" id="heroImg" src="assets/band-hero.webp?v={{AV}}" alt="The Mdm Ling Bakery Mid-Autumn 2026 collection laid out on a white garden table under a fringed parasol, surrounded by roses" width="1500" height="1500" fetchpriority="high" decoding="async">
     </picture>
+    <div class="hspots" id="hspots" aria-label="Tap a marker to jump to that gift set"></div>
   </div>
   <div class="hcap">
     <div class="wrap">
       <div>
-        <span class="eyebrow">Mdm Ling Bakery &middot; Mid-Autumn 2026</span>
         <h1>Gifts that outlive the season</h1>
-        <p class="hcn"><span class="han">花月情长</span> <span class="en">&middot; A Bond in Lasting Bloom</span></p>
+        <p class="hcn"><span class="cs-en">A Bond in Lasting Bloom</span><span class="cs-cn">花月情长</span></p>
       </div>
       <div>
-        <p class="lede">Fourteen keepsakes and three mooncake ranges, photographed in the garden they were made for. Every piece is built to be kept, used and remembered long after the last mooncake is gone.</p>
+        <p class="lede">Keepsakes and three mooncake ranges, photographed in the garden they were made for. Every piece is built to be kept, used and remembered long after the last mooncake is gone. &#127765;</p>
         <div class="acts">
           <a class="btn light" href="#concierge">Find the right gift</a>
-          <a class="btn ghost" href="#keepsakes" style="color:#FBF6F2">See the collection</a>
         </div>
-        <p class="hcred">The collection, shot in a Singapore garden</p>
       </div>
     </div>
   </div>
@@ -1558,13 +1784,13 @@ TEMPLATE = """<!DOCTYPE html>
 <section class="manifesto">
   <div class="wrap">
     <div>
-      <p class="mhan han">花月情长</p>
-      <span class="msub">A Bond in Lasting Bloom</span>
+      <p class="mhan cs-cn">花月情长</p>
+      <span class="msub cs-en" style="font-size:26px; text-transform:none; letter-spacing:.02em;">A Bond in Lasting Bloom</span>
     </div>
     <div>
       <p>In Singapore you don't visit someone empty-handed. You bring something to share. That single gesture is the whole reason this collection exists.</p>
       <p>So we design the <strong>keepsake first</strong> and the season second. A tin that holds trinkets for years. A bag someone actually wears. A turntable that comes back out at every reunion dinner. <strong>Sustainably made, genuinely useful, and Singaporean in spirit</strong>, with a four character name apiece the way heirlooms in a Chinese household always have.</p>
-      <p>The mooncakes are yours to choose. <strong>All our baked sets are Halal certified and vegetarian.</strong></p>
+      <p>The mooncakes are yours to choose. <strong>All our baked sets are Halal certified and vegetarian.</strong> &#127765;</p>
     </div>
   </div>
 </section>
@@ -1576,7 +1802,7 @@ TEMPLATE = """<!DOCTYPE html>
     <div class="tool">
       <span class="tool-kicker">The gift matcher</span>
       <h3>Tell us who it's for</h3>
-      <p class="sub">Fourteen keepsakes, seven mooncake sets. Four quick questions and we'll narrow it to one, with the mooncake set that suits their table.</p>
+      <p class="sub">Four quick questions and we'll narrow the whole collection to one keepsake, with the mooncake set that suits their table.</p>
       <div class="qsteps"><i class="on"></i><i></i><i></i><i></i></div>
       <div id="cQuiz">{{QS}}</div>
       <div class="result" id="cResult"></div>
@@ -1603,9 +1829,9 @@ TEMPLATE = """<!DOCTYPE html>
       <span class="mark">01</span>
       <div class="inner">
         <span class="eyebrow">The keepsakes</span>
-        <h2>Fourteen things worth keeping</h2>
-        <p class="lede">Every keepsake belongs to one family, <strong>花月情长 &middot; A Bond in Lasting Bloom</strong>, and carries its own four character name. Fill any of them with the mooncake set of your choice.</p>
-        <p class="lede" style="margin-top:12px"><strong>{{N_ONLINE}} of the {{N_KEEPSAKES}}</strong> can be ordered online right now. The rest are at our {{N_BOOTHS}} booths across the island, and we'll help you find one.</p>
+        <h2>Something worth sharing, something worth keeping</h2>
+        <p class="lede">Every keepsake belongs to one family, <strong>花月情长 &middot; A Bond in Lasting Bloom</strong>. Pick the piece that suits them, then fill it with the mooncakes of your choice.</p>
+        <p class="lede" style="margin-top:12px">Order online with <strong>free delivery above ${{FREE_DEL}}</strong>, choose the delivery date that suits you, and let us do the carrying. Or come see us at one of our <a href="#where" style="color:var(--rose); font-weight:600">{{N_BOOTHS}} booths around Singapore</a>. &#127765;</p>
       </div>
     </div>
   </section>
@@ -1624,19 +1850,6 @@ TEMPLATE = """<!DOCTYPE html>
       <div class="bout" id="bOut"></div>
     </div>
   </section>
-
-  <!-- ================= MOONCAKE SETS ================= -->
-  <section class="part" id="sets">
-    <div class="part-head">
-      <span class="mark">02</span>
-      <div class="inner">
-        <span class="eyebrow">The mooncake sets</span>
-        <h2>Then choose what fills it</h2>
-        <p class="lede"><strong>All baked sets, A to F, are Halal certified and vegetarian.</strong> The snowskin set G is <strong>not Halal certified</strong> and comes only in the Orchid Reverie tin. Our duo tins carry two traditional mooncakes rather than a lettered set.</p>
-      </div>
-    </div>
-    {{SETS_TABLE}}
-  </section>
 </div>
 
 <!-- ================= BAND: at the table ================= -->
@@ -1646,7 +1859,7 @@ TEMPLATE = """<!DOCTYPE html>
     <img src="assets/band-mooncake.webp?v={{AV}}" alt="Two friends sharing mooncakes at a garden table beneath a fringed parasol" width="1800" height="1200" loading="lazy" decoding="async">
   </picture>
   <div class="bt">
-    <span class="eyebrow">Part three</span>
+    <span class="eyebrow">Part two</span>
     <p>Three ranges, and a flavour for every generation at the table.</p>
   </div>
 </section>
@@ -1655,43 +1868,67 @@ TEMPLATE = """<!DOCTYPE html>
   <!-- ================= MOONCAKES ================= -->
   <section class="part" id="mooncakes">
     <div class="part-head">
-      <span class="mark">03</span>
+      <span class="mark">02</span>
       <div class="inner">
         <span class="eyebrow">The mooncakes</span>
         <h2>What goes inside</h2>
-        <p class="lede">Our premium traditional baked classics, our signature assorted range with a low sugar skin for each flavour, and our premium truffle snowskin range served chilled.</p>
+        <p class="lede">Ten flavours across three ranges: our <strong>traditional baked classics</strong>, our <strong>signature assorted range</strong> with a low sugar Momoyama skin, and our <strong>truffle snowskin range</strong> served chilled. Here they are at one glance. Tap any flavour to read its story.</p>
       </div>
     </div>
+    {{FLAV_OVERVIEW}}
     {{RANGES}}
 
     <div class="panel" id="storage">
       <h4>Storage and freshness</h4>
       <p>Our baked mooncakes keep for <strong>2 months from production</strong>, with the <strong>best before date printed on the packaging</strong>. Store them in a <strong>cool, dry place</strong> away from direct sunlight, and enjoy them soon after opening.</p>
-      <p>Snowskin mooncakes are <strong>best served chilled</strong>. Keep them away from direct heat and sunlight, and never leave them in the car boot. Within <strong>2 hours of purchase</strong>, place them in the freezer at <strong>&minus;12&deg;C or below</strong>, where they'll keep for <strong>up to 8 weeks</strong>. Once thawed, <strong>do not refreeze</strong>.</p>
+      <p>Snowskin mooncakes are <strong>best served chilled</strong>. Keep them away from direct heat and sunlight, and never leave them in the car boot. Within <strong>2 hours of purchase</strong>, place them in the freezer at <strong>&minus;12&deg;C or below</strong>, where they'll keep for <strong>up to 8 weeks</strong>. Once thawed, <strong>do not refreeze</strong>. &#127765;</p>
     </div>
   </section>
 </div>
 
 <!-- ================= THE PAINTED GARDEN / YING / BCF ================= -->
 <section class="artist" id="garden">
-  <picture>
-    <source media="(max-aspect-ratio: 4/5)" srcset="assets/band-open-box-p.webp?v={{AV}}">
-    <img src="assets/band-open-box.webp?v={{AV}}" alt="The Painted Garden gift box open on a rattan garden table, with mooncakes and tea" width="1800" height="1200" loading="lazy" decoding="async">
-  </picture>
   <div class="ainner wrap">
-    <div class="acol">
-      <span class="eyebrow">百花迎月 &middot; The Painted Garden</span>
-      <h3>A garden painted for Mdm Ling</h3>
-      <p>Singaporean artist <strong>Phuay Li Ying</strong> painted this year's garden as a quiet portrait of Mdm Ling herself. The central bloom is her. The smaller flowers are the people she gathers around her, <strong>wildflowers of many colours and origins rising together to greet the festival moon</strong>.</p>
-      <p>Her artwork runs across three pieces in the collection: the <strong>heritage tin</strong>, the <strong>duo tin</strong> and the <strong>silk paper gift box</strong>, each washed in gentle pinks, lilacs and gold with a quiet glow of foil.</p>
-      <div class="bcfnote">
-        <span class="amt">$1</span>
-        <p>from every <strong>Painted Garden Box</strong> goes to the <strong>Breast Cancer Foundation</strong>, supporting awareness, screening and survivor care here in Singapore. Each garden you give helps look after someone else's.</p>
+    <span class="collab">A collaboration by Mdm Ling Bakery<br>with World of Ying and Breast Cancer Foundation</span>
+    <div class="agrid">
+      <div class="acol">
+        <span class="eyebrow">百花迎月 &middot; The Painted Garden</span>
+        <h3>A garden painted for Mdm Ling</h3>
+        <p>Singaporean artist <strong>Phuay Li Ying</strong> painted this year's garden as a quiet portrait of Mdm Ling herself. The central bloom is her. The smaller flowers are the people she gathers around her, <strong>wildflowers of many colours and origins rising together to greet the festival moon</strong>.</p>
+        <p>Her artwork runs across three pieces in the collection: the <strong>heritage tin</strong>, the <strong>duo tin</strong> and the <strong>silk paper gift box</strong>, each washed in gentle pinks, lilacs and gold with a quiet glow of foil.</p>
+        <div class="bcfnote">
+          <span class="amt"><span class="d">$1</span><span class="dsub">with every box,<br>given onward</span></span>
+          <p>from every <strong>Painted Garden Box</strong> goes to the <strong>Breast Cancer Foundation</strong>, supporting awareness, screening and survivor care here in Singapore. Each garden you give helps look after someone else's.</p>
+        </div>
+        <div class="acts">
+          <a class="btn light" href="#k-the-painted-garden-box">See The Painted Garden Box</a>
+        </div>
+        <div class="orgs">
+          <details class="org">
+            <summary><span class="btn ghost">World of Ying</span></summary>
+            <div class="org-body">
+              <p>World of Ying is a multidisciplinary studio by Singapore print artist Phuay Li Ying, creating bespoke commissions, collaborations, installations and immersive experiences.</p>
+              <a class="btn light sm" href="{{ARTIST_IG}}" target="_blank" rel="noopener">Visit World of Ying &#8599;</a>
+            </div>
+          </details>
+          <details class="org">
+            <summary><span class="btn ghost">Breast Cancer Foundation</span></summary>
+            <div class="org-body">
+              <p>Breast Cancer Foundation (BCF) is a social service agency in Singapore that aims to promote early detection of breast cancer and support the breast cancer community. &#127765;</p>
+              <a class="btn light sm" href="{{BCF}}" target="_blank" rel="noopener" data-bcf="feature">Visit Breast Cancer Foundation &#8599;</a>
+            </div>
+          </details>
+        </div>
       </div>
-      <div class="acts">
-        <a class="btn light" href="#k-the-painted-garden-box">See The Painted Garden Box</a>
-        <a class="btn ghost" href="{{BCF}}" target="_blank" rel="noopener" data-bcf="feature" style="color:#FBF6F2">Breast Cancer Foundation</a>
-        <a class="tlink" href="{{ARTIST_IG}}" target="_blank" rel="noopener" style="color:#EFDCB4;border-color:#C7A66A">Ying's work</a>
+      <div class="amedia">
+        <figure class="aart">
+          <img src="assets/ying-artwork.webp?v={{AV}}" alt="The Painted Garden, the original watercolour artwork by Phuay Li Ying" width="1400" height="1400" loading="lazy" decoding="async">
+          <figcaption>The Painted Garden &middot; original artwork by Phuay Li Ying</figcaption>
+        </figure>
+        <figure class="aphoto">
+          <img src="assets/band-open-box-p.webp?v={{AV}}" alt="Phuay Li Ying opening The Painted Garden gift box at a rattan garden table" width="1000" height="1333" loading="lazy" decoding="async">
+          <figcaption>The artist with The Painted Garden Box</figcaption>
+        </figure>
       </div>
     </div>
   </div>
@@ -1701,14 +1938,14 @@ TEMPLATE = """<!DOCTYPE html>
   <!-- ================= WHERE TO BUY ================= -->
   <section class="part" id="where">
     <div class="part-head">
-      <span class="mark">04</span>
+      <span class="mark">03</span>
       <div class="inner">
         <span class="eyebrow">Where to buy</span>
         <h2>Find us across Singapore</h2>
-        <p class="lede">Every keepsake in this collection is at our booths. <strong>{{N_ONLINE}} of the {{N_KEEPSAKES}}</strong> can also be ordered online, with <strong>free delivery above ${{FREE_DEL}}</strong>. If you're after one of the booth only pieces, message us and we'll check stock for you.</p>
+        <p class="lede">Every keepsake in this collection is at our booths, and most can also be ordered online with <strong>free delivery above ${{FREE_DEL}}</strong>. If you're after one of the booth only pieces, message our <strong>customer experience team</strong> and we'll check stock for you. &#127765;</p>
         <div class="res-acts" style="margin-bottom:8px">
           <a class="btn" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" data-order="store" data-name="Online store">Shop online</a>
-          <a class="btn ghost" href="{{WA_CUST}}" target="_blank" rel="noopener" data-booth="general" data-name="General enquiry">WhatsApp us &middot; {{TEL_CUST}}</a>
+          <a class="btn ghost" href="{{WA_CUST}}" target="_blank" rel="noopener" data-booth="general" data-name="General enquiry">Customer experience team &middot; {{TEL_CUST}}</a>
           <a class="tlink" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="1">Download the brochure</a>
         </div>
       </div>
@@ -1723,14 +1960,17 @@ TEMPLATE = """<!DOCTYPE html>
 
 <footer>
   <div class="wrap">
-    <span class="fb">Mdm Ling Bakery</span>
-    <span class="fcn han">花月情长 &middot; A Bond in Lasting Bloom</span>
+    <img class="flogo" src="assets/mlb-logo-white.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="304" loading="lazy" decoding="async">
+    <span class="fcn"><span class="cs-cn">花月情长</span><span class="cs-en">A Bond in Lasting Bloom</span></span>
     <div class="fnav">
-      <a class="btn ghost sm" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" style="color:#C9BDB7">mdmlingbakery.com</a>
-      <a class="btn ghost sm" href="{{WA_CUST}}" target="_blank" rel="noopener" style="color:#C9BDB7">{{TEL_CUST}}</a>
-      <a class="btn ghost sm" href="{{BCF}}" target="_blank" rel="noopener" data-bcf="footer" style="color:#C9BDB7">Breast Cancer Foundation</a>
+      <a class="btn ghost sm" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" data-order="store-footer" data-name="Online store" style="color:#C9BDB7">Shop online</a>
+      <a class="btn ghost sm" href="{{WA_CUST}}" target="_blank" rel="noopener" style="color:#C9BDB7">Customer experience team</a>
     </div>
-    <p class="fl">Ingredients and allergen advice on this page follow the printed product labels. If you're gifting to someone with a food allergy, do check the label on the box as well. Halal certification covers our baked mooncakes; the truffle snowskin range isn't Halal certified. Campaign photography shot in Singapore, 2026. Artwork for The Painted Garden by Phuay Li Ying.</p>
+    <div class="fbadges">
+      <img src="assets/badge-mwp.webp?v={{AV}}" alt="Made With Passion, Singapore" width="700" height="474" loading="lazy" decoding="async">
+      <img src="assets/badge-pos.webp?v={{AV}}" alt="Product of Singapore" width="623" height="700" loading="lazy" decoding="async">
+    </div>
+    <p class="fl">Ingredients and allergen advice on this page follow the printed product labels. If you're gifting to someone with a food allergy, do check the label on the box as well. Halal certification covers our baked mooncakes; the truffle snowskin range isn't Halal certified. &#127765;</p>
   </div>
 </footer>
 
