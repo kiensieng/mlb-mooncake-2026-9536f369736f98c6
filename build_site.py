@@ -223,16 +223,24 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
    Positioned by JS with object-fit cover maths, so they stay pinned to the
    products whatever the crop. */
 .hspots{position:absolute; inset:0; z-index:3;}
-.hspot{position:absolute; width:34px; height:34px; margin:-17px 0 0 -17px; padding:0;
-  border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent;}
-.hspot i{position:absolute; inset:6px; border-radius:50%; background:rgba(251,246,242,.94);
-  border:1.5px solid var(--gold); box-shadow:0 2px 10px rgba(30,22,19,.4);}
-.hspot i::after{content:"+"; position:absolute; inset:0; display:flex; align-items:center;
-  justify-content:center; color:var(--cocoa); font-size:15px; font-weight:600; line-height:1;}
+.hspot{position:absolute; width:40px; height:40px; margin:-20px 0 0 -20px; padding:0;
+  border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  animation:bob 3.4s ease-in-out infinite;}
+.hspot i{position:absolute; inset:5px; border-radius:50%; background:var(--gold);
+  border:1.5px solid rgba(251,246,242,.95); box-shadow:0 5px 16px rgba(30,22,19,.5);
+  transition:transform .18s, background .18s;}
+.hspot i::after{content:"\\273F"; position:absolute; inset:0; display:flex; align-items:center;
+  justify-content:center; color:#3B2C28; font-size:16px; line-height:1;}
+.hspot:hover i, .hspot:focus-visible i{transform:scale(1.14); background:#D9BF86;}
 .hspot::before{content:""; position:absolute; inset:0; border-radius:50%;
-  border:1.5px solid rgba(251,246,242,.85); animation:spot 2.2s ease-out infinite;}
-@keyframes spot{0%{transform:scale(.55); opacity:.9;} 70%{transform:scale(1.25); opacity:0;}
-  100%{transform:scale(1.25); opacity:0;}}
+  border:1.5px solid rgba(231,197,133,.95); animation:spot 2.2s ease-out infinite;}
+@keyframes spot{0%{transform:scale(.55); opacity:.9;} 70%{transform:scale(1.3); opacity:0;}
+  100%{transform:scale(1.3); opacity:0;}}
+@keyframes bob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);}}
+@media(prefers-reduced-motion:reduce){
+  .hspot{animation:none;}
+  .hspot::before{animation:none; opacity:0;}
+}
 .hspot .hlabel{position:absolute; left:50%; bottom:calc(100% + 8px); transform:translateX(-50%);
   background:rgba(42,31,27,.92); color:#FBF6F2; font-size:11.5px; font-weight:600;
   letter-spacing:.04em; padding:7px 12px; white-space:nowrap; pointer-events:none;
@@ -309,8 +317,16 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
    as one closing thought rather than a second stranded block. */
 .manifesto{background:var(--cocoa); color:#EFE7E2;
   padding:clamp(10px,2vw,20px) 0 clamp(56px,9vw,104px);}
-.manifesto .mtext{max-width:64ch; border-top:1px solid rgba(199,166,106,.35);
+.manifesto .mtext{border-top:1px solid rgba(199,166,106,.35);
   padding-top:clamp(26px,4vw,44px);}
+/* on wide screens the thought runs across two columns, matching the full
+   width of the hero caption above instead of stranding a narrow block */
+@media(min-width:900px){
+  .manifesto .mtext{columns:2; column-gap:clamp(48px,7vw,96px);}
+  .manifesto p{break-inside:avoid;}
+  .manifesto p:first-child{column-span:all; font-size:clamp(19px,2.4vw,24px);
+    color:#F0E7E2; max-width:44ch; margin-bottom:30px;}
+}
 .manifesto p{margin:0 0 16px; font-size:clamp(17px,2.2vw,20px); color:#E3D8D3; line-height:1.6;}
 .manifesto p:last-child{margin-bottom:0;}
 .manifesto p strong{color:#fff; font-weight:600;}
@@ -575,9 +591,15 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   padding-top:clamp(48px,8vw,100px); padding-bottom:clamp(48px,8vw,100px);}
 .artist .collab{display:block; text-align:center; color:#E4D6CE; font-size:12px;
   font-weight:600; letter-spacing:.24em; text-transform:uppercase; line-height:2;
-  margin:0 auto clamp(34px,5vw,54px); position:relative; padding-bottom:20px;}
+  margin:0 auto 22px; position:relative; padding-bottom:20px;}
 .artist .collab::after{content:""; position:absolute; left:50%; bottom:0; width:54px; height:1px;
   transform:translateX(-50%); background:linear-gradient(90deg,transparent,#D9BF86,transparent);}
+/* the three partner marks, side by side under the collaboration line */
+.collab-logos{display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
+  gap:clamp(16px,3vw,32px); margin:0 auto clamp(38px,5.5vw,58px);}
+.collab-logos img{height:28px; width:auto; display:block; opacity:.94;}
+.collab-logos img.ying{height:46px;}
+.collab-logos span{color:#C7A66A; font-size:13px; opacity:.8;}
 .agrid{display:grid; gap:clamp(30px,4.5vw,64px); align-items:start;}
 @media(min-width:900px){ .agrid{grid-template-columns:1fr 1.05fr;} }
 /* the artwork is the hero of this section: one large, uncropped plate */
@@ -603,7 +625,12 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .artist p{margin:18px 0 0; font-size:16.5px; color:#E0D3CD;}
 .artist p strong{color:#fff; font-weight:600;}
 .artist .acts{display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:30px 0 0;}
-.artist .bcfnote{margin-top:30px; padding-top:24px; border-top:1px solid rgba(199,166,106,.42);}
+.artist .blurb-act{margin-top:14px;}
+/* the giving note: boxed and gilded so the $1 pledge reads as the heart of the section */
+.artist .bcfnote{margin-top:34px; padding:clamp(22px,3.4vw,30px) clamp(20px,3vw,28px);
+  border:1.5px solid rgba(199,166,106,.6); background:rgba(199,166,106,.10);
+  box-shadow:0 10px 34px rgba(20,14,12,.3);}
+.artist .bcfnote .btn{margin-top:20px;}
 /* the dollar that carries further: scripted, gilded, flanked by fine rules */
 .artist .amt{display:flex; align-items:center; gap:18px; color:var(--gold);}
 .artist .amt .d{font-family:'Great Vibes',cursive; font-size:clamp(52px,8vw,72px);
@@ -614,17 +641,11 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .artist .amt .dsub{font-size:10.5px; font-weight:700; letter-spacing:.26em;
   text-transform:uppercase; color:#EBD9AE;}
 .artist .bcfnote p{margin:14px 0 0; font-size:15.5px;}
-/* the two organisation buttons, each opening its boilerplate */
-.orgs{display:grid; gap:12px; margin:30px 0 0;}
-@media(min-width:640px){ .orgs{grid-template-columns:1fr 1fr; align-items:start;} }
-details.org summary{list-style:none; cursor:pointer;}
-details.org summary::-webkit-details-marker{display:none;}
-details.org summary .btn{width:100%; justify-content:space-between; color:#FBF6F2;}
-details.org summary .btn::after{content:"+"; font-size:17px; color:var(--gold);}
-details.org[open] summary .btn::after{content:"\\2212";}
-details.org .org-body{border:1.5px solid rgba(199,166,106,.42); border-top:0;
-  padding:18px 20px 20px; background:rgba(251,246,242,.05);}
-details.org .org-body p{margin:0 0 16px; font-size:14.5px; color:#E0D3CD;}
+/* under the artwork: its call to action, then the collaborators together */
+.amedia .amact{display:flex; margin:18px 0 0;}
+.amedia .agroup{margin-top:clamp(28px,4.5vw,46px);}
+.amedia .agroup figcaption.credit{text-transform:none; letter-spacing:0; font-size:13px;
+  color:#CDBBB2; line-height:1.65; margin-top:12px;}
 
 /* ---------- booth map ---------- */
 .booth-map{height:min(56svh,440px); margin:0 0 18px; background:var(--mushroom);}
@@ -1274,7 +1295,8 @@ JS = """
     if (!fig || !layer || !img) return;
     /* [x%, y%, keepsake id] measured on the master frames */
     var LAND = [
-      [46, 41, 'the-painted-garden-box'],
+      [44.5, 46.5, 'the-painted-garden-box'],
+      [46, 41, 'tote-of-bliss'],
       [29, 50, 'blossom-drawer-chest'],
       [51, 52, 'tote-of-good-health'],
       [52.5, 60, 'a-court-of-peonies'],
@@ -1284,7 +1306,8 @@ JS = """
       [68, 68, 'weaving-moments']
     ];
     var PORT = [
-      [49, 44, 'the-painted-garden-box'],
+      [47, 46, 'the-painted-garden-box'],
+      [46.5, 39.5, 'tote-of-bliss'],
       [21, 52, 'blossom-drawer-chest'],
       [55, 54, 'tote-of-good-health'],
       [52, 62, 'a-court-of-peonies'],
@@ -1297,9 +1320,10 @@ JS = """
       for (var i=0;i<K.length;i++){ if (K[i].id===id) return K[i].name; }
       return '';
     }
-    var spots = LAND.map(function(s){
+    var spots = LAND.map(function(s, i){
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'hspot';
+      b.style.animationDelay = ((i * 0.45) % 2.7).toFixed(2) + 's';
       b.setAttribute('aria-label', 'See ' + nameOf(s[2]));
       b.innerHTML = '<i></i><span class="hlabel">' + esc(nameOf(s[2])) + '</span>';
       b.addEventListener('click', function(){
@@ -1926,6 +1950,13 @@ TEMPLATE = """<!DOCTYPE html>
 <section class="artist" id="garden">
   <div class="ainner wrap">
     <span class="collab">A collaboration by Mdm Ling Bakery<br>with World of Ying and Breast Cancer Foundation</span>
+    <div class="collab-logos">
+      <img src="assets/mlb-logo-white.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="304" loading="lazy" decoding="async">
+      <span aria-hidden="true">&times;</span>
+      <img class="ying" src="assets/logo-ying.png?v={{AV}}" alt="World of Ying" width="592" height="260" loading="lazy" decoding="async">
+      <span aria-hidden="true">&times;</span>
+      <img src="assets/logo-bcf.png?v={{AV}}" alt="Breast Cancer Foundation" width="359" height="64" loading="lazy" decoding="async">
+    </div>
     <div class="agrid">
       <div class="acol">
         <span class="eyebrow">百花迎月 &middot; The Painted Garden</span>
@@ -1939,34 +1970,26 @@ TEMPLATE = """<!DOCTYPE html>
             <span class="as">Singapore print artist &middot; World of Ying</span>
           </div>
         </div>
+        <div class="acts blurb-act">
+          <a class="btn ghost sm" href="{{ARTIST_IG}}" target="_blank" rel="noopener">Visit World of Ying &#8599;</a>
+        </div>
         <div class="bcfnote">
           <span class="amt"><span class="d">$1</span><span class="dsub">with every box,<br>given onward</span></span>
           <p>from every <strong>Painted Garden Box</strong> goes to the <strong>Breast Cancer Foundation</strong>, supporting awareness, screening and survivor care here in Singapore. Each garden you give helps look after someone else's.</p>
-        </div>
-        <div class="acts">
-          <a class="btn light" href="#k-the-painted-garden-box">See The Painted Garden Box</a>
-        </div>
-        <div class="orgs">
-          <details class="org">
-            <summary><span class="btn ghost">World of Ying</span></summary>
-            <div class="org-body">
-              <p>World of Ying is a multidisciplinary studio by Singapore print artist Phuay Li Ying, creating bespoke commissions, collaborations, installations and immersive experiences.</p>
-              <a class="btn light sm" href="{{ARTIST_IG}}" target="_blank" rel="noopener">Visit World of Ying &#8599;</a>
-            </div>
-          </details>
-          <details class="org">
-            <summary><span class="btn ghost">Breast Cancer Foundation</span></summary>
-            <div class="org-body">
-              <p>Breast Cancer Foundation (BCF) is a social service agency in Singapore that aims to promote early detection of breast cancer and support the breast cancer community. &#127765;</p>
-              <a class="btn light sm" href="{{BCF}}" target="_blank" rel="noopener" data-bcf="feature">Visit Breast Cancer Foundation &#8599;</a>
-            </div>
-          </details>
+          <a class="btn gold sm" href="{{BCF}}" target="_blank" rel="noopener" data-bcf="feature">Visit Breast Cancer Foundation &#8599;</a>
         </div>
       </div>
       <div class="amedia">
         <figure class="aart">
           <img src="assets/ying-artwork.webp?v={{AV}}" alt="The Painted Garden, the original watercolour artwork by Phuay Li Ying" width="1400" height="1400" loading="lazy" decoding="async">
           <figcaption>The Painted Garden &middot; original artwork by Phuay Li Ying</figcaption>
+        </figure>
+        <div class="acts amact">
+          <a class="btn light" href="#k-the-painted-garden-box">See The Painted Garden Box</a>
+        </div>
+        <figure class="agroup">
+          <img src="assets/group-collab.webp?v={{AV}}" alt="Phuay Li Ying, Jacob Soo and Evelyn Lim at the table with The Painted Garden artwork and box" width="1400" height="1090" loading="lazy" decoding="async">
+          <figcaption class="credit">From left: Phuay Li Ying, founder of World of Ying; Jacob Soo, CEO of Breast Cancer Foundation; and Evelyn Lim, co&#8209;founder of Mdm Ling Bakery.</figcaption>
         </figure>
       </div>
     </div>
