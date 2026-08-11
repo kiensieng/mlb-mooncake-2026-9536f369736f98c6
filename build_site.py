@@ -39,7 +39,7 @@ from data import (KEEPSAKES, SETS, BOOTHS, CATEGORIES, RECIPIENTS, PRIORITIES,
                   TABLES, BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSET_V = 8  # bump when an asset is replaced under the same filename
+ASSET_V = 9  # bump when an asset is replaced under the same filename
 
 # Breast Cancer Foundation, Singapore. Verified 6 Aug 2026.
 BCF_URL = "https://www.bcf.org.sg"
@@ -512,6 +512,16 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 /* the $1 pledge reads as a filled badge, not another quiet chip */
 .tag.charity{background:var(--gold); border-color:var(--gold); color:#33241F;
   font-weight:700; box-shadow:0 2px 8px rgba(199,166,106,.35);}
+/* and on the giving pieces it sits as a ribbon pinned over the photo's edge */
+.feat .fimg{position:relative;}
+.feat .fbadge{position:absolute; top:20px; left:-12px; z-index:2;
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--gold); color:#33241F; font-size:13px; font-weight:700;
+  letter-spacing:.09em; text-transform:uppercase; padding:10px 16px;
+  box-shadow:0 8px 22px rgba(78,60,55,.35);}
+.feat .fbadge svg{width:16px; height:16px; fill:#33241F; flex:none;}
+.feat.rev .fbadge{left:auto; right:-12px;}
+@media(max-width:600px){ .feat .fbadge{left:12px; top:12px;} .feat.rev .fbadge{right:12px; left:auto;} }
 .tag.rose{border-color:#E0CBC6; color:var(--rose);}
 .tag.sage{border-color:#CFD6C4; color:#5F6B4C;}
 .tag.chill{border-color:#C6D4DA; color:#4C6570;}
@@ -659,7 +669,9 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .fov .fw{display:block; aspect-ratio:1/1; overflow:hidden; background:var(--mushroom);
   outline:1.5px solid var(--hair); outline-offset:-1.5px; transition:outline-color .16s;}
 .fov img{width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
-  transform:scale(1.9); transform-origin:50% 76%;}
+  transform:scale(1.55); transform-origin:50% 96%;}
+/* the single yolk shot is framed closer in camera, so it needs less zoom */
+.fov img[src*="trad-yolk"]{transform:scale(1.4);}
 .fov a:hover .fw{outline-color:var(--rose);}
 .fov .fname{display:block; font-size:12.5px; font-weight:600; line-height:1.3; margin:9px 0 0;}
 .fov a:hover .fname{color:var(--rose);}
@@ -1038,7 +1050,7 @@ def tags_for(k):
     if k.get("artist"):
         tags.append('<span class="tag rose">Artist edition</span>')
     if k.get("bcf"):
-        tags.append('<span class="tag charity">\U0001F397 $1 to charity</span>')
+        tags.append('<span class="tag charity">$1 to charity</span>')
     return "".join(tags)
 
 
@@ -1076,8 +1088,13 @@ def feature(kid, reverse=False):
     if k.get("artist"):
         extra += ('<a class="tlink" href="%s" target="_blank" rel="noopener">'
                   'About World of Ying</a>' % ARTIST_IG)
+    fb = ""
+    if k.get("bcf"):
+        fb = ('<span class="fbadge"><svg viewBox="0 0 24 24" aria-hidden="true">'
+              '<path d="M12 2c-2.8 3.4-3.4 6.9-1.7 10L5.4 20h3.7l2.9-4.4L14.9 20h3.7'
+              'l-4.9-8c1.7-3.1 1.1-6.6-1.7-10z"/></svg>$1 to charity</span>')
     return """<article class="feat%s" id="k-%s">
-  <div class="fimg"><img src="%s" alt="%s" width="900" height="1125" loading="lazy" decoding="async"></div>
+  <div class="fimg">%s<img src="%s" alt="%s" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
     <span class="chan%s">%s</span>
     <span class="fmt">%s</span>
@@ -1090,7 +1107,7 @@ def feature(kid, reverse=False):
     <div class="foot">%s%s</div>
     <div class="res-meta meta">%s</div>
   </div>
-</article>""" % (" rev" if reverse else "", k["id"], v(k["img"]), k["alt"],
+</article>""" % (" rev" if reverse else "", k["id"], fb, v(k["img"]), k["alt"],
                  "" if k["channel"] == "online" else " booth", chan_label(k),
                  k["format"], k["name"], var, k["cn"], k["pinyin"], k["gloss"],
                  disc, body, k["becomes"], note, cta_for(k, small=False), extra, tags_for(k))
@@ -1854,7 +1871,7 @@ JS = """
     var meta = ['<span class="tag">' + esc(k.format) + ' &middot; ' + esc(k.pcs) + '</span>'];
     if (k.sets.indexOf('G') >= 0) meta.push('<span class="tag chill">Snowskin &middot; chilled</span>');
     else meta.push('<span class="tag sage">Halal certified</span>');
-    if (k.bcf) meta.push('<span class="tag charity">\\uD83C\\uDF97 $1 to charity</span>');
+    if (k.bcf) meta.push('<span class="tag charity">$1 to charity</span>');
     if (k.channel === 'booth') meta.push('<span class="tag">At our booths</span>');
 
     var setLine = s
