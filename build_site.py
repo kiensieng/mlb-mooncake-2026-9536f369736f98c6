@@ -149,6 +149,8 @@ nav.jump .in{max-width:var(--maxw); margin:0 auto; padding:0 clamp(20px,5vw,48px
   height:var(--navh); align-items:center; -webkit-overflow-scrolling:touch;
   touch-action:pan-x; overscroll-behavior-x:contain;}
 nav.jump .in::-webkit-scrollbar{display:none;}
+/* desktop: the bar's links sit centred; phones keep the left-anchored slide */
+@media(min-width:760px){ nav.jump .in{justify-content:center;} }
 nav.jump a{text-decoration:none; white-space:nowrap; font-size:11.5px; font-weight:600;
   letter-spacing:.16em; text-transform:uppercase; color:var(--muted); padding:5px 0;
   border-bottom:1.5px solid transparent; transition:color .2s,border-color .2s;}
@@ -208,6 +210,17 @@ header.hero .hfig{position:relative; height:min(62svh,640px); overflow:hidden;
   background:var(--mushroom);}
 header.hero .hfig picture{position:absolute; inset:0;}
 header.hero .hbg{width:100%; height:100%; object-fit:cover; object-position:50% 40%;}
+/* Wide screens: the campaign photograph is square, so a full-bleed strip can
+   only ever crop it. Show the WHOLE frame instead: a centred square plate on
+   the cloud ground, nothing cut off. Phones keep the full-bleed portrait cut. */
+@media(min-width:760px){
+  header.hero{background:var(--cloud);}
+  header.hero .hfig{width:min(88vw,860px); height:auto; aspect-ratio:1/1;
+    margin:0 auto;}
+  header.hero .hfig::after{background:linear-gradient(to top, rgba(42,31,27,.30) 0%,
+    rgba(42,31,27,0) 18%);}
+  .hero .hcap{background:var(--cocoa); margin-top:clamp(26px,4vw,44px);}
+}
 header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:none;
   background:linear-gradient(to top, rgba(42,31,27,.55) 0%, rgba(42,31,27,.10) 22%,
              rgba(42,31,27,0) 44%);}
@@ -298,12 +311,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 
 /* ---------- manifesto ---------- */
 .manifesto{background:var(--cocoa); color:#EFE7E2; padding:clamp(56px,9vw,104px) 0;}
-.manifesto .wrap{display:grid; gap:clamp(26px,4vw,60px);}
-@media(min-width:900px){ .manifesto .wrap{grid-template-columns:1fr 1.15fr; align-items:start;} }
-.manifesto .mhan{font-size:clamp(30px,5vw,50px); font-weight:500; letter-spacing:.14em;
-  color:var(--gold); line-height:1.3; margin:0;}
-.manifesto .msub{display:block; margin-top:14px; font-size:12px; letter-spacing:.26em;
-  text-transform:uppercase; color:#C8B8B1; font-weight:600;}
+.manifesto .mtext{max-width:64ch;}
 .manifesto p{margin:0 0 16px; font-size:clamp(17px,2.2vw,20px); color:#E3D8D3; line-height:1.6;}
 .manifesto p:last-child{margin-bottom:0;}
 .manifesto p strong{color:#fff; font-weight:600;}
@@ -406,18 +414,27 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .cat-head h3{font-size:clamp(26px,4.4vw,44px); font-weight:600; letter-spacing:-.028em;
   line-height:1.04; margin:10px 0 0;}
 .cat-head .cat-blurb{margin:12px 0 0; font-size:16px; color:#6B5A54; max-width:58ch;}
-.cat-top{display:flex; flex-wrap:wrap; align-items:flex-end; gap:16px 28px; justify-content:space-between;}
-.cat-arrows{display:flex; align-items:center; gap:8px; margin:18px 0 0;}
+.cat-head .cat-blurb a{color:var(--rose); font-weight:600; text-decoration:none;
+  border-bottom:1px solid var(--gold);}
+/* head on the left, arrows + thumbnails filling the right, so the row above
+   each product reads as one balanced band instead of a half-empty one */
+.cat-top{display:grid; gap:20px clamp(28px,4vw,56px); align-items:end;}
+@media(min-width:900px){
+  .cat-top{grid-template-columns:minmax(0,1fr) auto;}
+  .cat-side{justify-self:end; text-align:right;}
+  .cat-side .cat-arrows{justify-content:flex-end;}
+}
+.cat-arrows{display:flex; align-items:center; gap:8px; margin:0 0 16px;}
 .cat-arrows .cnt{font-family:var(--fn); font-size:13px; font-weight:600; color:var(--muted);
   min-width:44px; text-align:center; letter-spacing:.06em;}
 .cnav{width:44px; height:44px; border:1.5px solid var(--cocoa); background:none; cursor:pointer;
   color:var(--cocoa); font-size:18px; line-height:1; display:flex; align-items:center;
   justify-content:center; transition:background .16s,color .16s;}
 .cnav:hover{background:var(--cocoa); color:var(--cloud);}
-.cat-thumbs{display:flex; gap:clamp(10px,1.6vw,16px); margin:24px 0 0; overflow-x:auto;
-  scrollbar-width:none; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
+.cat-thumbs{display:flex; align-items:flex-start; gap:clamp(10px,1.6vw,16px); margin:0;
+  overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
 .cat-thumbs::-webkit-scrollbar{display:none;}
-.cthumb{flex:0 0 auto; width:clamp(86px,12vw,120px); font-family:var(--f); padding:0;
+.cthumb{flex:0 0 auto; width:clamp(88px,11vw,148px); font-family:var(--f); padding:0;
   cursor:pointer; text-align:left; background:none; border:0; color:var(--ink);}
 .cthumb img{width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
   background:var(--mushroom); outline:1.5px solid var(--hair); outline-offset:-1.5px;
@@ -474,18 +491,21 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .settable .g{font-size:13.5px; color:var(--muted);}
 .settable ul{margin:0; padding:0; list-style:none; font-size:15px; color:#5E4F49;}
 
-/* ---------- flavour overview (one glance, tap to jump) ---------- */
+/* ---------- flavour overview (one glance, grouped by range) ---------- */
+.fov-group{margin:clamp(30px,4.5vw,48px) 0 0;}
+.fov-h{display:block; font-size:12px; font-weight:700; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--brass); text-decoration:none;
+  border-bottom:1px solid var(--hair); padding-bottom:10px;}
+.fov-h:hover{color:var(--rose);}
 .fov{display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(14px,2.4vw,24px);
-  margin:clamp(30px,4.5vw,50px) 0 0;}
-@media(min-width:560px){ .fov{grid-template-columns:repeat(3,1fr);} }
-@media(min-width:900px){ .fov{grid-template-columns:repeat(5,1fr);} }
+  margin:18px 0 0;}
+@media(min-width:560px){ .fov{grid-template-columns:repeat(4,1fr);} }
+@media(min-width:900px){ .fov{grid-template-columns:repeat(4,1fr);} }
 .fov a{display:block; text-decoration:none; color:var(--ink);}
 .fov img{width:100%; aspect-ratio:1/1; object-fit:cover; background:var(--mushroom);
   outline:1.5px solid var(--hair); outline-offset:-1.5px; transition:outline-color .16s;}
 .fov a:hover img{outline-color:var(--rose);}
 .fov .fname{display:block; font-size:12.5px; font-weight:600; line-height:1.3; margin:9px 0 0;}
-.fov .fcat{display:block; font-size:10px; font-weight:700; letter-spacing:.14em;
-  text-transform:uppercase; color:var(--brass); margin:4px 0 0;}
 .fov a:hover .fname{color:var(--rose);}
 
 /* ---------- callouts (the lines that must not be missed) ---------- */
@@ -551,22 +571,28 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .artist{position:relative; overflow:hidden; background:var(--cocoa);
   margin:clamp(74px,11vw,140px) 0 0;}
 .artist .ainner{position:relative; z-index:2; padding:clamp(48px,8vw,100px) 0;}
-.artist .collab{display:block; text-align:center; color:#E4D6CE; font-size:11.5px;
-  font-weight:600; letter-spacing:.24em; text-transform:uppercase; line-height:1.9;
-  margin:0 auto clamp(34px,5vw,54px); max-width:34ch; position:relative; padding-bottom:20px;}
+.artist .collab{display:block; text-align:center; color:#E4D6CE; font-size:12px;
+  font-weight:600; letter-spacing:.24em; text-transform:uppercase; line-height:2;
+  margin:0 auto clamp(34px,5vw,54px); position:relative; padding-bottom:20px;}
 .artist .collab::after{content:""; position:absolute; left:50%; bottom:0; width:54px; height:1px;
   transform:translateX(-50%); background:linear-gradient(90deg,transparent,#D9BF86,transparent);}
 .agrid{display:grid; gap:clamp(30px,4.5vw,64px); align-items:start;}
-@media(min-width:900px){ .agrid{grid-template-columns:1.1fr 1fr;} }
-.amedia{display:grid; gap:clamp(16px,2.4vw,24px);}
-@media(min-width:520px){ .amedia{grid-template-columns:1fr 1fr; align-items:start;} }
+@media(min-width:900px){ .agrid{grid-template-columns:1fr 1.05fr;} }
+/* the artwork is the hero of this section: one large, uncropped plate */
 .amedia figure{margin:0;}
-.amedia img{width:100%; height:auto; display:block; background:var(--mushroom);}
-.amedia .aart img{aspect-ratio:1/1; object-fit:cover;}
-.amedia .aphoto img{aspect-ratio:4/5; object-fit:cover; object-position:50% 0;}
+.amedia img{width:100%; height:auto; display:block; background:var(--mushroom);
+  box-shadow:0 18px 60px rgba(20,14,12,.45);}
 .amedia figcaption{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
-  color:#BBA89F; margin-top:10px; line-height:1.6;}
+  color:#BBA89F; margin-top:12px; line-height:1.6;}
 @media(max-width:899px){ .agrid .amedia{order:-1;} }
+/* the artist appears as a compact byline blurb, portrait and a line */
+.ablurb{display:flex; gap:16px; align-items:center; margin:26px 0 0;
+  padding:16px 18px; border:1px solid rgba(199,166,106,.35);
+  background:rgba(251,246,242,.05);}
+.ablurb img{width:64px; height:80px; object-fit:cover; object-position:50% 12%;
+  flex:none; display:block;}
+.ablurb .an{display:block; font-size:15.5px; font-weight:600; color:#FBF6F2;}
+.ablurb .as{display:block; font-size:13px; color:#CDBBB2; margin-top:3px;}
 .artist .acol{max-width:56ch; color:#EFE4DE;}
 .artist .eyebrow{color:#EFDCB4;}
 .artist h3{font-size:clamp(28px,4.8vw,52px); font-weight:600; letter-spacing:-.03em;
@@ -645,8 +671,8 @@ footer .fcn .cs-en{font-size:27px; color:#EBD9AE; margin-left:12px;}
 footer .fl{max-width:66ch; margin:30px 0 0; color:#A3948E; font-size:12.5px; line-height:1.6;}
 footer a{color:var(--gold);}
 footer .fnav{display:flex; flex-wrap:wrap; gap:12px; margin:0 0 26px;}
-footer .fbadges{display:flex; gap:14px; align-items:center; margin:30px 0 0;}
-footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12px;}
+footer .fbadges{display:flex; gap:26px; align-items:center; margin:34px 0 0;}
+footer .fbadges img{height:62px; width:auto;}
 """
 
 
@@ -890,6 +916,9 @@ def category_block(cat):
                   '<span class="cnt">1 / %d</span>'
                   '<button type="button" class="cnav next" aria-label="Next piece">&#8594;</button>'
                   '</div>' % len(items))
+    side = ""
+    if thumbs or arrows:
+        side = '<div class="cat-side">%s%s</div>' % (arrows, thumbs)
     return """<section class="cat" id="cat-%s" data-cat="%s">
   <hr class="cat-rule">
   <div class="cat-top">
@@ -900,10 +929,9 @@ def category_block(cat):
     </div>
     %s
   </div>
-  %s
   <div class="cpanels">%s</div>
 </section>""" % (cat["id"], cat["id"], cat["sub"], cat["name"], cat["blurb"],
-                 arrows, thumbs, panels)
+                 side, panels)
 
 
 def keepsakes_html():
@@ -920,17 +948,23 @@ def check_layout_covers_data():
 
 
 def flavour_overview():
-    """The one-glance flavour map: every flavour, its range, tap to jump."""
-    cats = (["Traditional"] * 2 + ["Signature Assorted"] * 4 + ["Truffle Snowskin"] * 4)
-    if len(FLAV_INDEX) != len(cats):
-        raise SystemExit("Flavour overview out of sync: %d cards, %d labels"
-                         % (len(FLAV_INDEX), len(cats)))
-    out = []
-    for f, c in zip(FLAV_INDEX, cats):
-        out.append('<a href="#%s"><img src="%s" alt="%s" loading="lazy" decoding="async">'
-                   '<span class="fname">%s</span><span class="fcat">%s</span></a>'
-                   % (f["slug"], v(f["img"]), f["name"], f["name"], c))
-    return '<div class="fov">%s</div>' % "".join(out)
+    """The one-glance flavour map, grouped by range, tap any to jump."""
+    groups = [("traditional", "Premium Traditional Baked", 2),
+              ("assorted", "Signature Assorted Baked", 4),
+              ("snowskin", "Premium Truffle Snowskin", 4)]
+    if len(FLAV_INDEX) != sum(g[2] for g in groups):
+        raise SystemExit("Flavour overview out of sync: %d cards" % len(FLAV_INDEX))
+    out, i = [], 0
+    for rid, title, n in groups:
+        items = ""
+        for f in FLAV_INDEX[i:i + n]:
+            items += ('<a href="#%s"><img src="%s" alt="%s" loading="lazy" decoding="async">'
+                      '<span class="fname">%s</span></a>'
+                      % (f["slug"], v(f["img"]), f["name"], f["name"]))
+        i += n
+        out.append('<div class="fov-group"><a class="fov-h" href="#%s">%s</a>'
+                   '<div class="fov">%s</div></div>' % (rid, title, items))
+    return "".join(out)
 
 
 def booths_html():
@@ -1755,7 +1789,7 @@ TEMPLATE = """<!DOCTYPE html>
 
 <header class="hero">
   <div class="hbrand">
-    <img src="assets/mlb-logo-cocoa.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="304" fetchpriority="high">
+    <img src="assets/mlb-logo-color.png?v={{AV}}" alt="Mdm Ling Bakery" width="900" height="308" fetchpriority="high">
     <span class="hseason">Mid-Autumn 2026</span>
   </div>
   <div class="hfig" id="heroFig">
@@ -1783,11 +1817,7 @@ TEMPLATE = """<!DOCTYPE html>
 
 <section class="manifesto">
   <div class="wrap">
-    <div>
-      <p class="mhan cs-cn">花月情长</p>
-      <span class="msub cs-en" style="font-size:26px; text-transform:none; letter-spacing:.02em;">A Bond in Lasting Bloom</span>
-    </div>
-    <div>
+    <div class="mtext">
       <p>In Singapore you don't visit someone empty-handed. You bring something to share. That single gesture is the whole reason this collection exists.</p>
       <p>So we design the <strong>keepsake first</strong> and the season second. A tin that holds trinkets for years. A bag someone actually wears. A turntable that comes back out at every reunion dinner. <strong>Sustainably made, genuinely useful, and Singaporean in spirit</strong>, with a four character name apiece the way heirlooms in a Chinese household always have.</p>
       <p>The mooncakes are yours to choose. <strong>All our baked sets are Halal certified and vegetarian.</strong> &#127765;</p>
@@ -1896,6 +1926,13 @@ TEMPLATE = """<!DOCTYPE html>
         <h3>A garden painted for Mdm Ling</h3>
         <p>Singaporean artist <strong>Phuay Li Ying</strong> painted this year's garden as a quiet portrait of Mdm Ling herself. The central bloom is her. The smaller flowers are the people she gathers around her, <strong>wildflowers of many colours and origins rising together to greet the festival moon</strong>.</p>
         <p>Her artwork runs across three pieces in the collection: the <strong>heritage tin</strong>, the <strong>duo tin</strong> and the <strong>silk paper gift box</strong>, each washed in gentle pinks, lilacs and gold with a quiet glow of foil.</p>
+        <div class="ablurb">
+          <img src="assets/ying-portrait.webp?v={{AV}}" alt="Phuay Li Ying, the artist behind The Painted Garden" width="466" height="700" loading="lazy" decoding="async">
+          <div>
+            <span class="an">Phuay Li Ying</span>
+            <span class="as">Singapore print artist &middot; World of Ying</span>
+          </div>
+        </div>
         <div class="bcfnote">
           <span class="amt"><span class="d">$1</span><span class="dsub">with every box,<br>given onward</span></span>
           <p>from every <strong>Painted Garden Box</strong> goes to the <strong>Breast Cancer Foundation</strong>, supporting awareness, screening and survivor care here in Singapore. Each garden you give helps look after someone else's.</p>
@@ -1924,10 +1961,6 @@ TEMPLATE = """<!DOCTYPE html>
         <figure class="aart">
           <img src="assets/ying-artwork.webp?v={{AV}}" alt="The Painted Garden, the original watercolour artwork by Phuay Li Ying" width="1400" height="1400" loading="lazy" decoding="async">
           <figcaption>The Painted Garden &middot; original artwork by Phuay Li Ying</figcaption>
-        </figure>
-        <figure class="aphoto">
-          <img src="assets/band-open-box-p.webp?v={{AV}}" alt="Phuay Li Ying opening The Painted Garden gift box at a rattan garden table" width="1000" height="1333" loading="lazy" decoding="async">
-          <figcaption>The artist with The Painted Garden Box</figcaption>
         </figure>
       </div>
     </div>
@@ -1967,8 +2000,8 @@ TEMPLATE = """<!DOCTYPE html>
       <a class="btn ghost sm" href="{{WA_CUST}}" target="_blank" rel="noopener" style="color:#C9BDB7">Customer experience team</a>
     </div>
     <div class="fbadges">
-      <img src="assets/badge-mwp.webp?v={{AV}}" alt="Made With Passion, Singapore" width="700" height="474" loading="lazy" decoding="async">
-      <img src="assets/badge-pos.webp?v={{AV}}" alt="Product of Singapore" width="623" height="700" loading="lazy" decoding="async">
+      <img src="assets/badge-mwp.png?v={{AV}}" alt="Made With Passion, Singapore" width="700" height="462" loading="lazy" decoding="async">
+      <img src="assets/badge-pos.png?v={{AV}}" alt="Product of Singapore" width="619" height="700" loading="lazy" decoding="async">
     </div>
     <p class="fl">Ingredients and allergen advice on this page follow the printed product labels. If you're gifting to someone with a food allergy, do check the label on the box as well. Halal certification covers our baked mooncakes; the truffle snowskin range isn't Halal certified. &#127765;</p>
   </div>

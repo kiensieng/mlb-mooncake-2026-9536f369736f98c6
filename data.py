@@ -338,7 +338,7 @@ KEEPSAKES = [
 CATEGORIES = [
     {"id": "painted-garden", "name": "The Painted Garden",
      "sub": "Artist edition",
-     "blurb": "Soft watercolour blooms by Singaporean artist Phuay Li Ying, across a silk paper gift box, a heritage tin and a slim duo tin.",
+     "blurb": "Soft watercolour blooms by Singaporean artist <a href=\"#garden\">Phuay Li Ying</a>, across a silk paper gift box, a heritage tin and a slim duo tin.",
      "items": ["the-painted-garden-box", "the-painted-garden", "the-painted-garden-duo"]},
     {"id": "court-of-peonies", "name": "A Court of Peonies",
      "sub": "Heritage tins",

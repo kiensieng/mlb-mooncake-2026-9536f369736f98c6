@@ -125,6 +125,8 @@ nav.jump .in{max-width:var(--maxw); margin:0 auto; padding:0 clamp(20px,5vw,48px
   height:var(--navh); align-items:center; -webkit-overflow-scrolling:touch;
   touch-action:pan-x; overscroll-behavior-x:contain;}
 nav.jump .in::-webkit-scrollbar{display:none;}
+/* desktop: the bar's links sit centred; phones keep the left-anchored slide */
+@media(min-width:760px){ nav.jump .in{justify-content:center;} }
 nav.jump a{text-decoration:none; white-space:nowrap; font-size:11.5px; font-weight:600;
   letter-spacing:.16em; text-transform:uppercase; color:var(--muted); padding:5px 0;
   border-bottom:1.5px solid transparent; transition:color .2s,border-color .2s;}
@@ -184,6 +186,17 @@ header.hero .hfig{position:relative; height:min(62svh,640px); overflow:hidden;
   background:var(--mushroom);}
 header.hero .hfig picture{position:absolute; inset:0;}
 header.hero .hbg{width:100%; height:100%; object-fit:cover; object-position:50% 40%;}
+/* Wide screens: the campaign photograph is square, so a full-bleed strip can
+   only ever crop it. Show the WHOLE frame instead: a centred square plate on
+   the cloud ground, nothing cut off. Phones keep the full-bleed portrait cut. */
+@media(min-width:760px){
+  header.hero{background:var(--cloud);}
+  header.hero .hfig{width:min(88vw,860px); height:auto; aspect-ratio:1/1;
+    margin:0 auto;}
+  header.hero .hfig::after{background:linear-gradient(to top, rgba(42,31,27,.30) 0%,
+    rgba(42,31,27,0) 18%);}
+  .hero .hcap{background:var(--cocoa); margin-top:clamp(26px,4vw,44px);}
+}
 header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:none;
   background:linear-gradient(to top, rgba(42,31,27,.55) 0%, rgba(42,31,27,.10) 22%,
              rgba(42,31,27,0) 44%);}
@@ -274,12 +287,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 
 /* ---------- manifesto ---------- */
 .manifesto{background:var(--cocoa); color:#EFE7E2; padding:clamp(56px,9vw,104px) 0;}
-.manifesto .wrap{display:grid; gap:clamp(26px,4vw,60px);}
-@media(min-width:900px){ .manifesto .wrap{grid-template-columns:1fr 1.15fr; align-items:start;} }
-.manifesto .mhan{font-size:clamp(30px,5vw,50px); font-weight:500; letter-spacing:.14em;
-  color:var(--gold); line-height:1.3; margin:0;}
-.manifesto .msub{display:block; margin-top:14px; font-size:12px; letter-spacing:.26em;
-  text-transform:uppercase; color:#C8B8B1; font-weight:600;}
+.manifesto .mtext{max-width:64ch;}
 .manifesto p{margin:0 0 16px; font-size:clamp(17px,2.2vw,20px); color:#E3D8D3; line-height:1.6;}
 .manifesto p:last-child{margin-bottom:0;}
 .manifesto p strong{color:#fff; font-weight:600;}
@@ -382,18 +390,27 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .cat-head h3{font-size:clamp(26px,4.4vw,44px); font-weight:600; letter-spacing:-.028em;
   line-height:1.04; margin:10px 0 0;}
 .cat-head .cat-blurb{margin:12px 0 0; font-size:16px; color:#6B5A54; max-width:58ch;}
-.cat-top{display:flex; flex-wrap:wrap; align-items:flex-end; gap:16px 28px; justify-content:space-between;}
-.cat-arrows{display:flex; align-items:center; gap:8px; margin:18px 0 0;}
+.cat-head .cat-blurb a{color:var(--rose); font-weight:600; text-decoration:none;
+  border-bottom:1px solid var(--gold);}
+/* head on the left, arrows + thumbnails filling the right, so the row above
+   each product reads as one balanced band instead of a half-empty one */
+.cat-top{display:grid; gap:20px clamp(28px,4vw,56px); align-items:end;}
+@media(min-width:900px){
+  .cat-top{grid-template-columns:minmax(0,1fr) auto;}
+  .cat-side{justify-self:end; text-align:right;}
+  .cat-side .cat-arrows{justify-content:flex-end;}
+}
+.cat-arrows{display:flex; align-items:center; gap:8px; margin:0 0 16px;}
 .cat-arrows .cnt{font-family:var(--fn); font-size:13px; font-weight:600; color:var(--muted);
   min-width:44px; text-align:center; letter-spacing:.06em;}
 .cnav{width:44px; height:44px; border:1.5px solid var(--cocoa); background:none; cursor:pointer;
   color:var(--cocoa); font-size:18px; line-height:1; display:flex; align-items:center;
   justify-content:center; transition:background .16s,color .16s;}
 .cnav:hover{background:var(--cocoa); color:var(--cloud);}
-.cat-thumbs{display:flex; gap:clamp(10px,1.6vw,16px); margin:24px 0 0; overflow-x:auto;
-  scrollbar-width:none; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
+.cat-thumbs{display:flex; align-items:flex-start; gap:clamp(10px,1.6vw,16px); margin:0;
+  overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
 .cat-thumbs::-webkit-scrollbar{display:none;}
-.cthumb{flex:0 0 auto; width:clamp(86px,12vw,120px); font-family:var(--f); padding:0;
+.cthumb{flex:0 0 auto; width:clamp(88px,11vw,148px); font-family:var(--f); padding:0;
   cursor:pointer; text-align:left; background:none; border:0; color:var(--ink);}
 .cthumb img{width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
   background:var(--mushroom); outline:1.5px solid var(--hair); outline-offset:-1.5px;
@@ -450,18 +467,21 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .settable .g{font-size:13.5px; color:var(--muted);}
 .settable ul{margin:0; padding:0; list-style:none; font-size:15px; color:#5E4F49;}
 
-/* ---------- flavour overview (one glance, tap to jump) ---------- */
+/* ---------- flavour overview (one glance, grouped by range) ---------- */
+.fov-group{margin:clamp(30px,4.5vw,48px) 0 0;}
+.fov-h{display:block; font-size:12px; font-weight:700; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--brass); text-decoration:none;
+  border-bottom:1px solid var(--hair); padding-bottom:10px;}
+.fov-h:hover{color:var(--rose);}
 .fov{display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(14px,2.4vw,24px);
-  margin:clamp(30px,4.5vw,50px) 0 0;}
-@media(min-width:560px){ .fov{grid-template-columns:repeat(3,1fr);} }
-@media(min-width:900px){ .fov{grid-template-columns:repeat(5,1fr);} }
+  margin:18px 0 0;}
+@media(min-width:560px){ .fov{grid-template-columns:repeat(4,1fr);} }
+@media(min-width:900px){ .fov{grid-template-columns:repeat(4,1fr);} }
 .fov a{display:block; text-decoration:none; color:var(--ink);}
 .fov img{width:100%; aspect-ratio:1/1; object-fit:cover; background:var(--mushroom);
   outline:1.5px solid var(--hair); outline-offset:-1.5px; transition:outline-color .16s;}
 .fov a:hover img{outline-color:var(--rose);}
 .fov .fname{display:block; font-size:12.5px; font-weight:600; line-height:1.3; margin:9px 0 0;}
-.fov .fcat{display:block; font-size:10px; font-weight:700; letter-spacing:.14em;
-  text-transform:uppercase; color:var(--brass); margin:4px 0 0;}
 .fov a:hover .fname{color:var(--rose);}
 
 /* ---------- callouts (the lines that must not be missed) ---------- */
@@ -527,22 +547,28 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .artist{position:relative; overflow:hidden; background:var(--cocoa);
   margin:clamp(74px,11vw,140px) 0 0;}
 .artist .ainner{position:relative; z-index:2; padding:clamp(48px,8vw,100px) 0;}
-.artist .collab{display:block; text-align:center; color:#E4D6CE; font-size:11.5px;
-  font-weight:600; letter-spacing:.24em; text-transform:uppercase; line-height:1.9;
-  margin:0 auto clamp(34px,5vw,54px); max-width:34ch; position:relative; padding-bottom:20px;}
+.artist .collab{display:block; text-align:center; color:#E4D6CE; font-size:12px;
+  font-weight:600; letter-spacing:.24em; text-transform:uppercase; line-height:2;
+  margin:0 auto clamp(34px,5vw,54px); position:relative; padding-bottom:20px;}
 .artist .collab::after{content:""; position:absolute; left:50%; bottom:0; width:54px; height:1px;
   transform:translateX(-50%); background:linear-gradient(90deg,transparent,#D9BF86,transparent);}
 .agrid{display:grid; gap:clamp(30px,4.5vw,64px); align-items:start;}
-@media(min-width:900px){ .agrid{grid-template-columns:1.1fr 1fr;} }
-.amedia{display:grid; gap:clamp(16px,2.4vw,24px);}
-@media(min-width:520px){ .amedia{grid-template-columns:1fr 1fr; align-items:start;} }
+@media(min-width:900px){ .agrid{grid-template-columns:1fr 1.05fr;} }
+/* the artwork is the hero of this section: one large, uncropped plate */
 .amedia figure{margin:0;}
-.amedia img{width:100%; height:auto; display:block; background:var(--mushroom);}
-.amedia .aart img{aspect-ratio:1/1; object-fit:cover;}
-.amedia .aphoto img{aspect-ratio:4/5; object-fit:cover; object-position:50% 0;}
+.amedia img{width:100%; height:auto; display:block; background:var(--mushroom);
+  box-shadow:0 18px 60px rgba(20,14,12,.45);}
 .amedia figcaption{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
-  color:#BBA89F; margin-top:10px; line-height:1.6;}
+  color:#BBA89F; margin-top:12px; line-height:1.6;}
 @media(max-width:899px){ .agrid .amedia{order:-1;} }
+/* the artist appears as a compact byline blurb, portrait and a line */
+.ablurb{display:flex; gap:16px; align-items:center; margin:26px 0 0;
+  padding:16px 18px; border:1px solid rgba(199,166,106,.35);
+  background:rgba(251,246,242,.05);}
+.ablurb img{width:64px; height:80px; object-fit:cover; object-position:50% 12%;
+  flex:none; display:block;}
+.ablurb .an{display:block; font-size:15.5px; font-weight:600; color:#FBF6F2;}
+.ablurb .as{display:block; font-size:13px; color:#CDBBB2; margin-top:3px;}
 .artist .acol{max-width:56ch; color:#EFE4DE;}
 .artist .eyebrow{color:#EFDCB4;}
 .artist h3{font-size:clamp(28px,4.8vw,52px); font-weight:600; letter-spacing:-.03em;
@@ -621,8 +647,8 @@ footer .fcn .cs-en{font-size:27px; color:#EBD9AE; margin-left:12px;}
 footer .fl{max-width:66ch; margin:30px 0 0; color:#A3948E; font-size:12.5px; line-height:1.6;}
 footer a{color:var(--gold);}
 footer .fnav{display:flex; flex-wrap:wrap; gap:12px; margin:0 0 26px;}
-footer .fbadges{display:flex; gap:14px; align-items:center; margin:30px 0 0;}
-footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12px;}
+footer .fbadges{display:flex; gap:26px; align-items:center; margin:34px 0 0;}
+footer .fbadges img{height:62px; width:auto;}
 </style>
 </head>
 <body>
@@ -659,7 +685,7 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
 
 <header class="hero">
   <div class="hbrand">
-    <img src="assets/mlb-logo-cocoa.png?v=5" alt="Mdm Ling Bakery" width="900" height="304" fetchpriority="high">
+    <img src="assets/mlb-logo-color.png?v=5" alt="Mdm Ling Bakery" width="900" height="308" fetchpriority="high">
     <span class="hseason">Mid-Autumn 2026</span>
   </div>
   <div class="hfig" id="heroFig">
@@ -687,11 +713,7 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
 
 <section class="manifesto">
   <div class="wrap">
-    <div>
-      <p class="mhan cs-cn">花月情长</p>
-      <span class="msub cs-en" style="font-size:26px; text-transform:none; letter-spacing:.02em;">A Bond in Lasting Bloom</span>
-    </div>
-    <div>
+    <div class="mtext">
       <p>In Singapore you don't visit someone empty-handed. You bring something to share. That single gesture is the whole reason this collection exists.</p>
       <p>So we design the <strong>keepsake first</strong> and the season second. A tin that holds trinkets for years. A bag someone actually wears. A turntable that comes back out at every reunion dinner. <strong>Sustainably made, genuinely useful, and Singaporean in spirit</strong>, with a four character name apiece the way heirlooms in a Chinese household always have.</p>
       <p>The mooncakes are yours to choose. <strong>All our baked sets are Halal certified and vegetarian.</strong> &#127765;</p>
@@ -747,11 +769,10 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
     <div class="cat-head">
       <span class="eyebrow">Artist edition</span>
       <h3>The Painted Garden</h3>
-      <p class="cat-blurb">Soft watercolour blooms by Singaporean artist Phuay Li Ying, across a silk paper gift box, a heritage tin and a slim duo tin.</p>
+      <p class="cat-blurb">Soft watercolour blooms by Singaporean artist <a href="#garden">Phuay Li Ying</a>, across a silk paper gift box, a heritage tin and a slim duo tin.</p>
     </div>
-    <div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div>
+    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show The Painted Garden Box"><img src="assets/painted-garden-box.webp?v=5" alt="The Painted Garden Box watercolour floral Mid-Autumn gift box by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Painted Garden Box</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show The Painted Garden"><img src="assets/painted-garden-tin.webp?v=5" alt="The Painted Garden 4 piece watercolour floral keepsake mooncake tin" loading="lazy" decoding="async"><span>The Painted Garden</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show The Painted Garden Duo"><img src="assets/painted-garden-duo.webp?v=5" alt="The Painted Garden 2 piece duo watercolour floral mooncake tin" loading="lazy" decoding="async"><span>The Painted Garden Duo</span></button></div></div>
   </div>
-  <div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show The Painted Garden Box"><img src="assets/painted-garden-box.webp?v=5" alt="The Painted Garden Box watercolour floral Mid-Autumn gift box by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Painted Garden Box</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show The Painted Garden"><img src="assets/painted-garden-tin.webp?v=5" alt="The Painted Garden 4 piece watercolour floral keepsake mooncake tin" loading="lazy" decoding="async"><span>The Painted Garden</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show The Painted Garden Duo"><img src="assets/painted-garden-duo.webp?v=5" alt="The Painted Garden 2 piece duo watercolour floral mooncake tin" loading="lazy" decoding="async"><span>The Painted Garden Duo</span></button></div>
   <div class="cpanels"><div class="cpanel on" data-kid="the-painted-garden-box"><article class="feat" id="k-the-painted-garden-box">
   <div class="fimg"><img src="assets/painted-garden-box.webp?v=5" alt="The Painted Garden Box watercolour floral Mid-Autumn gift box by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
@@ -800,9 +821,8 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
       <h3>A Court of Peonies</h3>
       <p class="cat-blurb">Bold painterly peonies in jewel tones, on a deep navy heritage tin and a soft sage duo tin.</p>
     </div>
-    <div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 2</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div>
+    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 2</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show A Court of Peonies"><img src="assets/court-peonies-tin.webp?v=5" alt="A Court of Peonies 4 piece navy floral keepsake mooncake tin" loading="lazy" decoding="async"><span>A Court of Peonies</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show A Court of Peonies Duo"><img src="assets/court-peonies-duo.webp?v=5" alt="A Court of Peonies 2 piece duo sage floral mooncake tin" loading="lazy" decoding="async"><span>A Court of Peonies Duo</span></button></div></div>
   </div>
-  <div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show A Court of Peonies"><img src="assets/court-peonies-tin.webp?v=5" alt="A Court of Peonies 4 piece navy floral keepsake mooncake tin" loading="lazy" decoding="async"><span>A Court of Peonies</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show A Court of Peonies Duo"><img src="assets/court-peonies-duo.webp?v=5" alt="A Court of Peonies 2 piece duo sage floral mooncake tin" loading="lazy" decoding="async"><span>A Court of Peonies Duo</span></button></div>
   <div class="cpanels"><div class="cpanel on" data-kid="a-court-of-peonies"><article class="feat" id="k-a-court-of-peonies">
   <div class="fimg"><img src="assets/court-peonies-tin.webp?v=5" alt="A Court of Peonies 4 piece navy floral keepsake mooncake tin" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
@@ -838,9 +858,8 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
       <h3>The Dusk and The Dawn</h3>
       <p class="cat-blurb">One old idiom, 花晨月夕, split across two leather bags. Give one, or give both and bookend the day.</p>
     </div>
-    <div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 2</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div>
+    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 2</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show The Dusk"><img src="assets/the-dusk.webp?v=5" alt="The Dusk terracotta leather Mid-Autumn gift bag by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Dusk</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show The Dawn"><img src="assets/the-dawn.webp?v=5" alt="The Dawn cream leather Mid-Autumn gift bag by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Dawn</span></button></div></div>
   </div>
-  <div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show The Dusk"><img src="assets/the-dusk.webp?v=5" alt="The Dusk terracotta leather Mid-Autumn gift bag by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Dusk</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show The Dawn"><img src="assets/the-dawn.webp?v=5" alt="The Dawn cream leather Mid-Autumn gift bag by Mdm Ling Bakery" loading="lazy" decoding="async"><span>The Dawn</span></button></div>
   <div class="cpanels"><div class="cpanel on" data-kid="the-dusk"><article class="feat" id="k-the-dusk">
   <div class="fimg"><img src="assets/the-dusk.webp?v=5" alt="The Dusk terracotta leather Mid-Autumn gift bag by Mdm Ling Bakery" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
@@ -876,9 +895,8 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
       <h3>The Keepsake Bags</h3>
       <p class="cat-blurb">Bags made to be worn long after the season, each carrying its own four character wish.</p>
     </div>
-    <div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div>
+    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show Weaving Moments"><img src="assets/weaving-moments.webp?v=5" alt="Weaving Moments woven leather Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Weaving Moments</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show Tote of Bliss (Green)"><img src="assets/tote-green.webp?v=5" alt="Tote of Bliss green leather tote Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Tote of Bliss (Green)</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show Tote of Good Health (Fuchsia)"><img src="assets/tote-fuchsia.webp?v=5" alt="Tote of Good Health fuchsia leather tote Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Tote of Good Health (Fuchsia)</span></button></div></div>
   </div>
-  <div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show Weaving Moments"><img src="assets/weaving-moments.webp?v=5" alt="Weaving Moments woven leather Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Weaving Moments</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show Tote of Bliss (Green)"><img src="assets/tote-green.webp?v=5" alt="Tote of Bliss green leather tote Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Tote of Bliss (Green)</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show Tote of Good Health (Fuchsia)"><img src="assets/tote-fuchsia.webp?v=5" alt="Tote of Good Health fuchsia leather tote Mid-Autumn gift bag" loading="lazy" decoding="async"><span>Tote of Good Health (Fuchsia)</span></button></div>
   <div class="cpanels"><div class="cpanel on" data-kid="weaving-moments"><article class="feat" id="k-weaving-moments">
   <div class="fimg"><img src="assets/weaving-moments.webp?v=5" alt="Weaving Moments woven leather Mid-Autumn gift bag" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
@@ -927,9 +945,8 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
       <h3>The Reunion Pieces</h3>
       <p class="cat-blurb">A drawer chest, a serving turntable and a scroll box, the pieces that come back out at every gathering.</p>
     </div>
-    <div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div>
+    <div class="cat-side"><div class="cat-arrows"><button type="button" class="cnav prev" aria-label="Previous piece">&#8592;</button><span class="cnt">1 / 3</span><button type="button" class="cnav next" aria-label="Next piece">&#8594;</button></div><div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show Blossom Drawer Chest"><img src="assets/blossom-drawer.webp?v=5" alt="Blossom Drawer Chest pink keepsake box with working drawer" loading="lazy" decoding="async"><span>Blossom Drawer Chest</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show Elegance Reunion Turntable"><img src="assets/elegance-turntable.webp?v=5" alt="Elegance Reunion Turntable, a round floral serving turntable by Mdm Ling Bakery" loading="lazy" decoding="async"><span>Elegance Reunion Turntable</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show Treasure Scroll (Rose Pink)"><img src="assets/treasure-scroll.webp?v=5" alt="Treasure Scroll Rose Pink long gift box by Mdm Ling Bakery" loading="lazy" decoding="async"><span>Treasure Scroll (Rose Pink)</span></button></div></div>
   </div>
-  <div class="cat-thumbs"><button type="button" class="cthumb on" data-idx="0" aria-label="Show Blossom Drawer Chest"><img src="assets/blossom-drawer.webp?v=5" alt="Blossom Drawer Chest pink keepsake box with working drawer" loading="lazy" decoding="async"><span>Blossom Drawer Chest</span></button><button type="button" class="cthumb" data-idx="1" aria-label="Show Elegance Reunion Turntable"><img src="assets/elegance-turntable.webp?v=5" alt="Elegance Reunion Turntable, a round floral serving turntable by Mdm Ling Bakery" loading="lazy" decoding="async"><span>Elegance Reunion Turntable</span></button><button type="button" class="cthumb" data-idx="2" aria-label="Show Treasure Scroll (Rose Pink)"><img src="assets/treasure-scroll.webp?v=5" alt="Treasure Scroll Rose Pink long gift box by Mdm Ling Bakery" loading="lazy" decoding="async"><span>Treasure Scroll (Rose Pink)</span></button></div>
   <div class="cpanels"><div class="cpanel on" data-kid="blossom-drawer-chest"><article class="feat" id="k-blossom-drawer-chest">
   <div class="fimg"><img src="assets/blossom-drawer.webp?v=5" alt="Blossom Drawer Chest pink keepsake box with working drawer" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
@@ -980,7 +997,6 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
     </div>
     
   </div>
-  
   <div class="cpanels"><div class="cpanel on" data-kid="orchid-reverie"><article class="feat" id="k-orchid-reverie">
   <div class="fimg"><img src="assets/orchid-reverie.webp?v=5" alt="Orchid Reverie keepsake tin with snowskin mooncakes cut open to show their truffle centres" width="900" height="1125" loading="lazy" decoding="async"></div>
   <div class="ftxt">
@@ -1033,7 +1049,7 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
         <p class="lede">Ten flavours across three ranges: our <strong>traditional baked classics</strong>, our <strong>signature assorted range</strong> with a low sugar Momoyama skin, and our <strong>truffle snowskin range</strong> served chilled. Here they are at one glance. Tap any flavour to read its story.</p>
       </div>
     </div>
-    <div class="fov"><a href="#f-lotus-with-melon-seeds-and-yolk"><img src="assets/trad-yolk.webp?v=5" alt="Lotus with Melon Seeds and Yolk" loading="lazy" decoding="async"><span class="fname">Lotus with Melon Seeds and Yolk</span><span class="fcat">Traditional</span></a><a href="#f-lotus-with-melon-seeds"><img src="assets/trad-no-yolk.webp?v=5" alt="Lotus with Melon Seeds" loading="lazy" decoding="async"><span class="fname">Lotus with Melon Seeds</span><span class="fcat">Traditional</span></a><a href="#f-belgian-double-chocolate"><img src="assets/momo-choc.webp?v=5" alt="Belgian Double Chocolate" loading="lazy" decoding="async"><span class="fname">Belgian Double Chocolate</span><span class="fcat">Signature Assorted</span></a><a href="#f-black-sesame-peanut-butter"><img src="assets/momo-sesame.webp?v=5" alt="Black Sesame Peanut Butter" loading="lazy" decoding="async"><span class="fname">Black Sesame Peanut Butter</span><span class="fcat">Signature Assorted</span></a><a href="#f-emerald-pandan-golden-yolk"><img src="assets/momo-pandan.webp?v=5" alt="Emerald Pandan Golden Yolk" loading="lazy" decoding="async"><span class="fname">Emerald Pandan Golden Yolk</span><span class="fcat">Signature Assorted</span></a><a href="#f-red-dates-longan"><img src="assets/momo-reddates.webp?v=5" alt="Red Dates Longan" loading="lazy" decoding="async"><span class="fname">Red Dates Longan</span><span class="fcat">Signature Assorted</span></a><a href="#f-truffle-muscat-grape"><img src="assets/snow-muscat.webp?v=5" alt="Truffle Muscat Grape" loading="lazy" decoding="async"><span class="fname">Truffle Muscat Grape</span><span class="fcat">Truffle Snowskin</span></a><a href="#f-truffle-passionfruit"><img src="assets/snow-passionfruit.webp?v=5" alt="Truffle Passionfruit" loading="lazy" decoding="async"><span class="fname">Truffle Passionfruit</span><span class="fcat">Truffle Snowskin</span></a><a href="#f-truffle-popping-candy"><img src="assets/snow-popping.webp?v=5" alt="Truffle Popping Candy" loading="lazy" decoding="async"><span class="fname">Truffle Popping Candy</span><span class="fcat">Truffle Snowskin</span></a><a href="#f-truffle-pistachio-kunafa"><img src="assets/snow-pistachio.webp?v=5" alt="Truffle Pistachio Kunafa" loading="lazy" decoding="async"><span class="fname">Truffle Pistachio Kunafa</span><span class="fcat">Truffle Snowskin</span></a></div>
+    <div class="fov-group"><a class="fov-h" href="#traditional">Premium Traditional Baked</a><div class="fov"><a href="#f-lotus-with-melon-seeds-and-yolk"><img src="assets/trad-yolk.webp?v=5" alt="Lotus with Melon Seeds and Yolk" loading="lazy" decoding="async"><span class="fname">Lotus with Melon Seeds and Yolk</span></a><a href="#f-lotus-with-melon-seeds"><img src="assets/trad-no-yolk.webp?v=5" alt="Lotus with Melon Seeds" loading="lazy" decoding="async"><span class="fname">Lotus with Melon Seeds</span></a></div></div><div class="fov-group"><a class="fov-h" href="#assorted">Signature Assorted Baked</a><div class="fov"><a href="#f-belgian-double-chocolate"><img src="assets/momo-choc.webp?v=5" alt="Belgian Double Chocolate" loading="lazy" decoding="async"><span class="fname">Belgian Double Chocolate</span></a><a href="#f-black-sesame-peanut-butter"><img src="assets/momo-sesame.webp?v=5" alt="Black Sesame Peanut Butter" loading="lazy" decoding="async"><span class="fname">Black Sesame Peanut Butter</span></a><a href="#f-emerald-pandan-golden-yolk"><img src="assets/momo-pandan.webp?v=5" alt="Emerald Pandan Golden Yolk" loading="lazy" decoding="async"><span class="fname">Emerald Pandan Golden Yolk</span></a><a href="#f-red-dates-longan"><img src="assets/momo-reddates.webp?v=5" alt="Red Dates Longan" loading="lazy" decoding="async"><span class="fname">Red Dates Longan</span></a></div></div><div class="fov-group"><a class="fov-h" href="#snowskin">Premium Truffle Snowskin</a><div class="fov"><a href="#f-truffle-muscat-grape"><img src="assets/snow-muscat.webp?v=5" alt="Truffle Muscat Grape" loading="lazy" decoding="async"><span class="fname">Truffle Muscat Grape</span></a><a href="#f-truffle-passionfruit"><img src="assets/snow-passionfruit.webp?v=5" alt="Truffle Passionfruit" loading="lazy" decoding="async"><span class="fname">Truffle Passionfruit</span></a><a href="#f-truffle-popping-candy"><img src="assets/snow-popping.webp?v=5" alt="Truffle Popping Candy" loading="lazy" decoding="async"><span class="fname">Truffle Popping Candy</span></a><a href="#f-truffle-pistachio-kunafa"><img src="assets/snow-pistachio.webp?v=5" alt="Truffle Pistachio Kunafa" loading="lazy" decoding="async"><span class="fname">Truffle Pistachio Kunafa</span></a></div></div>
     <section class="range" id="traditional"><div class="range-head"><span class="range-num">1</span><h3>Premium Traditional Baked</h3><span class="tag2">The classics, baked golden</span></div><div class="flavours"><div class="flav" id="f-lotus-with-melon-seeds-and-yolk">
       <button type="button" class="fp" data-lightbox="assets/trad-yolk.webp?v=5" data-lightbox-alt="Traditional white lotus mooncake with salted egg yolk" aria-label="View a larger photo of Lotus with Melon Seeds and Yolk">
         <img src="assets/trad-yolk.webp?v=5" alt="Traditional white lotus mooncake with salted egg yolk" width="420" height="525" loading="lazy" decoding="async">
@@ -1214,6 +1230,13 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
         <h3>A garden painted for Mdm Ling</h3>
         <p>Singaporean artist <strong>Phuay Li Ying</strong> painted this year's garden as a quiet portrait of Mdm Ling herself. The central bloom is her. The smaller flowers are the people she gathers around her, <strong>wildflowers of many colours and origins rising together to greet the festival moon</strong>.</p>
         <p>Her artwork runs across three pieces in the collection: the <strong>heritage tin</strong>, the <strong>duo tin</strong> and the <strong>silk paper gift box</strong>, each washed in gentle pinks, lilacs and gold with a quiet glow of foil.</p>
+        <div class="ablurb">
+          <img src="assets/ying-portrait.webp?v=5" alt="Phuay Li Ying, the artist behind The Painted Garden" width="466" height="700" loading="lazy" decoding="async">
+          <div>
+            <span class="an">Phuay Li Ying</span>
+            <span class="as">Singapore print artist &middot; World of Ying</span>
+          </div>
+        </div>
         <div class="bcfnote">
           <span class="amt"><span class="d">$1</span><span class="dsub">with every box,<br>given onward</span></span>
           <p>from every <strong>Painted Garden Box</strong> goes to the <strong>Breast Cancer Foundation</strong>, supporting awareness, screening and survivor care here in Singapore. Each garden you give helps look after someone else's.</p>
@@ -1242,10 +1265,6 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
         <figure class="aart">
           <img src="assets/ying-artwork.webp?v=5" alt="The Painted Garden, the original watercolour artwork by Phuay Li Ying" width="1400" height="1400" loading="lazy" decoding="async">
           <figcaption>The Painted Garden &middot; original artwork by Phuay Li Ying</figcaption>
-        </figure>
-        <figure class="aphoto">
-          <img src="assets/band-open-box-p.webp?v=5" alt="Phuay Li Ying opening The Painted Garden gift box at a rattan garden table" width="1000" height="1333" loading="lazy" decoding="async">
-          <figcaption>The artist with The Painted Garden Box</figcaption>
         </figure>
       </div>
     </div>
@@ -1285,8 +1304,8 @@ footer .fbadges img{height:64px; width:auto; background:#FBF8F6; padding:8px 12p
       <a class="btn ghost sm" href="https://wa.me/6584680201?text=Hello%21%20I%20have%20a%20question%20about%20your%20Mid-Autumn%202026%20mooncakes." target="_blank" rel="noopener" style="color:#C9BDB7">Customer experience team</a>
     </div>
     <div class="fbadges">
-      <img src="assets/badge-mwp.webp?v=5" alt="Made With Passion, Singapore" width="700" height="474" loading="lazy" decoding="async">
-      <img src="assets/badge-pos.webp?v=5" alt="Product of Singapore" width="623" height="700" loading="lazy" decoding="async">
+      <img src="assets/badge-mwp.png?v=5" alt="Made With Passion, Singapore" width="700" height="462" loading="lazy" decoding="async">
+      <img src="assets/badge-pos.png?v=5" alt="Product of Singapore" width="619" height="700" loading="lazy" decoding="async">
     </div>
     <p class="fl">Ingredients and allergen advice on this page follow the printed product labels. If you're gifting to someone with a food allergy, do check the label on the box as well. Halal certification covers our baked mooncakes; the truffle snowskin range isn't Halal certified. &#127765;</p>
   </div>
