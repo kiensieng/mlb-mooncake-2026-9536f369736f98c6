@@ -801,8 +801,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   text-transform:uppercase; color:#C7A66A; margin-bottom:4px;}
 .ablurb .an{display:block; font-size:16.5px; font-weight:600; color:#FBF6F2;}
 .ablurb .as{display:block; font-size:13px; color:#CDBBB2; margin-top:3px;}
-.ablurb .awb{margin-left:auto; align-self:center;}
-@media(max-width:560px){ .ablurb .awb{margin-left:0; width:100%; justify-content:center;} }
+.ablurb .awb{margin-top:12px;}
 .artist .acol{max-width:56ch; color:#EFE4DE;}
 .artist .eyebrow{color:#EFDCB4;}
 .artist h3{font-size:clamp(28px,4.8vw,52px); font-weight:600; letter-spacing:-.03em;
@@ -1620,8 +1619,10 @@ JS = """
       var x = parseFloat(b.style.left) || 0, y = parseFloat(b.style.top) || 0;
       var pw = pop.offsetWidth || 260, ph = pop.offsetHeight || 240;
       var left = Math.max(10, Math.min(x - pw/2, cw - pw - 10));
-      var top = (y + 36 + ph > ch - 10) ? (y - ph - 40) : (y + 36);
-      if (top < 10) top = 10;
+      /* the card sits above the butterfly so it never covers the product;
+         it only drops below when there is no room overhead */
+      var top = (y - ph - 40 < 10) ? (y + 36) : (y - ph - 40);
+      if (top + ph > ch - 10) top = Math.max(10, ch - ph - 10);
       pop.style.left = left + 'px'; pop.style.top = top + 'px';
     }
     pop.addEventListener('click', function(e){
@@ -2473,8 +2474,8 @@ TEMPLATE = """<!DOCTYPE html>
             <span class="apre">Painted for Mdm Ling Bakery by</span>
             <span class="an">Phuay Li Ying</span>
             <span class="as">@theworldofying &middot; Singapore print artist</span>
+            <a class="btn ghost sm awb" href="{{ARTIST_IG}}" target="_blank" rel="noopener">Visit World of Ying &#8599;</a>
           </div>
-          <a class="btn ghost sm awb" href="{{ARTIST_IG}}" target="_blank" rel="noopener">Visit World of Ying &#8599;</a>
         </div>
         <div class="bcfnote">
           <span class="amt"><span class="d">$1</span><span class="dsub">with every box,<br>given onward</span></span>
