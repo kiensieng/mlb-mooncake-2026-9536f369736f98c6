@@ -15,7 +15,7 @@ mdmlingbakery.com, checked 3 Aug 2026.
 WA_CUSTOMER = "6584680201"      # general customer service
 FREE_DELIVERY = 100
 
-SITE_URL = "https://kiensieng.github.io/mlb-mooncake-2026-9536f369736f98c6/"
+SITE_URL = "https://midautumn2026.mdmlingbakery.com/"
 GA_ID = "G-MD1H486BMD"
 
 # --------------------------------------------------------------------------
