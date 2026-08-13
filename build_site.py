@@ -1788,7 +1788,7 @@ JS = """
         tally.innerHTML = BFLY +
           '<span class="thn">You\\'ve found the whole garden. ' +
           '<span class="han">\\u82B1\\u6708\\u60C5\\u957F</span></span>' +
-          '<a class="tgo" href="#gift" data-tally-go="1">Now find the one to gift</a>';
+          '<a class="tgo" href="#concierge" data-tally-go="1">Now find the one to gift</a>';
       } else {
         tally.innerHTML =
           '<span class="tn"><b>' + foundN + '</b> / ' + TOTAL + '</span>' +
@@ -2384,6 +2384,23 @@ JS = """
 # --------------------------------------------------------------------------
 # Build
 # --------------------------------------------------------------------------
+def check_anchors(html):
+    """Every in-page link must land on something.
+
+    The 'find the whole garden' button shipped pointing at #gift when the Gift
+    Matcher's anchor is #concierge, so it silently did nothing. Nothing caught
+    it, because a bad hash is not an error in a browser: it just fails to
+    scroll. This turns that class of bug into a failed build.
+    """
+    ids = set(re.findall(r'\sid="([^"]+)"', html))
+    # only plain literal anchors; the JS builds some hrefs by concatenation
+    # ('#k-' + k.id) and those resolve at runtime, not here
+    links = set(re.findall(r'href="#([A-Za-z0-9_-]+)"', html))
+    dead = sorted(l for l in links if l not in ids)
+    if dead:
+        raise SystemExit("Links point at anchors that do not exist: %s" % dead)
+
+
 def build():
     check_layout_covers_data()
 
@@ -2455,6 +2472,7 @@ def build():
     left = re.findall(r"\{\{[A-Z_]+\}\}", html)
     if left:
         raise SystemExit("Unfilled placeholders remain: %s" % sorted(set(left)))
+    check_anchors(html)
     print("wrote %s  (%.1f KB)" % (out, len(html) / 1024.0))
     print("keepsakes: %d  ·  online: %d  ·  booth: %d"
           % (len(KEEPSAKES), online, len(KEEPSAKES) - online))
