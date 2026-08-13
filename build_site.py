@@ -892,6 +892,9 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 footer{margin-top:clamp(74px,11vw,140px); background:var(--cocoa); color:#C9BDB7;
   padding:clamp(46px,7vw,80px) 0 clamp(40px,6vw,60px); font-size:14px;}
 footer .flogo{width:min(48vw,200px); height:auto; display:block;}
+footer .fnav .fig{padding:11px 13px;}
+footer .fnav .fig svg{width:18px; height:18px; display:block;}
+footer .fnav .fig:hover{color:var(--gold) !important; border-color:var(--gold);}
 footer .fcn{display:block; margin:20px 0 30px; line-height:1.2;}
 footer .fcn .cs-cn{font-size:30px; color:var(--gold);}
 footer .fcn .cs-en{font-size:27px; color:#EBD9AE; margin-left:12px;}
@@ -2532,6 +2535,7 @@ TEMPLATE = """<!DOCTYPE html>
       <a class="btn ghost sm" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" data-order="store-footer" data-name="Online store" style="color:#C9BDB7">Shop online</a>
       <a class="btn ghost sm" href="{{WA_CUST}}" target="_blank" rel="noopener" style="color:#C9BDB7">Customer experience team</a>
       <a class="btn ghost sm" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="footer" style="color:#C9BDB7">E&#8209;Brochure</a>
+      <a class="btn ghost sm fig" href="https://www.instagram.com/mdmlingbakery/" target="_blank" rel="noopener" aria-label="Mdm Ling Bakery on Instagram" style="color:#C9BDB7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" stroke="none"/></svg></a>
     </div>
     <div class="fbadges">
       <img src="assets/badge-mwp.png?v={{AV}}" alt="Made With Passion, Singapore" width="700" height="462" loading="lazy" decoding="async">
