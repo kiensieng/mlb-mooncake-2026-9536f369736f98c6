@@ -41,8 +41,10 @@ from data import (KEEPSAKES, SETS, BOOTHS, CATEGORIES, RECIPIENTS, PRIORITIES,
 HERE = os.path.dirname(os.path.abspath(__file__))
 ASSET_V = 10  # bump when an asset is replaced under the same filename
 
-# Breast Cancer Foundation, Singapore. Verified 6 Aug 2026.
-BCF_URL = "https://www.bcf.org.sg"
+# Breast Cancer Foundation, Singapore. Campaign-tagged self-examination page
+# (same UTM as the printed QR code). Set 13 Aug 2026.
+BCF_URL = ("https://bcf.org.sg/get-involved/breast_self_examination/"
+           "?utm_source=print&utm_medium=qr_code&utm_campaign=mdm_ling_bakery")
 ARTIST_IG = "https://www.instagram.com/theworldofying/"
 
 
