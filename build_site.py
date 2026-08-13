@@ -306,7 +306,12 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   transform:rotate(-8deg);
   filter:drop-shadow(0 4px 9px rgba(30,22,19,.6)); transition:transform .18s;}
 .hspot:hover svg, .hspot:focus-visible svg{transform:rotate(-8deg) scale(1.16);}
-.hspot svg path{fill:var(--gold); stroke:#FBF6F2; stroke-width:1.6; stroke-linejoin:round;}
+/* Wings are coloured per butterfly (--bw upper, --bw2 lower) from the palette
+   of the collection's own floral artwork; each one is set in JS to contrast
+   with the product it lands on. Champagne gold is the fallback and is still
+   worn by the hint butterfly and one hero butterfly. */
+.hspot svg path{fill:var(--bw,var(--gold)); stroke:#FBF6F2; stroke-width:1.6; stroke-linejoin:round;}
+.hspot svg .w2{fill:var(--bw2,var(--bw,var(--gold)));}
 .hspot svg ellipse{fill:#4E3C37; stroke:#FBF6F2; stroke-width:1;}
 .hspot svg .ant{fill:none; stroke:#FBF6F2; stroke-width:1.4; stroke-linecap:round;}
 .hspot .wl, .hspot .wr{transform-box:fill-box; animation:flut .6s ease-in-out infinite;}
@@ -1597,14 +1602,48 @@ JS = """
       return null;
     }
     function nameOf(id){ var k = kOf(id); return k ? k.name : ''; }
+    /* ---- butterfly colours ----------------------------------------------
+       Every hue below already appears in the collection's floral artwork, so
+       the flock reads as part of the photograph rather than as UI dropped on
+       top of it. Each pair is [upper wing, lower wing]; the cream outline and
+       cocoa body are shared, which is what holds them together as one set. */
+    var WING = {
+      gold:       ['#C7A66A', '#A8874B'],
+      jade:       ['#2F8A72', '#216450'],
+      coral:      ['#E2673F', '#BE4B2A'],
+      raspberry:  ['#C63F6D', '#9E2C55'],
+      cornflower: ['#5C7CC4', '#42599E'],
+      marigold:   ['#E3A63C', '#BE8322'],
+      plum:       ['#7E4E7C', '#5E3760']
+    };
+    /* Assigned against the surface each butterfly lands on, sampled off the
+       hero frame, so no butterfly wears its own product's colour: teal tote
+       gets coral, fuchsia tote gets jade, terracotta bag gets jade, mint bag
+       gets coral, and the pale tins get the deeper hues. Neighbouring spots
+       never share a colour. */
+    var SPOT_WING = {
+      'the-painted-garden-box':     'raspberry',
+      'tote-of-bliss':              'coral',
+      'blossom-drawer-chest':       'cornflower',
+      'tote-of-good-health':        'jade',
+      'a-court-of-peonies':         'gold',
+      'treasure-scroll':            'cornflower',
+      'a-court-of-peonies-duo':     'raspberry',
+      'the-painted-garden-duo':     'marigold',
+      'the-dawn':                   'plum',
+      'the-painted-garden':         'jade',
+      'elegance-reunion-turntable': 'cornflower',
+      'the-dusk':                   'jade',
+      'weaving-moments':            'coral'
+    };
     var BFLY = '<svg viewBox="0 0 48 48" aria-hidden="true">' +
       '<g class="wl">' +
-        '<path d="M21.5 22.5 C16 10 4 6 3.5 14.5 C3.2 20 10 24.5 21.5 25.5 Z"/>' +
-        '<path d="M21.5 27 C13 27.5 7 33 9.5 38.5 C11.8 43 19 39.5 22 30.5 Z"/>' +
+        '<path class="w1" d="M21.5 22.5 C16 10 4 6 3.5 14.5 C3.2 20 10 24.5 21.5 25.5 Z"/>' +
+        '<path class="w2" d="M21.5 27 C13 27.5 7 33 9.5 38.5 C11.8 43 19 39.5 22 30.5 Z"/>' +
       '</g>' +
       '<g class="wr">' +
-        '<path d="M26.5 22.5 C32 10 44 6 44.5 14.5 C44.8 20 38 24.5 26.5 25.5 Z"/>' +
-        '<path d="M26.5 27 C35 27.5 41 33 38.5 38.5 C36.2 43 29 39.5 26 30.5 Z"/>' +
+        '<path class="w1" d="M26.5 22.5 C32 10 44 6 44.5 14.5 C44.8 20 38 24.5 26.5 25.5 Z"/>' +
+        '<path class="w2" d="M26.5 27 C35 27.5 41 33 38.5 38.5 C36.2 43 29 39.5 26 30.5 Z"/>' +
       '</g>' +
       '<ellipse cx="24" cy="26" rx="2.1" ry="8.2"/>' +
       '<path class="ant" d="M23 19 C21.5 14.5 18.5 11.5 15.5 10.5 M25 19 C26.5 14.5 29.5 11.5 32.5 10.5"/>' +
@@ -1683,6 +1722,9 @@ JS = """
       b.style.setProperty('--fx', Math.round(Math.cos(ang) * dist) + 'px');
       b.style.setProperty('--fy', Math.round(Math.sin(ang) * dist * 0.7 - 70) + 'px');
       b.style.setProperty('--fd', (0.25 + i * 0.2).toFixed(2) + 's');
+      var w = WING[SPOT_WING[s[2]]] || WING.gold;
+      b.style.setProperty('--bw', w[0]);
+      b.style.setProperty('--bw2', w[1]);
       b.addEventListener('animationend', function(e){
         if (e.animationName === 'flyin') b.classList.add('landed');
       });
