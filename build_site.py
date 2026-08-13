@@ -1078,12 +1078,9 @@ def cta_for(k, small=True):
         return ('<a class="btn%s" href="%s" target="_blank" rel="noopener" '
                 'data-order="%s" data-name="%s">Order online</a>'
                 % (sm, k["url"], k["id"], k["name"]))
-    msg = ("Hello! I'd like to ask about the %s Mid-Autumn gift set. "
-           "Which booths have it in stock?" % k["name"])
-    return ('<a class="btn%s gold" href="%s" target="_blank" rel="noopener" '
-            'data-booth="%s" data-name="%s">Check booth stock</a>'
-            '<a class="tlink" href="#where">See booths</a>'
-            % (sm, wa(WA_CUSTOMER, msg), k["id"], k["name"]))
+    return ('<a class="btn%s gold" href="#where" '
+            'data-booth="%s" data-name="%s">Find a booth near you</a>'
+            % (sm, k["id"], k["name"]))
 
 
 # --------------------------------------------------------------------------
@@ -1931,11 +1928,8 @@ JS = """
       cta = '<a class="btn" href="' + k.url + '" target="_blank" rel="noopener" ' +
             'data-order="' + k.id + '" data-name="' + esc(k.name) + '">Order online</a>';
     } else {
-      var msg = "Hello! The gift matcher on your Mid-Autumn page suggested the " + k.name +
-                ". Which booths have it in stock?";
-      cta = '<a class="btn gold" href="https://wa.me/' + WA_CUSTOMER + '?text=' +
-            encodeURIComponent(msg) + '" target="_blank" rel="noopener" data-booth="' + k.id +
-            '" data-name="' + esc(k.name) + '">Check booth stock</a>';
+      cta = '<a class="btn gold" href="#where" data-booth="' + k.id +
+            '" data-name="' + esc(k.name) + '">Find a booth near you</a>';
     }
 
     var shareMsg = "For " + recipLabel + " this Mid-Autumn: " + k.name + " " + k.cn +
@@ -2028,11 +2022,8 @@ JS = """
       cta = '<a class="btn sm" href="' + k.url + '" target="_blank" rel="noopener" data-order="' +
             k.id + '" data-name="' + esc(k.name) + '">Order online</a>';
     } else {
-      var msg = "Hello! I'd like to ask about the " + k.name + " Mid-Autumn gift set. " +
-                "Which booths have it in stock?";
-      cta = '<a class="btn sm gold" href="https://wa.me/' + WA_CUSTOMER + '?text=' +
-            encodeURIComponent(msg) + '" target="_blank" rel="noopener" data-booth="' + k.id +
-            '" data-name="' + esc(k.name) + '">Check booth stock</a>';
+      cta = '<a class="btn sm gold" href="#where" data-booth="' + k.id +
+            '" data-name="' + esc(k.name) + '">Find a booth near you</a>';
     }
 
     bout.innerHTML =
@@ -2508,7 +2499,7 @@ TEMPLATE = """<!DOCTYPE html>
       <div class="inner">
         <span class="eyebrow">Where to buy</span>
         <h2>Find us across Singapore</h2>
-        <p class="lede">Every keepsake in this collection is at our booths, and most can also be ordered online with <strong>free delivery above ${{FREE_DEL}}</strong>. If you're after one of the booth only pieces, message our <strong>customer experience team</strong> and we'll check stock for you. &#127765;</p>
+        <p class="lede">Every keepsake in this collection is at our booths, and most can also be ordered online with <strong>free delivery above ${{FREE_DEL}}</strong>. If you're after one of the booth only pieces, <strong>drop by any booth</strong> and see what's available on the day. &#127765;</p>
         <div class="res-acts" style="margin-bottom:8px">
           <a class="btn" href="https://www.mdmlingbakery.com" target="_blank" rel="noopener" data-order="store" data-name="Online store">Shop online</a>
           <a class="btn ghost" href="{{WA_CUST}}" target="_blank" rel="noopener" data-booth="general" data-name="General enquiry">Customer experience team &middot; {{TEL_CUST}}</a>
