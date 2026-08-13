@@ -2212,7 +2212,16 @@ JS = """
     box.classList.add('on');
     byId('cQuiz').style.display = 'none';
     pips.forEach(function(p){ p.classList.add('on'); });
-    byId('cAgain').addEventListener('click', function(){ ans = {}; show(0); });
+    /* The result is a tall card and it scrolled itself into view, so resetting
+       in place left the reader stranded below a quiz that had quietly gone
+       back to question one. Take them back up to it, the same way finishing
+       took them down to the result. */
+    byId('cAgain').addEventListener('click', function(){
+      ans = {};
+      show(0);
+      var sec = byId('concierge');
+      (sec || byId('cQuiz')).scrollIntoView({behavior: reduced ? 'auto':'smooth', block:'start'});
+    });
     byId('cShare').addEventListener('click', function(){ ga('concierge_share', {match:k.id}); });
     box.scrollIntoView({behavior: reduced ? 'auto':'smooth', block:'start'});
   }
