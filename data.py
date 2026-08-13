@@ -106,7 +106,7 @@ KEEPSAKES = [
         "artist": True,
         "body": [
             "The Painted Garden is a <strong>metal keepsake tin</strong> dressed in soft watercolour blooms by <strong>Singaporean artist Phuay Li Ying</strong>, the kind of pastel garden that feels like spring held still.",
-            "Ying painted the garden as a <strong>quiet portrait of Mdm Ling herself</strong>. The central bloom is her, and the smaller flowers are the people she gathers around her, <strong>wildflowers of many colours and origins rising together to greet the festival moon</strong>.",
+            "Ying painted it from her own Mid-Autumn memories: the whole family gathered, mooncakes laid out under the moon. Look closely and there's <strong>no single big flower</strong>, only <strong>wildflowers in full, open bloom</strong>, many small flowers coming together into one beautiful picture, the way people from all walks of life do when they gather.",
             "Every petal is washed in gentle pinks, lilacs and gold, a celebration of nature at its most tender, finished with a quiet glow of <strong>foil</strong>.",
             "<strong>Sustainably designed to be kept and reused</strong> long after Mid-Autumn, the tin finds a second life holding keepsakes, trinkets and the small things worth saving. A Mid-Autumn gift set for <strong>family, friends and clients</strong> that stays on the shelf.",
         ],
@@ -127,7 +127,7 @@ KEEPSAKES = [
         "artist": True,
         "body": [
             "The Painted Garden in a <strong>slimmer form</strong>, carrying the same soft watercolour blooms by <strong>Singaporean artist Phuay Li Ying</strong> in a size made for <strong>lighter, thoughtful gifting</strong>.",
-            "Look closely and you'll find Ying's story in miniature: the central bloom is <strong>Mdm Ling herself</strong>, ringed by the people she gathers around her.",
+            "Look closely and you'll find Ying's story in miniature: <strong>no single big flower, only wildflowers blooming together</strong>, many small flowers forming one beautiful picture.",
             "Ideal for a <strong>smaller gesture that still feels considered</strong>, it's an easy way to wish someone well this Mid-Autumn.",
             "Like its larger companion, the tin is made to be <strong>kept and reused</strong> long after the season passes. \U0001F315",
         ],
