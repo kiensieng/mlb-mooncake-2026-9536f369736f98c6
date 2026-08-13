@@ -2231,7 +2231,7 @@ TEMPLATE = """<!DOCTYPE html>
 <meta property="og:title" content="Mdm Ling Bakery · Mid-Autumn 2026">
 <meta property="og:description" content="Keepsake gift sets built to outlive the season. 花月情长 · A Bond in Lasting Bloom.">
 <meta property="og:url" content="{{SITE}}">
-<meta property="og:image" content="{{SITE}}assets/og-midautumn-2026-v2.jpg">
+<meta property="og:image" content="{{SITE}}assets/og-midautumn-2026-v3.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -2239,7 +2239,7 @@ TEMPLATE = """<!DOCTYPE html>
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mdm Ling Bakery · Mid-Autumn 2026">
 <meta name="twitter:description" content="Keepsake gift sets built to outlive the season. 花月情长 · A Bond in Lasting Bloom.">
-<meta name="twitter:image" content="{{SITE}}assets/og-midautumn-2026-v2.jpg">
+<meta name="twitter:image" content="{{SITE}}assets/og-midautumn-2026-v3.jpg">
 <meta name="theme-color" content="#4E3C37">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23A97F78'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23F0E2C4' font-family='sans-serif'%3E花%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">

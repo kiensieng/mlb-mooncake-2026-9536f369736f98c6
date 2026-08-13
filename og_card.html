@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,500;14..32,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,500;14..32,600&family=Great+Vibes&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <style>
-  /* 1200x630 share card. Mirrors the site's split opening: the garden
-     photograph runs undimmed on the right, the title sits on cocoa at the
-     left. No decorative geometry - the old version had a ring motif, which
-     is exactly the generic look the rebuild removed. */
+  /* 1200x630 share card. Mirrors the welcome gate: the filmed rose hedge
+     with the campaign seal centred over it, exactly what a first visitor
+     sees before they tap in. */
   *{margin:0;padding:0;box-sizing:border-box;}
   body{width:1200px;height:630px;overflow:hidden;font-family:'Inter',sans-serif;}
-  .card{width:1200px;height:630px;background:#4E3C37;display:grid;
-    grid-template-columns:1fr 560px;position:relative;overflow:hidden;}
-  .txt{padding:0 46px 0 66px;display:flex;flex-direction:column;justify-content:center;
-    position:relative;z-index:2;}
-  .eyebrow{font-size:14px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:#C7A66A;}
-  h1{font-size:60px;font-weight:600;letter-spacing:-.032em;line-height:.99;color:#FBF6F2;margin:22px 0 0;}
-  .cn{margin:24px 0 0;color:#F0E2C4;font-size:26px;font-weight:500;}
-  .cn .han{letter-spacing:.16em;}
-  .cn .en{letter-spacing:.01em;font-size:.8em;color:#E4D2C4;}
-  .rule{width:64px;height:1px;background:#C7A66A;margin:30px 0 0;}
-  .foot{margin:24px 0 0;color:#CBBDB7;font-size:18px;font-weight:500;letter-spacing:.01em;}
-  .shot{position:relative;overflow:hidden;background:#D8CEC3;}
-  .shot img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;}
-  /* soften the seam into the cocoa panel rather than boxing the photo */
-  .shot::before{content:"";position:absolute;inset:0;z-index:2;
-    background:linear-gradient(to right, rgba(78,60,55,.96) 0%, rgba(78,60,55,.45) 12%, rgba(78,60,55,0) 34%);}
+  .card{width:1200px;height:630px;position:relative;overflow:hidden;background:#2A211E;}
+  .card > img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    object-position:50% 46%;}
+  .veil{position:absolute;inset:0;
+    background:radial-gradient(ellipse 70% 55% at 50% 48%, rgba(30,23,20,.62) 0%,
+               rgba(30,23,20,.30) 55%, rgba(30,23,20,.44) 100%);}
+  .seal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    text-align:center;color:#F6ECD8;width:640px;}
+  .seal img{display:block;width:180px;height:auto;margin:0 auto;
+    filter:drop-shadow(0 2px 14px rgba(24,18,15,.55));}
+  .s-en{display:block;margin:22px 0 0;font-family:'Great Vibes',cursive;font-weight:400;
+    font-size:58px;line-height:1.1;color:#FBF3E2;letter-spacing:.01em;
+    text-shadow:0 2px 22px rgba(24,18,15,.65);}
+  .s-han{display:block;margin:8px 0 0;font-family:'Ma Shan Zheng','Inter',cursive;
+    font-weight:400;font-size:50px;line-height:1.1;color:#F4E3C2;letter-spacing:.1em;
+    text-shadow:0 2px 26px rgba(24,18,15,.7);}
+  .s-season{display:block;margin:18px 0 0;font-size:13px;font-weight:600;
+    letter-spacing:.3em;text-transform:uppercase;color:#E4D6CE;}
+  .s-rule{display:block;width:54px;height:1px;margin:20px auto 0;
+    background:linear-gradient(90deg,transparent,#D9BF86,transparent);}
 </style></head>
 <body>
   <div class="card">
-    <div class="txt">
-      <span class="eyebrow">Mdm Ling Bakery</span>
-      <h1>Gifts that outlive the season</h1>
-      <p class="cn"><span class="han">花月情长</span> <span class="en">· A Bond in Lasting Bloom</span></p>
-      <div class="rule"></div>
-      <p class="foot">Mid-Autumn 2026 · 14 keepsakes, 3 mooncake ranges</p>
+    <img class="bg" src="assets/intro-garden.jpg">
+    <div class="veil"></div>
+    <div class="seal">
+      <img src="assets/mlb-logo-white.png">
+      <span class="s-en">A Bond in Lasting Bloom</span>
+      <span class="s-han">花月情长</span>
+      <span class="s-season">Mid-Autumn 2026</span>
+      <span class="s-rule"></span>
     </div>
-    <div class="shot"><img src="assets/band-hero.webp"></div>
   </div>
 </body></html>
