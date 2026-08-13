@@ -2421,6 +2421,13 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .htally .tgo:hover, .htally .tgo:focus-visible{background:#DCC08A;}
 .htally .thn{font-size:13px; font-weight:600; letter-spacing:.03em;}
 .htally .thn .han{color:var(--gold);}
+/* On a phone the frame is the portrait cut and the products stack towards the
+   bottom, so a pill anchored there sits on top of the lowest butterflies (The
+   Dusk and The Painted Garden Box) and puts them out of reach. Above the
+   flock is clear sky: the highest butterfly is at 39.5% of the frame. */
+@media(max-width:760px){
+  .htip, .htally{top:clamp(12px,3.4vw,22px); bottom:auto;}
+}
 @media(max-width:600px){
   .htally{gap:9px; padding:9px 13px;}
   .htally .tn{font-size:16px;} .htally .tn b{font-size:19px;}
@@ -3077,7 +3084,7 @@ footer .fbadges img{height:62px; width:auto;}
       <div>
         <p class="lede">Keepsakes and three mooncake ranges, photographed in the garden they were made for. Every piece is built to be kept, used and remembered long after the last mooncake is gone. &#127765;</p>
         <div class="acts">
-          <a class="btn light" href="#concierge">Find the right gift</a>
+          <a class="btn light" href="#concierge">Try our gift matcher</a>
         </div>
       </div>
     </div>
@@ -4170,6 +4177,10 @@ footer .fbadges img{height:62px; width:auto;}
       layer.classList.remove('waiting');
       if (!tipSeen){
         window.setTimeout(function(){
+          /* checked here, not above: this callback can run before the tally
+             below has read its saved count, and a hint drawn over a tally
+             that is already on screen is what a returning visitor saw */
+          if (foundN) return;
           tip.classList.add('on');
           try { window.sessionStorage.setItem('mlbHtip','1'); } catch(e){}
           window.setTimeout(hideTip, 9000);
@@ -4203,7 +4214,7 @@ footer .fbadges img{height:62px; width:auto;}
         tally.innerHTML = BFLY +
           '<span class="thn">You\'ve found the whole garden. ' +
           '<span class="han">\u82B1\u6708\u60C5\u957F</span></span>' +
-          '<a class="tgo" href="#concierge" data-tally-go="1">Now find the one to gift</a>';
+          '<a class="tgo" href="#concierge" data-tally-go="1">Try our gift matcher</a>';
       } else {
         tally.innerHTML =
           '<span class="tn"><b>' + foundN + '</b> / ' + TOTAL + '</span>' +
