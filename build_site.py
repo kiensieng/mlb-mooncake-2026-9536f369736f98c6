@@ -35,6 +35,7 @@ liability at this size.
 import json
 import os
 import re
+import seo
 from data import (KEEPSAKES, SETS, BOOTHS, CATEGORIES, RECIPIENTS, PRIORITIES,
                   TABLES, BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
@@ -928,7 +929,11 @@ def flav(img, alt, name, badges, story, ing, algs, trace):
     a = "".join('<span class="alg">%s</span>' % x for x in algs)
     src = v(img)
     slug = "f-" + slugify(name)
-    FLAV_INDEX.append({"img": img, "name": name, "slug": slug})
+    # seo.py reads this to build the flavour schema, so it carries the whole
+    # flavour, not just what the one-glance overview needs.
+    FLAV_INDEX.append({"img": img, "name": name, "slug": slug, "story": story,
+                       "ing": ing, "algs": list(algs), "trace": trace,
+                       "badges": list(badges), "range": ""})
     return """<div class="flav" id="%s">
       <button type="button" class="fp" data-lightbox="%s" data-lightbox-alt="%s" aria-label="View a larger photo of %s">
         <img src="%s" alt="%s" width="420" height="420" loading="lazy" decoding="async">
@@ -2195,9 +2200,19 @@ def build():
 
     online = sum(1 for k in KEEPSAKES if k["channel"] == "online")
 
+    # Tag each flavour with the range it sits in. flav() runs in page order as
+    # the RANGES literal is built, so walking them in parallel lines up.
+    _i = 0
+    for r in RANGES:
+        for _ in r["items"]:
+            if _i < len(FLAV_INDEX):
+                FLAV_INDEX[_i]["range"] = r["title"]
+            _i += 1
+
     html = fill(
         TEMPLATE,
         CSS=CSS, JS=js, QS=qs,
+        JSONLD=seo.jsonld_block(FLAV_INDEX),
         KEEPSAKES=keepsakes_html(),
         FLAV_OVERVIEW=flavour_overview(),
         RANGES=ranges,
@@ -2218,6 +2233,13 @@ def build():
     print("wrote %s  (%.1f KB)" % (out, len(html) / 1024.0))
     print("keepsakes: %d  ·  online: %d  ·  booth: %d"
           % (len(KEEPSAKES), online, len(KEEPSAKES) - online))
+
+    written = seo.write_files(HERE, FLAV_INDEX)
+    graph = seo.build_graph(FLAV_INDEX)["@graph"]
+    print("seo: %s  ·  %d schema nodes (%d products, %d booth events)"
+          % (", ".join(written), len(graph),
+             sum(1 for n in graph if n.get("@type") == "Product"),
+             sum(1 for n in graph if n.get("@type") == "SaleEvent")))
 
 
 TEMPLATE = """<!DOCTYPE html>
@@ -2257,6 +2279,12 @@ TEMPLATE = """<!DOCTYPE html>
   gtag('config', '{{GA}}');
 </script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="author" content="Mdm Ling Bakery">
+<meta name="geo.region" content="SG">
+<meta name="geo.placename" content="Singapore">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="Plain-text summary for AI answer engines">
+{{JSONLD}}
 <style>{{CSS}}</style>
 </head>
 <body>
