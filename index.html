@@ -2552,6 +2552,9 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .res-alt{margin:30px 0 0; padding:20px 0 0; border-top:1px solid var(--hair); font-size:15px; color:var(--muted);}
 .res-alt a{color:var(--rose); font-weight:600; text-decoration:none; border-bottom:1px solid var(--gold);}
 .res-note{margin:16px 0 0; font-size:14px; color:#7A6A64;}
+/* the travel veto explanation: quiet, but it has to be read */
+.res-note.flag{border-left:2px solid var(--gold); padding:2px 0 2px 14px; color:#5E4F49;}
+.res-note.flag strong{color:var(--cocoa);}
 
 /* ---------- tags ---------- */
 .tag{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600;
@@ -4292,27 +4295,52 @@ footer .fbadges img{height:62px; width:auto;}
     b.addEventListener('click', function(){ if(step>0) show(step-1); });
   });
 
+  /* Snowskin has to be kept chilled, so it cannot go on a plane. Someone
+     heading overseas is therefore a HARD veto on set G, and it outranks the
+     chilled answer: pick "heading overseas" + "happy with chilled snowskin"
+     and you get a baked match with an on-screen explanation, never snowskin. */
+  function travelling(){ return ans.recipient === 'traveller'; }
+  function wantsChilled(){ return ans.table === 'chilled' && !travelling(); }
+  function snowskinOnly(k){
+    return k.sets.length > 0 && k.sets.indexOf('G') >= 0 &&
+           k.sets.join('').replace(/G/g, '') === '';
+  }
+  /* Set the customer's table answer points at, after the travel veto. The
+     adventurous answer falls back to the Signature baked set, its closest
+     room-temperature equivalent. */
+  function wantSet(){
+    if (travelling() && ans.table === 'chilled') return 'D';
+    return TABLE_SET[ans.table];
+  }
+  function suppressedSnowskin(){ return travelling() && ans.table === 'chilled'; }
+
   function pool(){
     var b = BUDGET[ans.budget];
     var hard = K.filter(function(k){
-      if (ans.table === 'halal'   && !k.halalSafe) return false;
-      if (ans.table === 'chilled' && k.sets.indexOf('G') < 0) return false;
+      if (ans.table === 'halal' && !k.halalSafe) return false;
+      if (travelling()   && snowskinOnly(k)) return false;
+      if (wantsChilled() && k.sets.indexOf('G') < 0) return false;
       if (ans.budget !== 'b4'){ if (k.price <= b.min || k.price > b.max) return false; }
       return true;
     });
     if (hard.length) return {list:hard, relaxed:false};
     /* Nothing survived. Drop the budget rail last, and say so on screen. */
     var soft = K.filter(function(k){
-      if (ans.table === 'halal'   && !k.halalSafe) return false;
-      if (ans.table === 'chilled' && k.sets.indexOf('G') < 0) return false;
+      if (ans.table === 'halal' && !k.halalSafe) return false;
+      if (travelling()   && snowskinOnly(k)) return false;
+      if (wantsChilled() && k.sets.indexOf('G') < 0) return false;
       return true;
     });
+    if (!soft.length){
+      /* Last resort still respects the travel veto. */
+      soft = K.filter(function(k){ return !(travelling() && snowskinOnly(k)); });
+    }
     return {list:soft.length ? soft : K.slice(), relaxed:true};
   }
 
   function scoreOf(k){
     var s = (k.score[ans.recipient]||0) * 2 + (k.score[ans.priority]||0) * 3;
-    var want = TABLE_SET[ans.table];
+    var want = wantSet();
     if (k.sets.length && k.sets.indexOf(want) < 0) s -= 3;   /* wrong mooncake family */
     if (ans.budget === 'b4' && k.price >= 78) s += 1;        /* corporate leans premium */
     if (k.channel === 'online') s += 0.5;                    /* tiebreak: buyable now */
@@ -4321,8 +4349,11 @@ footer .fbadges img{height:62px; width:auto;}
 
   function recSet(k){
     if (!k.sets.length) return null;
-    var want = TABLE_SET[ans.table];
-    return k.sets.indexOf(want) >= 0 ? want : k.sets[0];
+    var want = wantSet();
+    if (k.sets.indexOf(want) >= 0) return want;
+    /* Never hand a traveller the snowskin set as a fallback. */
+    var ok = travelling() ? k.sets.filter(function(x){ return x !== 'G'; }) : k.sets;
+    return ok.length ? ok[0] : null;
   }
 
   function finish(){
@@ -4374,6 +4405,12 @@ footer .fbadges img{height:62px; width:auto;}
           '<p class="res-why">For ' + esc(recipLabel) + ', ' + esc(k.why) + '</p>' +
           '<div class="res-meta">' + meta.join('') + '</div>' +
           setLine +
+          (suppressedSnowskin()
+            ? '<p class="res-note flag"><strong>We\'ve left snowskin out of this one.</strong> ' +
+              'Snowskin mooncakes are kept chilled and they don\'t survive a journey, ' +
+              'so we\'ve matched something baked instead. It keeps at room temperature ' +
+              'and travels in hand luggage without a worry.</p>'
+            : '') +
           (relaxed ? '<p class="res-note">Nothing in the collection sits inside that budget with those requirements, so this is the closest fit.</p>' : '') +
           (k.note ? '<p class="res-note">' + esc(k.note) + '</p>' : '') +
           (k.bcf ? '<p class="res-note">Every one of these sends <strong>$1 to the Breast Cancer Foundation</strong>. <a class="tlink" href="' + BCF + '" target="_blank" rel="noopener" data-bcf="match">Read about their work</a></p>' : '') +
