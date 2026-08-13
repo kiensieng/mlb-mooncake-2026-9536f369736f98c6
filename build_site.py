@@ -2281,6 +2281,9 @@ TEMPLATE = """<!DOCTYPE html>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 <meta name="author" content="Mdm Ling Bakery">
+<!-- Bing Webmaster Tools site verification. Lives here, not in index.html,
+     so a rebuild can't delete it and silently un-verify the site. -->
+<meta name="msvalidate.01" content="3F11EDA668E40319822CBEE209A010BE" />
 <meta name="geo.region" content="SG">
 <meta name="geo.placename" content="Singapore">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="Plain-text summary for AI answer engines">
