@@ -349,6 +349,55 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .htip svg path{fill:var(--gold); stroke:#FBF6F2; stroke-width:1.6; stroke-linejoin:round;}
 .htip svg ellipse{fill:#2A1F1B; stroke:#FBF6F2; stroke-width:1;}
 .htip svg .ant{fill:none; stroke:#FBF6F2; stroke-width:1.4; stroke-linecap:round;}
+/* ---------- the tally: how much of the garden you've found ----------
+   Takes over the hint pill's slot the moment the first butterfly is opened,
+   so the two never share the screen. Numerals are Work Sans (the one place
+   the brand allows it: standalone numbers). */
+.htally{position:absolute; left:50%; bottom:clamp(16px,3.4vw,30px); z-index:4;
+  transform:translateX(-50%) translateY(8px); display:flex; align-items:center; gap:12px;
+  max-width:86vw; background:rgba(42,31,27,.86); color:#F4E9E2;
+  padding:10px 18px; border:1px solid rgba(199,166,106,.65); pointer-events:none;
+  opacity:0; visibility:hidden; transition:opacity .3s, transform .3s, visibility .3s;}
+.htally.on{opacity:1; visibility:visible; transform:translateX(-50%);}
+.htally .tn{font-family:var(--fn); font-size:19px; font-weight:600; line-height:1;
+  color:var(--gold); font-variant-numeric:tabular-nums; white-space:nowrap;}
+.htally .tn b{font-weight:600; color:#FBF6F2; font-size:23px;}
+.htally .tl{font-size:12px; font-weight:600; letter-spacing:.14em;
+  text-transform:uppercase; white-space:nowrap;}
+.htally .tbar{display:block; width:clamp(56px,11vw,110px); height:2px;
+  background:rgba(244,233,226,.28); flex:none;}
+.htally .tbar i{display:block; height:100%; width:0; background:var(--gold);
+  transition:width .5s cubic-bezier(.22,1,.36,1);}
+/* the whole garden found: the pill grows a way onward */
+.htally.done{pointer-events:auto; gap:14px; padding:11px 14px 11px 18px;}
+.htally.done .tbar{display:none;}
+.htally.done svg{width:26px; height:26px; flex:none; transform:rotate(-8deg);}
+.htally.done svg path{fill:var(--gold); stroke:#FBF6F2; stroke-width:1.6; stroke-linejoin:round;}
+.htally.done svg ellipse{fill:#2A1F1B; stroke:#FBF6F2; stroke-width:1;}
+.htally.done svg .ant{fill:none; stroke:#FBF6F2; stroke-width:1.4; stroke-linecap:round;}
+.htally .tgo{font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  color:#2A1F1B; background:var(--gold); padding:8px 13px; text-decoration:none;
+  white-space:nowrap; transition:background .2s;}
+.htally .tgo:hover, .htally .tgo:focus-visible{background:#DCC08A;}
+.htally .thn{font-size:13px; font-weight:600; letter-spacing:.03em;}
+.htally .thn .han{color:var(--gold);}
+@media(max-width:600px){
+  .htally{gap:9px; padding:9px 13px;}
+  .htally .tn{font-size:16px;} .htally .tn b{font-size:19px;}
+  .htally .tl{font-size:10.5px; letter-spacing:.1em;}
+  .htally.done{flex-wrap:wrap; justify-content:center; max-width:88vw; gap:10px;}
+  /* the wording carries it on a small screen; the icon only adds height */
+  .htally.done svg{display:none;}
+  .htally .thn{font-size:12px;} .htally .tgo{font-size:11px; padding:7px 11px;}
+}
+/* a butterfly already opened settles: its wings come to rest, and it drops
+   behind the ones still to be found so the remaining targets get easier to
+   hit as the hunt goes on (several products sit shoulder to shoulder) */
+.hspot{z-index:2;}
+.hspot.found{z-index:1;}
+.hspot.found .wl, .hspot.found .wr{animation:none !important;}
+.hspot.found svg{transform:scale(.94);}
+.hspot.found:hover svg, .hspot.found:focus-visible svg{transform:rotate(-8deg) scale(1.16);}
 @media(prefers-reduced-motion:reduce){
   .hspot, .hspot svg, .hspot .wl, .hspot .wr{animation:none !important;}
 }
@@ -1712,6 +1761,64 @@ JS = """
         }, 2600);
       }
     });
+    /* ---- the tally -------------------------------------------------------
+       Thirteen butterflies mark thirteen keepsakes, and the risk is that
+       someone opens the two nearest their thumb and scrolls on. So every
+       butterfly opened is counted, and finding the whole garden hands them
+       on to the Gift Matcher. Session-scoped, like the intro gate, so a
+       return visit is a fresh garden. Verified reachable at every viewport
+       from 320px up: no butterfly is ever cropped out of the frame. */
+    var TOTAL = LAND.length;
+    var found = {}, foundN = 0, doneShown = false;
+    try {
+      var saved = window.sessionStorage.getItem('mlbFound26');
+      if (saved){
+        saved.split(',').forEach(function(id){ if (id){ found[id] = 1; foundN++; } });
+      }
+    } catch(e){}
+    var tally = document.createElement('div');
+    tally.className = 'htally';
+    tally.setAttribute('aria-live', 'polite');
+    layer.appendChild(tally);
+
+    function drawTally(){
+      hideTip();
+      if (foundN >= TOTAL){
+        tally.classList.add('done');
+        tally.innerHTML = BFLY +
+          '<span class="thn">You\\'ve found the whole garden. ' +
+          '<span class="han">\\u82B1\\u6708\\u60C5\\u957F</span></span>' +
+          '<a class="tgo" href="#gift" data-tally-go="1">Now find the one to gift</a>';
+      } else {
+        tally.innerHTML =
+          '<span class="tn"><b>' + foundN + '</b> / ' + TOTAL + '</span>' +
+          '<span class="tl">found</span>' +
+          '<span class="tbar"><i style="width:' +
+            Math.round(foundN / TOTAL * 100) + '%"></i></span>';
+      }
+      tally.classList.add('on');
+    }
+    tally.addEventListener('click', function(e){
+      if (e.target.closest && e.target.closest('[data-tally-go]')) ga('garden_complete_go', {});
+    });
+
+    function markFound(id){
+      if (found[id]) return;
+      found[id] = 1; foundN++;
+      try {
+        window.sessionStorage.setItem('mlbFound26', Object.keys(found).join(','));
+      } catch(e){}
+      var b = spotFor(id);
+      if (b) b.classList.add('found');
+      drawTally();
+      if (foundN >= TOTAL && !doneShown){
+        doneShown = true;
+        ga('garden_complete', {});
+      }
+    }
+    /* a returning visitor keeps the count they had */
+    if (foundN) onGardenEnter(function(){ window.setTimeout(drawTally, 900); });
+
     var spots = LAND.map(function(s, i){
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'hspot';
@@ -1730,15 +1837,21 @@ JS = """
       });
       b.setAttribute('aria-label', 'See ' + nameOf(s[2]));
       b.innerHTML = BFLY + '<span class="hlabel">' + esc(nameOf(s[2])) + '</span>';
+      if (found[s[2]]) b.classList.add('found');
       b.addEventListener('click', function(){
         hideTip();
         ga('hotspot_click', {item_id: s[2]});
         openPop(s[2], b);
+        markFound(s[2]);
       });
       b.addEventListener('mouseenter', hideTip);
       layer.appendChild(b);
       return b;
     });
+    function spotFor(id){
+      for (var i=0;i<LAND.length;i++){ if (LAND[i][2] === id) return spots[i]; }
+      return null;
+    }
     function place(){
       closePop();
       var cw = fig.clientWidth, ch = fig.clientHeight;
@@ -1751,8 +1864,40 @@ JS = """
          50% 58% on the wide full-screen crop */
       var yp = (portrait || cw < 760) ? 0.4 : 0.58;
       var ox = (cw - dw) * 0.5, oy = (ch - dh) * yp;
+      var pos = spots.map(function(b, i){
+        return {x: ox + data[i][0]/100*dw, y: oy + data[i][1]/100*dh};
+      });
+      /* Keep every butterfly tappable. Several products sit shoulder to
+         shoulder in the frame, and at phone width their markers overlapped by
+         more than half a marker, which put one of them physically underneath
+         another and out of reach. Butterflies hover rather than sit, so a few
+         pixels of drift costs nothing: push any overlapping pair apart until
+         each has its own target, capped so none strays off its product. */
+      var size = spots[0] ? (spots[0].offsetWidth || 52) : 52;
+      var minGap = size * 1.06, cap = size * 0.85;
+      for (var pass = 0; pass < 4; pass++){
+        var moved = false;
+        for (var a = 0; a < pos.length; a++){
+          for (var c = a + 1; c < pos.length; c++){
+            var dx = pos[c].x - pos[a].x, dy = pos[c].y - pos[a].y;
+            var d = Math.sqrt(dx*dx + dy*dy);
+            if (d >= minGap) continue;
+            if (d < 0.01){ dx = (a % 2 ? 1 : -1); dy = 1; d = 1; }
+            var push = (minGap - d) / 2, ux = dx/d, uy = dy/d;
+            pos[a].x -= ux*push; pos[a].y -= uy*push;
+            pos[c].x += ux*push; pos[c].y += uy*push;
+            moved = true;
+          }
+        }
+        if (!moved) break;
+      }
       spots.forEach(function(b, i){
-        var x = ox + data[i][0]/100*dw, y = oy + data[i][1]/100*dh;
+        var hx = ox + data[i][0]/100*dw, hy = oy + data[i][1]/100*dh;
+        /* never let the relaxation walk a butterfly off its own product */
+        var ddx = pos[i].x - hx, ddy = pos[i].y - hy;
+        var dd = Math.sqrt(ddx*ddx + ddy*ddy);
+        if (dd > cap){ pos[i].x = hx + ddx/dd*cap; pos[i].y = hy + ddy/dd*cap; }
+        var x = pos[i].x, y = pos[i].y;
         var vis = x > 26 && x < cw-26 && y > 26 && y < ch-26;
         b.style.display = vis ? '' : 'none';
         b.style.left = x + 'px'; b.style.top = y + 'px';
