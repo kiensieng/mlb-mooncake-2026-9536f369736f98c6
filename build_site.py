@@ -48,6 +48,8 @@ ASSET_V = 10  # bump when an asset is replaced under the same filename
 #     ?utm_source=print&utm_medium=qr_code&utm_campaign=mdm_ling_bakery
 BCF_URL = "https://www.bcf.org.sg"
 ARTIST_IG = "https://www.instagram.com/theworldofying/"
+# WooCommerce account page, which carries the newsletter signup. Checked 16 Aug 2026.
+NEWSLETTER = "https://www.mdmlingbakery.com/my-account/"
 
 
 def fill(t, **kw):
@@ -753,6 +755,14 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 /* ---------- callouts (the lines that must not be missed) ---------- */
 .callout{border:1.5px solid var(--gold); background:#FBF6EC; padding:18px 22px;
   margin:26px 0 0; max-width:70ch; font-size:15.5px; color:#4E3C37;}
+/* the newsletter offer under a match: sits below the order button so it never
+   competes with it, but is the next thing read once they have their answer */
+.res-news{margin:22px 0 0; padding:16px 0 0; border-top:1px solid var(--hair);
+  display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px;}
+.res-news p{margin:0; font-size:14.5px; color:#5E4F49; flex:1 1 15ch;}
+.res-news strong{color:var(--plum);}
+.res-news .tc{display:block; margin-top:3px; font-size:11.5px; color:var(--muted);
+  letter-spacing:.04em;}
 .callout strong{color:var(--plum);}
 .callout a{color:var(--rose); font-weight:600;}
 
@@ -1330,6 +1340,7 @@ JS = """
   var SITE = "{{SITE}}";
   var AV = "{{AV}}";
   var BCF = "{{BCF}}";
+  var NEWSLETTER = "{{NEWSLETTER}}";
 
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function ga(name, params){ if(window.gtag){ window.gtag('event', name, params||{}); } }
@@ -2050,6 +2061,7 @@ JS = """
     if(a.dataset.booth) ga('booth_click', {item_id:a.dataset.booth, item_name:a.dataset.name});
     if(a.dataset.brochure) ga('brochure_download', {});
     if(a.dataset.bcf) ga('bcf_click', {placement:a.dataset.bcf});
+    if(a.dataset.news) ga('newsletter_click', {placement:a.dataset.news});
   });
 
   /* ---------------- gift matcher ---------------- */
@@ -2201,6 +2213,12 @@ JS = """
             '<a class="btn ghost" href="https://wa.me/?text=' + encodeURIComponent(shareMsg) +
               '" target="_blank" rel="noopener" id="cShare">Send to someone</a>' +
             '<button class="qback" id="cAgain" type="button" style="margin:0">Start again</button>' +
+          '</div>' +
+          '<div class="res-news">' +
+            '<p>Sign up to our newsletter and take <strong>$5 off your first order</strong>.' +
+              '<span class="tc">T&amp;Cs apply</span></p>' +
+            '<a class="btn gold sm" href="' + NEWSLETTER + '" target="_blank" rel="noopener" ' +
+              'data-news="match">Sign up and claim your $5</a>' +
           '</div>' +
           (alt ? '<p class="res-alt">Also worth a look: <a href="#k-' + alt.id + '">' + esc(alt.name) +
                  '</a>, ' + esc(alt.becomes.charAt(0).toLowerCase() + alt.becomes.slice(1)) + '</p>' : '') +
@@ -2435,6 +2453,7 @@ def build():
         BUDGET=json.dumps({b[0]: {"min": b[2], "max": b[3]} for b in BUDGETS}, ensure_ascii=False),
         RECIP=json.dumps({r[0]: r[2] for r in RECIPIENTS}, ensure_ascii=False),
         WACUST=WA_CUSTOMER, SITE=SITE_URL, AV=ASSET_V, BCF=BCF_URL,
+        NEWSLETTER=NEWSLETTER,
     )
 
     def optset(key, opts, n, total, title):
@@ -2483,7 +2502,7 @@ def build():
         N_KEEPSAKES=len(KEEPSAKES), N_ONLINE=online, N_BOOTHS=len(BOOTHS),
         WA_CUST=wa(WA_CUSTOMER, "Hello! I have a question about your Mid-Autumn 2026 mooncakes."),
         FREE_DEL=FREE_DELIVERY, TEL_CUST="+65 8468 0201",
-        BCF=BCF_URL, ARTIST_IG=ARTIST_IG,
+        BCF=BCF_URL, ARTIST_IG=ARTIST_IG, NEWSLETTER=NEWSLETTER,
     )
 
     out = os.path.join(HERE, "index.html")

@@ -2793,6 +2793,14 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 /* ---------- callouts (the lines that must not be missed) ---------- */
 .callout{border:1.5px solid var(--gold); background:#FBF6EC; padding:18px 22px;
   margin:26px 0 0; max-width:70ch; font-size:15.5px; color:#4E3C37;}
+/* the newsletter offer under a match: sits below the order button so it never
+   competes with it, but is the next thing read once they have their answer */
+.res-news{margin:22px 0 0; padding:16px 0 0; border-top:1px solid var(--hair);
+  display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px;}
+.res-news p{margin:0; font-size:14.5px; color:#5E4F49; flex:1 1 15ch;}
+.res-news strong{color:var(--plum);}
+.res-news .tc{display:block; margin-top:3px; font-size:11.5px; color:var(--muted);
+  letter-spacing:.04em;}
 .callout strong{color:var(--plum);}
 .callout a{color:var(--rose); font-weight:600;}
 
@@ -3745,6 +3753,7 @@ footer .fbadges img{height:62px; width:auto;}
   var SITE = "https://midautumn2026.mdmlingbakery.com/";
   var AV = "10";
   var BCF = "https://www.bcf.org.sg";
+  var NEWSLETTER = "https://www.mdmlingbakery.com/my-account/";
 
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function ga(name, params){ if(window.gtag){ window.gtag('event', name, params||{}); } }
@@ -4465,6 +4474,7 @@ footer .fbadges img{height:62px; width:auto;}
     if(a.dataset.booth) ga('booth_click', {item_id:a.dataset.booth, item_name:a.dataset.name});
     if(a.dataset.brochure) ga('brochure_download', {});
     if(a.dataset.bcf) ga('bcf_click', {placement:a.dataset.bcf});
+    if(a.dataset.news) ga('newsletter_click', {placement:a.dataset.news});
   });
 
   /* ---------------- gift matcher ---------------- */
@@ -4616,6 +4626,12 @@ footer .fbadges img{height:62px; width:auto;}
             '<a class="btn ghost" href="https://wa.me/?text=' + encodeURIComponent(shareMsg) +
               '" target="_blank" rel="noopener" id="cShare">Send to someone</a>' +
             '<button class="qback" id="cAgain" type="button" style="margin:0">Start again</button>' +
+          '</div>' +
+          '<div class="res-news">' +
+            '<p>Sign up to our newsletter and take <strong>$5 off your first order</strong>.' +
+              '<span class="tc">T&amp;Cs apply</span></p>' +
+            '<a class="btn gold sm" href="' + NEWSLETTER + '" target="_blank" rel="noopener" ' +
+              'data-news="match">Sign up and claim your $5</a>' +
           '</div>' +
           (alt ? '<p class="res-alt">Also worth a look: <a href="#k-' + alt.id + '">' + esc(alt.name) +
                  '</a>, ' + esc(alt.becomes.charAt(0).toLowerCase() + alt.becomes.slice(1)) + '</p>' : '') +
