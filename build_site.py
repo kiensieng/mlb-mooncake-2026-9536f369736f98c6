@@ -1034,7 +1034,7 @@ VEG = ("sage", "Vegetarian")
 RANGES = [
     {
         "n": 1, "id": "traditional", "title": "Premium Traditional Baked",
-        "tag": "The classics, baked golden", "intro": None,
+        "tag": "The classics, baked golden 🌕", "intro": None,
         "items": [
             flav("trad-yolk.webp", "Traditional white lotus mooncake with salted egg yolk",
                  "Lotus with Melon Seeds and Yolk",
@@ -1107,7 +1107,7 @@ RANGES = [
             flav("snow-popping.webp", "Truffle Popping Candy snowskin mooncake with dragon fruit paste and popping candy centre",
                  "Truffle Popping Candy", [("chill", "Chilled"), ("", "63g")],
                  "A blush pink snowskin of soft glutinous rice, filled with vivid <strong>dragonfruit paste</strong> and a <strong>popping candy truffle that crackles as you bite</strong>. <strong>The one that makes everyone at the table laugh first</strong> and reach for seconds after.",
-                 "Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, dragon fruit paste (lotus paste, dragon fruit powder), popping candy truffle (white couverture, pink popping candy filling, blue popping candy filling).",
+                 "Cold water, icing sugar, glutinous rice flour, snowskin powder, shortening, cooking oil, dragon fruit paste (lotus paste, dragon fruit powder), popping candy truffle (white couverture, pink popping candy filling, blue popping candy filling). 🌕",
                  ["Milk"],
                  "May contain traces of gluten, egg, nuts, sesame, peanuts and soy."),
             flav("snow-pistachio.webp", "Truffle Pistachio Kunafa snowskin mooncake with almond filling and pistachio paste centre",
@@ -2606,7 +2606,7 @@ TEMPLATE = """<!DOCTYPE html>
     <a href="#concierge">Gift matcher</a>
     <a href="#keepsakes">Keepsakes</a>
     <a href="#builder">Build your gift</a>
-    <a href="#mooncakes">Mooncakes</a>
+    <a href="#mooncakes">Mooncakes 🌕</a>
     <a href="#garden">The Painted Garden</a>
     <a href="#where">Where to buy</a>
     <a class="nbro" href="assets/mlb-midautumn-2026-brochure.pdf" target="_blank" rel="noopener" data-brochure="nav">E&#8209;Brochure</a>
@@ -2677,7 +2677,7 @@ TEMPLATE = """<!DOCTYPE html>
   <!-- ================= GIFT MATCHER ================= -->
   <section class="part" id="concierge">
     <div class="tool">
-      <span class="tool-kicker">The gift matcher</span>
+      <span class="tool-kicker">The gift matcher 🌕</span>
       <h3>Tell us who it's for</h3>
       <p class="sub">Four quick questions and we'll narrow the whole collection to one keepsake, with the mooncake set that suits their table.</p>
       <div class="qsteps"><i class="on"></i><i></i><i></i><i></i></div>
@@ -2737,7 +2737,7 @@ TEMPLATE = """<!DOCTYPE html>
   </picture>
   <div class="bt">
     <span class="eyebrow">Part two</span>
-    <p>Three ranges, and a flavour for every generation at the table.</p>
+    <p>Three ranges, and a flavour for every generation at the table. 🌕</p>
   </div>
 </section>
 
@@ -2836,7 +2836,7 @@ TEMPLATE = """<!DOCTYPE html>
     </div>
     <div class="booth-map" id="boothMap" role="img" aria-label="Map of Mdm Ling Bakery Mid-Autumn booths across Singapore"></div>
     <div class="map-tools">
-      <button type="button" class="btn ghost sm" id="boothMapReset">View full map</button>
+      <button type="button" class="btn ghost sm" id="boothMapReset">View full map 🌕</button>
     </div>
     {{BOOTHS}}
   </section>

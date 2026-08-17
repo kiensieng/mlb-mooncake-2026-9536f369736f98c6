@@ -74,7 +74,7 @@ KEEPSAKES = [
     },
     {
         "id": "the-dusk", "name": "The Dusk", "cn": "月夕",
-        "pinyin": "yuè xī", "gloss": "moonlit evening",
+        "pinyin": "yuè xī", "gloss": "moonlit evening 🌕",
         "format": "Leather Gift Bag", "pcs": "4 pcs", "price": 92,
         "img": "the-dusk.webp",
         "alt": "The Dusk terracotta leather Mid-Autumn gift bag by Mdm Ling Bakery",
@@ -343,7 +343,7 @@ CATEGORIES = [
      "sub": "Heritage tins",
      "blurb": "Bold painterly peonies in jewel tones, on a deep navy heritage tin and a soft sage duo tin.",
      "items": ["a-court-of-peonies", "a-court-of-peonies-duo"]},
-    {"id": "dusk-and-dawn", "name": "The Dusk and The Dawn",
+    {"id": "dusk-and-dawn", "name": "The Dusk and The Dawn 🌕",
      "sub": "A pair of leather bags",
      "blurb": "One old idiom, 花晨月夕, split across two leather bags. Give one, or give both and bookend the day.",
      "items": ["the-dusk", "the-dawn"]},
