@@ -2421,6 +2421,18 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .htally .tgo:hover, .htally .tgo:focus-visible{background:#DCC08A;}
 .htally .thn{font-size:13px; font-weight:600; letter-spacing:.03em;}
 .htally .thn .han{color:var(--gold);}
+/* The whole garden found: a lucky butterfly, one colour drawn from the flock's
+   own palette. Kept in storage so it stays this visitor's colour on a return
+   visit rather than rerolling every time the pill redraws. */
+.htally.done .tstack{display:flex; flex-direction:column; align-items:flex-start;
+  gap:5px; min-width:0;}
+.htally .luck{display:flex; align-items:center; gap:7px; font-size:12px;
+  font-weight:600; letter-spacing:.03em; color:#F4E9E2;}
+.htally.done .luck svg{width:19px; height:19px; flex:none; transform:rotate(-8deg);}
+.htally.done .luck svg path{fill:var(--bw); stroke:#FBF6F2; stroke-width:1.6;
+  stroke-linejoin:round;}
+.htally.done .luck svg .w2{fill:var(--bw2);}
+.htally .luck b{font-weight:700; color:var(--gold);}
 /* On a phone the frame is the portrait cut and the products stack towards the
    bottom, so a pill anchored there sits on top of the lowest butterflies (The
    Dusk and The Painted Garden Box) and puts them out of reach. Above the
@@ -2435,6 +2447,10 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
   .htally.done{flex-wrap:wrap; justify-content:center; max-width:88vw; gap:10px;}
   /* the wording carries it on a small screen; the icon only adds height */
   .htally.done svg{display:none;}
+  /* the lucky butterfly is the point of the line, so it stays */
+  .htally.done .tstack{align-items:center;}
+  .htally.done .luck svg{display:block;}
+  .htally .luck{font-size:11px;}
   .htally .thn{font-size:12px;} .htally .tgo{font-size:11px; padding:7px 11px;}
 }
 /* a butterfly already opened settles: its wings come to rest, and it drops
@@ -4116,6 +4132,32 @@ footer .fbadges img{height:62px; width:auto;}
       'the-dusk':                   'jade',
       'weaving-moments':            'coral'
     };
+    /* One colour of the flock is handed to the visitor as theirs. Drawn once
+       and kept, so it reads as an assignment rather than a slot machine. */
+    var LUCKY_NAME = {
+      gold: 'Gold', jade: 'Jade', coral: 'Coral', raspberry: 'Raspberry',
+      cornflower: 'Cornflower', marigold: 'Marigold', plum: 'Plum'
+    };
+    function luckyStore(k, v){
+      try {
+        if (v){ window.localStorage.setItem(k, v); return v; }
+        return window.localStorage.getItem(k);
+      } catch(e){
+        try {
+          if (v){ window.sessionStorage.setItem(k, v); return v; }
+          return window.sessionStorage.getItem(k);
+        } catch(e2){ return null; }
+      }
+    }
+    function luckyWing(){
+      var keys = Object.keys(WING);
+      var k = luckyStore('mlbLucky26');
+      if (!k || !WING[k]){
+        k = keys[Math.floor(Math.random() * keys.length)];
+        luckyStore('mlbLucky26', k);
+      }
+      return k;
+    }
     var BFLY = '<svg viewBox="0 0 48 48" aria-hidden="true">' +
       '<g class="wl">' +
         '<path class="w1" d="M21.5 22.5 C16 10 4 6 3.5 14.5 C3.2 20 10 24.5 21.5 25.5 Z"/>' +
@@ -4204,7 +4246,7 @@ footer .fbadges img{height:62px; width:auto;}
        return visit is a fresh garden. Verified reachable at every viewport
        from 320px up: no butterfly is ever cropped out of the frame. */
     var TOTAL = LAND.length;
-    var found = {}, foundN = 0, doneShown = false;
+    var found = {}, foundN = 0, doneShown = false, luckySent = false;
     try {
       var saved = window.sessionStorage.getItem('mlbFound26');
       if (saved){
@@ -4220,10 +4262,16 @@ footer .fbadges img{height:62px; width:auto;}
       hideTip();
       if (foundN >= TOTAL){
         tally.classList.add('done');
+        var lk = luckyWing(), lw = WING[lk];
         tally.innerHTML = BFLY +
+          '<span class="tstack">' +
           '<span class="thn">You\'ve found the whole garden. ' +
           '<span class="han">\u82B1\u6708\u60C5\u957F</span></span>' +
+          '<span class="luck" style="--bw:' + lw[0] + ';--bw2:' + lw[1] + '">' +
+          BFLY + '<span>Your lucky butterfly is <b>' + LUCKY_NAME[lk] + '</b></span>' +
+          '</span></span>' +
           '<a class="tgo" href="#concierge" data-tally-go="1">Try our gift matcher</a>';
+        if (!luckySent){ luckySent = true; ga('garden_lucky', {lucky_colour: lk}); }
       } else {
         tally.innerHTML =
           '<span class="tn"><b>' + foundN + '</b> / ' + TOTAL + '</span>' +
