@@ -40,7 +40,10 @@ from data import (KEEPSAKES, SETS, BOOTHS, CATEGORIES, RECIPIENTS, PRIORITIES,
                   TABLES, BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSET_V = 11  # bump when an asset is replaced under the same filename
+ASSET_V = 12
+
+# the one keepsake that carries a silent cut from the collaboration film
+FILM_CLIP_KID = "the-painted-garden-box"  # bump when an asset is replaced under the same filename
 
 # Breast Cancer Foundation, Singapore. Verified 6 Aug 2026.
 # Kien plans to swap this for the campaign-tagged self-examination page later:
@@ -642,6 +645,19 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .feat .desc p{margin:0 0 13px;}
 .feat .desc p:last-child{margin-bottom:0;}
 .feat .desc strong{color:var(--plum); font-weight:600;}
+/* the film clip shares the photo's column, so that column becomes a stack */
+.feat .fcol{display:flex; flex-direction:column; gap:14px; min-width:0;}
+@media(min-width:900px){
+  .feat.rev .fcol{order:2;}
+  /* the .rev rule targets .fimg; nested in .fcol it would reorder the stack */
+  .feat.rev .fcol .fimg{order:0;}
+}
+.feat .fclip{display:flex; align-items:center; gap:16px;}
+.feat .fclip video{width:clamp(132px,32%,186px); aspect-ratio:1/1; height:auto;
+  display:block; flex:none; object-fit:cover; background:var(--mushroom);}
+.feat .fclip .fctxt{min-width:0;}
+.feat .fclip .fclbl{display:block; font-size:10px; font-weight:700; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:7px;}
 .feat .becomes{margin:24px 0 0; padding:16px 0 0; border-top:1px solid var(--hair); max-width:52ch;}
 .feat .becomes .lbl{display:block; font-size:10px; font-weight:700; letter-spacing:.2em;
   text-transform:uppercase; color:var(--gold); margin-bottom:6px;}
@@ -1256,8 +1272,24 @@ def feature(kid, reverse=False):
         fb = ('<span class="fbadge"><svg viewBox="0 0 24 24" aria-hidden="true">'
               '<path d="M12 2c-2.8 3.4-3.4 6.9-1.7 10L5.4 20h3.7l2.9-4.4L14.9 20h3.7'
               'l-4.9-8c1.7-3.1 1.1-6.6-1.7-10z"/></svg>$1 to charity</span>')
+    imgcol = ('<div class="fimg">%s<img src="%s" alt="%s" width="900" height="1125" '
+              'loading="lazy" decoding="async"></div>' % (fb, v(k["img"]), k["alt"]))
+    if k["id"] == FILM_CLIP_KID:
+        # the photo column becomes a stack: the still, then a silent 3.7s cut from
+        # the collaboration film of the box actually opening. The still cannot show
+        # the box open; this can, and it earns the trip to the full film below.
+        imgcol = ('<div class="fcol">' + imgcol
+                  + '<div class="fclip">'
+                    '<video id="boxClip" width="720" height="720" muted playsinline '
+                    'preload="none" poster="%s" '
+                    'aria-label="The Painted Garden Box opening to four mooncakes">'
+                    '<source src="%s" type="video/mp4"></video>'
+                    '<div class="fctxt"><span class="fclbl">From the film</span>'
+                    '<a class="tlink" href="#garden" data-filmjump="card">'
+                    'Watch the full film</a></div>'
+                    '</div></div>' % (v("box-clip-poster.webp"), v("box-clip.mp4")))
     return """<article class="feat%s" id="k-%s">
-  <div class="fimg">%s<img src="%s" alt="%s" width="900" height="1125" loading="lazy" decoding="async"></div>
+  %s
   <div class="ftxt">
     <span class="chan%s">%s</span>
     <span class="fmt">%s</span>
@@ -1270,7 +1302,7 @@ def feature(kid, reverse=False):
     <div class="foot">%s%s</div>
     <div class="res-meta meta">%s</div>
   </div>
-</article>""" % (" rev" if reverse else "", k["id"], fb, v(k["img"]), k["alt"],
+</article>""" % (" rev" if reverse else "", k["id"], imgcol,
                  "" if k["channel"] == "online" else " booth", chan_label(k),
                  k["format"], k["name"], var, k["cn"], k["pinyin"], k["gloss"],
                  disc, body, k["becomes"], note, cta_for(k, small=False), extra, tags_for(k))
@@ -2157,7 +2189,26 @@ JS = """
     if(a.dataset.brochure) ga('brochure_download', {});
     if(a.dataset.bcf) ga('bcf_click', {placement:a.dataset.bcf});
     if(a.dataset.news) ga('newsletter_click', {placement:a.dataset.news});
+    if(a.dataset.filmjump) ga('film_jump', {placement:a.dataset.filmjump});
   });
+
+  /* ---------------- the box clip in the product card ---------------- */
+  /* silent, 363KB, and it runs when it reaches the screen rather than looping:
+     one pass, then it holds on the open box. preload="none" so a visitor who
+     never reaches that card never fetches it. */
+  (function(){
+    var c = byId('boxClip');
+    if(!c || !window.IntersectionObserver) return;
+    if(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          try{ c.currentTime = 0; }catch(err){}
+          var p = c.play(); if(p && p.catch) p.catch(function(){});
+        } else { c.pause(); }
+      });
+    }, {threshold:.55}).observe(c);
+  })();
 
   /* ---------------- the collaboration film ---------------- */
   /* tap to play, with sound. preload="none" keeps the 14MB off every visitor's
