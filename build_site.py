@@ -941,7 +941,10 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .afilm .vwrap{position:relative; margin:0 auto; aspect-ratio:9/16;
   width:min(100%, calc(80vh * 0.5625), 461px); background:#1A1210;
   box-shadow:0 22px 70px rgba(20,14,12,.55);}
-.afilm video{display:block; width:100%; height:100%; object-fit:cover; background:#1A1210;}
+/* contain, NOT cover: the inline frame is already exactly 9:16 so the two look
+   identical there, but fullscreen hands the element a LANDSCAPE box, and cover
+   fills that by cropping hard into the middle of the portrait frame */
+.afilm video{display:block; width:100%; height:100%; object-fit:contain; background:#1A1210;}
 /* the play affordance sits over the poster and leaves once the film runs.
    the poster's centre is the box's pale logo cartouche, so the disc carries its
    own dark ground and the caption sits down in the scrim rather than on the box */
