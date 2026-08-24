@@ -40,7 +40,7 @@ from data import (KEEPSAKES, SETS, BOOTHS, CATEGORIES, RECIPIENTS, PRIORITIES,
                   TABLES, BUDGETS, WA_CUSTOMER, FREE_DELIVERY, SITE_URL, GA_ID)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ASSET_V = 10  # bump when an asset is replaced under the same filename
+ASSET_V = 11  # bump when an asset is replaced under the same filename
 
 # Breast Cancer Foundation, Singapore. Verified 6 Aug 2026.
 # Kien plans to swap this for the campaign-tagged self-examination page later:
@@ -923,6 +923,50 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .amedia .agroup{margin-top:clamp(28px,4.5vw,46px);}
 .amedia .agroup figcaption.credit{text-transform:none; letter-spacing:0; font-size:13px;
   color:#CDBBB2; line-height:1.65; margin-top:12px;}
+
+/* ---------- the collaboration film ---------- */
+/* the film is 9:16, so it is capped by viewport HEIGHT, not width: at that
+   ratio any generous width turns into a tower on desktop */
+.afilm{margin:clamp(46px,7vw,84px) auto 0; text-align:center;}
+.afilm .fkick{display:flex; align-items:center; justify-content:center; gap:16px;
+  font-size:clamp(13px,1.7vw,16px); font-weight:600; letter-spacing:.2em;
+  text-transform:uppercase; color:#EFDCB4; margin:0 0 clamp(22px,3vw,34px);}
+.afilm .fkick::before{content:"\\273F"; color:var(--gold); letter-spacing:0; font-size:1.2em;}
+.afilm .fkick::after{content:""; height:1.5px; flex:0 1 200px;
+  background:linear-gradient(90deg,#D9BF86,transparent);}
+/* width leads, so the 9:16 frame is never cropped: the width is whichever is
+   smaller of the column and the width an 80vh-tall 9:16 frame would need.
+   Setting height here instead let max-width clamp the width and squeeze the
+   ratio, which cropped the sides of the film on phones. */
+.afilm .vwrap{position:relative; margin:0 auto; aspect-ratio:9/16;
+  width:min(100%, calc(80vh * 0.5625), 461px); background:#1A1210;
+  box-shadow:0 22px 70px rgba(20,14,12,.55);}
+.afilm video{display:block; width:100%; height:100%; object-fit:cover; background:#1A1210;}
+/* the play affordance sits over the poster and leaves once the film runs.
+   the poster's centre is the box's pale logo cartouche, so the disc carries its
+   own dark ground and the caption sits down in the scrim rather than on the box */
+.afilm .fplay{position:absolute; inset:0; width:100%; border:0; padding:0; cursor:pointer;
+  display:block; font-family:var(--f); transition:opacity .35s ease;
+  background:linear-gradient(180deg,rgba(20,14,12,.30) 0%,rgba(20,14,12,.10) 38%,rgba(20,14,12,.80) 100%);}
+.afilm .fplay.gone{opacity:0; pointer-events:none;}
+.afilm .ficon{position:absolute; left:50%; top:50%; width:76px; height:76px; border-radius:50%;
+  transform:translate(-50%,-50%); border:1.5px solid rgba(251,246,242,.92);
+  background:rgba(20,14,12,.58); box-shadow:0 6px 30px rgba(20,14,12,.5);
+  transition:transform .3s ease, background .3s ease;}
+.afilm .ficon::after{content:""; position:absolute; left:54%; top:50%;
+  transform:translate(-50%,-50%); border-style:solid; border-width:11px 0 11px 18px;
+  border-color:transparent transparent transparent #FBF6F2;}
+.afilm .fplay:hover .ficon{transform:translate(-50%,-50%) scale(1.07);
+  background:rgba(199,166,106,.72);}
+.afilm .flab{position:absolute; left:0; right:0; bottom:26px; padding:0 16px;
+  color:#FBF6F2; font-size:15.5px; font-weight:600;
+  text-shadow:0 2px 14px rgba(20,14,12,.8);}
+.afilm .flab em{display:block; font-style:normal; font-size:11.5px; font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:#EBD9AE; margin-top:6px;}
+.afilm .fcap{margin:16px auto 0; max-width:54ch; font-size:14px; color:#CDBBB2; line-height:1.7;}
+@media(prefers-reduced-motion:reduce){
+  .afilm .fplay, .afilm .ficon{transition:none;}
+}
 
 /* ---------- booth map ---------- */
 /* ---------- nearest booth finder ---------- */
@@ -2112,6 +2156,27 @@ JS = """
     if(a.dataset.news) ga('newsletter_click', {placement:a.dataset.news});
   });
 
+  /* ---------------- the collaboration film ---------------- */
+  /* tap to play, with sound. preload="none" keeps the 14MB off every visitor's
+     connection until they ask for it; load() on ended restores the poster so
+     the film's white end card never sits there against the cocoa section */
+  (function(){
+    var v = byId('filmVid'), b = byId('filmPlay');
+    if(!v || !b) return;
+    b.addEventListener('click', function(){
+      v.controls = true; v.muted = false;
+      var p = v.play();
+      /* if a browser refuses audible playback, fall back to muted: the film
+         carries burnt-in subtitles, so it still reads */
+      if(p && p.catch) p.catch(function(){ v.muted = true; v.play(); });
+      b.classList.add('gone');
+      ga('film_play', {});
+    });
+    v.addEventListener('ended', function(){
+      v.controls = false; v.load(); b.classList.remove('gone');
+    });
+  })();
+
   /* ---------------- gift matcher ---------------- */
   var ans = {}, step = 0;
   var qs = [].slice.call(document.querySelectorAll('.q'));
@@ -2855,6 +2920,20 @@ TEMPLATE = """<!DOCTYPE html>
           <figcaption class="credit">From left: Phuay Li Ying, founder of World of Ying; Jacob Soo, CEO of Breast Cancer Foundation; and Evelyn Lim, co&#8209;founder of Mdm Ling Bakery.</figcaption>
         </figure>
       </div>
+    </div>
+    <div class="afilm">
+      <span class="fkick">Behind The Painted Garden</span>
+      <div class="vwrap">
+        <video id="filmVid" width="720" height="1280" preload="none" playsinline
+          poster="assets/collab-film-poster.webp?v={{AV}}">
+          <source src="assets/collab-film.mp4?v={{AV}}" type="video/mp4">
+        </video>
+        <button class="fplay" id="filmPlay" type="button" aria-label="Play the film, 1 minute 29 seconds">
+          <span class="ficon" aria-hidden="true"></span>
+          <span class="flab">Watch the story<em>1 min 29 sec</em></span>
+        </button>
+      </div>
+      <p class="fcap">Ying paints the garden, and Evelyn and Jacob Soo talk about the dollar this box carries onward. It's subtitled, so you can watch it with the sound off.</p>
     </div>
   </div>
 </section>
