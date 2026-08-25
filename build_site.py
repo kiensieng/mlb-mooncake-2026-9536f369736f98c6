@@ -3034,7 +3034,6 @@ TEMPLATE = """<!DOCTYPE html>
       <a class="btn ghost sm fig" href="https://www.instagram.com/mdmlingbakery/" target="_blank" rel="noopener" aria-label="Mdm Ling Bakery on Instagram" style="color:#C9BDB7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" stroke="none"/></svg></a>
     </div>
     <div class="fbadges">
-      <img src="assets/badge-mwp.png?v={{AV}}" alt="Made With Passion, Singapore" width="700" height="462" loading="lazy" decoding="async">
       <img src="assets/badge-pos.png?v={{AV}}" alt="Product of Singapore" width="619" height="700" loading="lazy" decoding="async">
     </div>
     <p class="fl">Ingredients and allergen advice on this page follow the printed product labels. If you're gifting to someone with a food allergy, do check the label on the box as well. Halal certification covers our baked mooncakes; the truffle snowskin range isn't Halal certified. &#127765;</p>
