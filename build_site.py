@@ -1009,6 +1009,7 @@ header.hero .hfig::after{content:""; position:absolute; inset:0; pointer-events:
 .booth-map{height:min(56svh,440px); margin:0 0 18px; background:var(--mushroom);}
 .booth-map .leaflet-popup-content-wrapper{border-radius:0; box-shadow:0 6px 22px rgba(78,60,55,.2);}
 .booth-map .leaflet-popup-tip{box-shadow:none;}
+.booth-map .leaflet-tile-pane{filter:grayscale(1) contrast(.62) brightness(1.2);}
 .booth-map .leaflet-popup-content{margin:14px 16px; font-family:var(--f);}
 .bpop .bn{font-size:15px; font-weight:600; margin:0 0 2px; color:var(--ink);}
 .bpop .bl{font-size:12.5px; color:var(--muted); margin:0;}
@@ -2544,8 +2545,9 @@ JS = """
     var DEFAULT_CENTER = [1.345, 103.82], DEFAULT_ZOOM = 11;
     var map = L.map('boothMap', { scrollWheelZoom: false, attributionControl: true })
       .setView(DEFAULT_CENTER, DEFAULT_ZOOM);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap contributors &copy; CARTO', maxZoom: 18
+    // CARTO basemaps went key-only (Sep 2026): OSM tiles, greyed in CSS (.booth-map .leaflet-tile-pane)
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom: 19
     }).addTo(map);
 
     var markers = {};
